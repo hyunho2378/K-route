@@ -17,6 +17,8 @@ import Profile from './pages/Profile'; // [V10]
 import Gate from './pages/Gate';
 import GtsBuild from './pages/GtsBuild';
 import GtsCheckout from './pages/GtsCheckout';
+import GtsGo from './pages/GtsGo'; // [V5-0] 스텁
+import GtsQuiz from './pages/GtsQuiz'; // [V5-0] 스텁
 import GtsRoute from './pages/GtsRoute';
 import GtsSetup from './pages/GtsSetup';
 import Home from './pages/Home';
@@ -67,6 +69,9 @@ export default function App() {
                     <Route path="/gts/build" element={<RequireAuth><GtsBuild /></RequireAuth>} />
                     <Route path="/gts/route" element={<RequireAuth><GtsRoute /></RequireAuth>} />
                     <Route path="/gts/checkout" element={<RequireAuth><GtsCheckout /></RequireAuth>} />
+                    {/* [V5-0] K-Route 스텁(IA §11.3·§11.7) · /gts→/gts/quiz 리다이렉트는 P2로 연기(사용자 결정 2026-09-11) */}
+                    <Route path="/gts/quiz" element={<RequireAuth><GtsQuiz /></RequireAuth>} />
+                    <Route path="/gts/go" element={<RequireAuth><GtsGo /></RequireAuth>} />
                     <Route path="/ticket/:bookingId" element={<Ticket />} />
                     <Route path="/travel-log" element={<TravelLog />} />
                     <Route path="/reviews" element={<Reviews />} />

@@ -10,6 +10,9 @@ import travelLog from './travelLog';
 import venues from './venues';
 import profile from './profile'; // [V10]
 import team from './team'; // [V10]
+import quiz from './quiz'; // [V5-0]
+import chat from './chat'; // [V5-0]
+import go from './go'; // [V5-0]
 
-const ko = { ...common, ...gate, ...loop, ...brand, ...legal, ...gts, ...reviews, ...venues, ...travelLog, ...profile, ...team };
+const ko = { ...common, ...gate, ...loop, ...brand, ...legal, ...gts, ...reviews, ...venues, ...travelLog, ...profile, ...team, ...quiz, ...chat, ...go };
 export default ko;

@@ -14,6 +14,10 @@ const adminRouter = require('./routes/admin'); // [V1]
 const travelLogsRouter = require('./routes/travelLogs'); // [V3]
 const profileRouter = require('./routes/profile'); // [V10] 프로필 사진 업로드(Vercel Blob)
 const ratesRouter = require('./routes/rates'); // [V12] 환율 캐시(GET /api/rates)
+const ktoRouter = require('./routes/kto'); // [V5-0] K-Route 스텁 4종(전부 200 fallback)
+const quizRouter = require('./routes/quiz');
+const chatRouter = require('./routes/chat');
+const goRouter = require('./routes/go');
 
 const app = express();
 app.set('trust proxy', 1); // Render 등 프록시 뒤 secure 쿠키
@@ -77,6 +81,10 @@ app.use('/api', adminRouter); // [V1] 관리자(requireAdmin 내장)
 app.use('/api', travelLogsRouter); // [V3] Travel Log 발자취
 app.use('/api', profileRouter); // [V10] 프로필 사진 업로드
 app.use('/api', ratesRouter); // [V12] 환율
+app.use('/api', ktoRouter); // [V5-0] 공사 OpenAPI 스텁
+app.use('/api', quizRouter); // [V5-0] 취향 설문 추천 스텁
+app.use('/api', chatRouter); // [V5-0] K-가이드 봇 스텁
+app.use('/api', goRouter); // [V5-0] 현위치 교통 스텁
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {

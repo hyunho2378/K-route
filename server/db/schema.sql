@@ -71,9 +71,11 @@ ALTER TABLE gts_bookings ADD COLUMN IF NOT EXISTS travel_date DATE;
 
 -- [V3] journey_events.step 에 log_template 추가(Travel Log 템플릿 적용 계측) —
 -- 인라인 CHECK 재정의: DROP 후 ADD(매 migrate 실행 시 동일 결과 · 멱등 효과)
+-- [V5-0] quiz/recommend/go/chat 추가 · 이 목록이 step 제약의 단일 출처(별도 DROP+ADD 블록을 두면
+--   이 줄의 좁은 목록 재ADD가 신규 step 행과 충돌해 2회차 migrate가 실패하므로 여기서 확장).
 ALTER TABLE journey_events DROP CONSTRAINT IF EXISTS journey_events_step_check;
 ALTER TABLE journey_events ADD CONSTRAINT journey_events_step_check
-  CHECK (step IN ('login','setup','meal_plan','meals','picks','route_confirm','pay_method','complete','log_template'));
+  CHECK (step IN ('login','setup','meal_plan','meals','picks','route_confirm','pay_method','complete','log_template','quiz','recommend','go','chat'));
 
 -- [V4] ID/PIN 계정 병행 · 구글 유저(email 有)와 ID 유저(username+pin) 공존 — 전부 멱등.
 --   email NOT NULL 해제: ID 유저는 email NULL 허용(구글 유저는 여전히 값 有).
@@ -107,3 +109,46 @@ ALTER TABLE gts_bookings ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMPTZ;
 ALTER TABLE gts_bookings DROP CONSTRAINT IF EXISTS gts_bookings_status_check;
 ALTER TABLE gts_bookings ADD CONSTRAINT gts_bookings_status_check
   CHECK (status IN ('confirmed', 'cancelled'));
+
+-- [V5-0] K-Route scaffold · IA §11 · 전부 멱등(IF NOT EXISTS · DROP 없음).
+--   journey_events.step 확장(quiz/recommend/go/chat)은 위 [V3] 제약 목록에서 처리.
+CREATE EXTENSION IF NOT EXISTS vector; -- Neon 지원(0.8.6 · SETUP 2026-09-11 활성 확인)
+
+CREATE TABLE IF NOT EXISTS kto_spots (
+  contentid  TEXT,
+  lang       TEXT,
+  raw        JSONB,              -- 공사 API 원문 JSON 그대로(가공 금지 · PITFALLS)
+  tags       TEXT[] DEFAULT '{}',
+  kcontent   JSONB,              -- SOURCE_SPOTS.md 태그 원문(무결성 대상)
+  fetched_at TIMESTAMPTZ DEFAULT now(),
+  PRIMARY KEY (contentid, lang)
+);
+
+CREATE TABLE IF NOT EXISTS spot_chunks (
+  id         BIGSERIAL PRIMARY KEY,
+  contentid  TEXT,
+  lang       TEXT,
+  source     TEXT,
+  chunk      TEXT,
+  embedding  vector(768),        -- 768은 임시 차원 · RAG 세션이 임베딩 모델 차원에 맞춰 ALTER
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS quiz_sessions (
+  id          UUID PRIMARY KEY,
+  user_id     INTEGER,
+  answers     JSONB,
+  recommended JSONB,
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS chat_logs (
+  id         BIGSERIAL PRIMARY KEY,
+  session_id UUID,
+  user_id    INTEGER,
+  lang       TEXT,
+  q          TEXT,
+  a          TEXT,
+  sources    JSONB,
+  created_at TIMESTAMPTZ DEFAULT now()
+);

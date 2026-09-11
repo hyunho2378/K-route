@@ -2,6 +2,57 @@
 
 > 갱신 규칙: 각 프롬프트 완료 시 + 컨텍스트 85% 도달 시. 재시작 세션은 이 파일을 먼저 읽는다.
 
+## v5 K-Route (2026-09~) — 2026 관광데이터 활용 공모전 ②-2 지정과제 3
+
+> 세션마다 완료·진행중·다음을 갱신.
+
+서비스: 춘천 지역특화 K-콘텐츠 여행 플래너. 봄내헬퍼(솔버톤 GTS) 100% 재사용 + 확장.
+
+### 확정 사실 (근거)
+- 교통 API = TAGO 시외버스(SuburbsBusInfo) + 철도(TrainInfo, ITX·일반열차). 외부 API로 유지.
+- 장소 = venues.js 52곳 하드코딩 존재 → 공사 TourAPI 하이브리드로 전환(적격 요건).
+- K-콘텐츠 태깅 = SOURCE_SPOTS.md(사실검증 완료 · 무결성 대상). 앵커=K-푸드 중심.
+- 팀 2명: 주현호(기획·디자인·프론트) / 송준하(백엔드·RAG·데이터). 공고 5명 이내 OK.
+- LLM = Gemini 단일키 예정(임베딩+생성+번역). env 미설정 → 발급 필요.
+- 공사 OpenAPI = 현재 0건 → api.visitkorea.or.kr 활용신청 필요(사용자 작업).
+
+### 마일스톤
+- [x] P0 SETUP: v5 scaffold(스텁·DB·env·문서) — 프롬프트 1 (2026-09-11 · 브랜치 v5-kroute · [V5-1] 커밋 대기)
+- [ ] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2
+- [ ] P2 화면: quiz·추천·build개조·go — 프롬프트 3
+- [ ] P3 RAG봇 + 다국어 + 기능설명서·시연 — 프롬프트 4
+
+### 리스크
+- 공사 키 승인 지연 → 스텁 폴백으로 화면 먼저, 키 오면 실데이터 스왑.
+- Gemini 키 미발급 → 추천 사전문장 폴백·챗봇 비활성으로 데모 가능하게 방어.
+
+### P0 SETUP 결과 (2026-09-11 · 브랜치 v5-kroute · [V5-1] 커밋 대기)
+
+| 항목 | 결과 |
+|---|---|
+| 문서 | IA §11·ROUTES v5 = 끝에 append, PROGRESS v5 = 상단 삽입, append 3종·README_배치 삭제, 루트 6종(PITFALLS·MOTION·RESPONSIVE·SESSION_HEADER·SOURCE_SPOTS·KTO_API) 유지 |
+| env | server/.env 키: DATABASE_URL · GOOGLE_CLIENT_ID · GOOGLE_CLIENT_SECRET · SESSION_SECRET · CLIENT_ORIGIN · TAGO_SERVICE_KEY · BLOB_READ_WRITE_TOKEN / 공사 키 없음 / LLM 키 없음 / client/.env 부재 → .env.example 복사 생성(사용자 결정) |
+| DB | Neon SELECT 1 OK · vector 미설치(available 0.8.6) → CREATE EXTENSION 성공 · migrate 2회 exit 0·카운트 동일 · kto_spots / spot_chunks(embedding vector(768)) / quiz_sessions / chat_logs 존재 · journey_events.step + quiz·recommend·go·chat |
+| docs/kto | 신규 생성 + README(KTO_API.md 배치 목록) · 활용가이드 문서 0건 |
+| 서버 스텁 | lib/kto.js(asItems = tago.js 재사용) · services 6 · routes 4(index.js 기존 순서 뒤에 등록) · 7 엔드포인트 curl 전부 200 {source:'fallback'} |
+| 클라 스텁 | pages GtsQuiz·GtsGo(Section id만) · components/{quiz,chat,go}/.gitkeep · data/gts/ktoApi.js(서버 스텁 1:1 7함수 fallback) · quizQuestions.js([]) · i18n quiz·chat·go ×3 빈 객체 + index 등록 · GtsContext 필드 3 · App 라우트 2(RequireAuth) |
+| 검증 | client build 통과 · /api/health 200 · 스텁 진입 비로그인 = LoginGate / 로그인 = 렌더 · 회귀 E2E 홈 → /gate → /gts(setup) → build → route → checkout → 티켓(UZPUSQ) 통과·콘솔 에러 0 · grep(HEX·스토리지·TS·이모지·scale·B551011·줄표) 0건 · 3언어 1181키 동형 |
+
+결정(사용자 확인 2026-09-11):
+- /gts → /gts/quiz 리다이렉트는 **P2로 연기**(퀴즈 구현 전 진입점이 빈 스텁에 막히는 것 방지). 현재 /gts = GtsSetup 유지 · ROUTES v5 표는 목표 명세로 둠.
+- 스텁은 title 없는 Section(quiz·go 네임스페이스 빈 객체 유지).
+- 검증 계정 v5setup01@kroute.test 신규 · 예약 UZPUSQ·journey_events가 Neon에 남음.
+
+명세 밖 결정(보고):
+- journey_events 제약은 [V3] CHECK 목록을 직접 확장(별도 DROP+ADD 블록을 두면 [V3]의 좁은 목록 재ADD가 신규 step 행과 충돌해 2회차 migrate 실패).
+- migrate.js 무수정: schema.sql 전체를 실행하는 구조라 v5 블록(IF NOT EXISTS)이 곧 멱등 블록. schema.sql에 CREATE EXTENSION IF NOT EXISTS vector 포함(신규 DB 재현성).
+- 서버 라우트는 서비스 미연결 직접 fallback(연결은 P1~P3) · .env.example은 공사 키 변수 없이 주석 자리만(실제 이름 미확정) + LLM_PROVIDER= · EMBEDDING_PROVIDER= 빈값.
+
+다음 세션 참고:
+- /gts/quiz·/gts/go 문서 title·Dock 라벨이 "Not found"(PageLayout routeKeyFromPath 미등록 · /admin 선례와 동일) → P2에서 routeKey + meta.title 키 추가.
+- server/routes/track.js STEPS 화이트리스트엔 quiz·recommend·go·chat 미추가(DB 제약만 확장) → 계측 붙일 때 추가.
+- 사용자 준비물: 공사 키 발급 + docs/kto 활용가이드 배치, Gemini 키 발급(키 이름 확정 후 .env.example 반영).
+
 ## 상태
 
 | PHASE | 담당 | 상태 | 커밋 |

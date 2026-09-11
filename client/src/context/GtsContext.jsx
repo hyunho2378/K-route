@@ -22,6 +22,9 @@ const initial = {
   routeVisited: false,
   travelDate: null, // [V3] YYYY-MM-DD · 셋업 진입 시 오늘 기본(당일 예약 허용)
   logTemplate: null, // [V3] Travel Log 템플릿 적용 시 로그 code — setup CTA가 체크아웃 직행 판단
+  quizAnswers: null, // [V5-0] K-Route 설문 응답(IA §11.3) · 필드만, 로직은 P2
+  recommended: [], // [V5-0] 추천 결과(IA §11.4)
+  goOrigin: null, // [V5-0] go 화면 현위치 출발점(IA §11.7)
 };
 
 // 플랜별 식사 픽 정원(§9.4 Step 1)

@@ -61,3 +61,23 @@
 - 라우트 변경 시: 스크롤 top 복원(`ScrollRestoration` 커스텀 훅), GlassDock 수축, 진행 중 시트/다이얼로그 닫기.
 - 페이지 title: `Bomnae Helper — {페이지 키}` (사전 키 `meta.title.*`).
 - 내부 이동은 전부 `<Link>`/`useNavigate` — `<a href>`는 외부 링크만(`rel="noopener"`).
+
+
+---
+
+## v5 신규·변경 라우트 (React Router v6 · RequireAuth 기존 래핑 동일)
+
+> 기존 라우트·가드는 삭제/리네임 금지.
+
+| path | element | 가드 | 비고 |
+|---|---|---|---|
+| /gts | (변경) → /gts/quiz 리다이렉트 | RequireAuth | 기존 /gts=setup 진입점을 quiz로. /gts/setup 직접경로 유지 |
+| /gts/quiz | GtsQuiz | RequireAuth + useGtsGuard | 신설 · 게이미피케이션 설문 |
+| /gts/build | GtsBuild(개조) | 기존 | 추천 결과 단일 풀 · 식사플랜 폐지 |
+| /gts/route | GtsRoute | 기존 | ItineraryMap 재사용 · go 링크 추가 |
+| /gts/go | GtsGo | RequireAuth + useGtsGuard | 신설 · 현위치→첫 장소 교통 |
+| /gts/setup | GtsSetup | 기존 유지 | route에서 "차량으로 이동" 링크로만 진입(심사 경로 밖) |
+| /gts/checkout | 기존 유지 | 기존 | BM 근거로 남김 |
+
+- useGtsGuard 스텝 순서 = quiz → build → route → go. setup·checkout은 별도 분기(가드 재설계는 IA §11 세션).
+- 나머지 라우트(/gate, /ticket, /travel-log, /reviews, /admin, /loop 등) 전부 불변.
