@@ -171,4 +171,4 @@ async function getSpot(contentid, lang) {
   return raw;
 }
 
-module.exports = { ensureKtoIds, warm, poolItems, getSpot, norm };
+module.exports = { ensureKtoIds, warm, poolItems, getSpot, norm, REGION };

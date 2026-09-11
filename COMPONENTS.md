@@ -263,6 +263,6 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | 존 | 소유 | 항목 |
 |---|---|---|
 | A 취향 찾기 | pages/GtsQuiz.jsx · components/quiz/{QuizQuestion,QuizResult}.jsx | StepStage 6스텝(q1~q5 + 결과) · q1 복수 · 탭 자동 전진 · 결과 = 여행 타입 배지(q2 결정론 4종) + SuccessStamp 1회 + "추천 N곳 보기" |
-| B 코스 담기 | pages/GtsBuild.jsx · components/gts/{VenueGrid,VenueDetail,CourseQueue}.jsx | 단일 풀 = 추천 결과 · 정원 q4 · 카드 = 공사 대표이미지 → webp → 텍스트 + K배지 + 사유 1줄 + 집중률 Chip · 상세 = 공사 detailCommon·Intro 원문 + odii(같은 장소 이름 일치만) · 리뷰 제거 |
+| B 코스 담기 | pages/GtsBuild.jsx · components/gts/{VenueGrid,VenueDetail,CourseQueue}.jsx | 단일 풀 = 추천 결과 · 정원 q4 · 카드 = 공사 대표이미지 → webp → 텍스트 + K배지 + 사유 1줄 + 집중률 Chip · 상세 = 공사 detailCommon·Intro 원문 + odii([P3-A] 장소명 완전일치 테마만 · 없으면 블록 비렌더 · 테마명 병기 없음) · 리뷰 제거 |
 | C 출발 | pages/GtsGo.jsx · components/go/{LegTimeline,CrowdCard}.jsx · ItineraryMap 선택 prop(pinLabels·drawMs·labelKey) | §21 동의 → 현재 위치(거부 시 춘천역) → FieldSelect 도착 · /api/go 도보·택시 '예상' 레그 · 지도 폴리라인(거리 비례 draw-on) · 집중률 카드(3xl 이상 우측) · 다음 장소 |
 | 통합(오케스트레이터) | pages/GtsRoute.jsx · Ticket(공사 id 풀 해석) · GtsSetup(route 경유 체크아웃 직행) · GtsCheckout(course) | route CTA 3종 + K배지·집중률 + FAB |

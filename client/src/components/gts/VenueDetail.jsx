@@ -56,25 +56,23 @@ const trapTab = (e, root) => {
   }
 };
 
-// [V5-3] 공사 이용 안내 값 · 원문 HTML → 텍스트(짧은 필드라 "<br>\n" 겹줄바꿈은 한 줄로)
-const val = (v) => ktoText(v).replace(/\n\s*\n/g, '\n');
-
 // detailIntro2 필드명 접미사는 콘텐츠 유형마다 다르다(관광지 usetime · 문화시설 usetimeculture · 레포츠 usetimeleports ·
 //   쇼핑 opentime · 음식점 opentimefood …) → 이름 패턴에 맞는 첫 비어있지 않은 값
+//   [P3-A] 값 가공 = ktoText 하나("<br>\n" 겹줄바꿈은 ktoText가 처리 · 로컬 합치기 중복 제거)
 const introVal = (intro, re) => {
-  const k = Object.keys(intro).find((key) => re.test(key) && val(intro[key]));
-  return k ? val(intro[k]) : '';
+  const k = Object.keys(intro).find((key) => re.test(key) && ktoText(intro[key]));
+  return k ? ktoText(intro[k]) : '';
 };
 
 // 이용 안내 행 [라벨 키(gts.detail.*), 값] · 값 있는 것만
 const ktoInfo = (common, intro) =>
   [
-    ['address', [common.addr1, common.addr2].map(val).filter(Boolean).join(' ')],
-    ['contact', val(common.tel) || introVal(intro, /^infocenter/)],
+    ['address', [common.addr1, common.addr2].map(ktoText).filter(Boolean).join(' ')],
+    ['contact', ktoText(common.tel) || introVal(intro, /^infocenter/)],
     ['hours', introVal(intro, /^(usetime|opentime)/)],
     ['closed', introVal(intro, /^restdate/)],
     ['fee', introVal(intro, /^usefee/)],
-    ['menu', [...new Set([val(intro.firstmenu), val(intro.treatmenu)].filter(Boolean))].join(' · ')],
+    ['menu', [...new Set([ktoText(intro.firstmenu), ktoText(intro.treatmenu)].filter(Boolean))].join(' · ')],
     ['parking', introVal(intro, /^parking(?!fee)/)], // parkingfee(주차 요금)는 제외 · 주차 가능 여부 필드
   ].filter(([, v]) => v);
 
@@ -316,17 +314,13 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
       </Block>
     );
 
-  // [V5-3] odii 오디오 해설(두 kind 공통 · 서버가 같은 장소 테마만 붙임) · 첫 이야기 · 음원 없으면(en 다수) 원고만
+  // [V5-3] odii 오디오 해설(두 kind 공통) · 첫 이야기 · 음원 없으면(en 다수) 원고만
+  //   [P3-A] 서버가 장소명 완전일치 테마만 붙인다 → 없으면 블록 자체 비렌더(테마명 병기로 다른 장소 해설을 설명하지 않는다)
   const story = info?.audio?.stories?.[0];
   const audioBlock = story ? (
     <Block order={4} still={still} className="flex flex-col gap-12">
       <LangSwap k="gts.detail.audio" as="h3" className="text-h3 font-semibold" />
-      <div className="flex flex-col gap-4">
-        {info.audio.theme?.title && (
-          <p className="text-small font-medium text-inkSec">{info.audio.theme.title}</p>
-        )}
-        <p className="text-body font-semibold">{story.audioTitle}</p>
-      </div>
+      <p className="text-body font-semibold">{story.audioTitle}</p>
       {story.audioUrl && (
         <audio controls preload="none" src={story.audioUrl} aria-label={story.audioTitle} className="w-full" />
       )}

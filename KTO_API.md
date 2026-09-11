@@ -29,9 +29,9 @@
 | TatsCnctrRateService | tatsCnctrRatedList | areaCd, signguCd(시도+시군구 5자리), tAtsNm(선택), numOfRows, pageNo | baseYmd, tAtsNm, cnctrRate | 집중률 |
 | TarRlteTarService1 | areaBasedList1 | areaCd, signguCd(5자리), baseYm(YYYYMM) | baseYm, tAtsNm, rlteTatsNm, rlteRank, rlteCtgryLclsNm·Mcls·Scls | 최신 baseYm 탐색 |
 | TarRlteTarService1 | searchKeyword1 | areaCd, signguCd, baseYm, keyword | areaBasedList1과 동일 | 연관 |
-| Odii | themeLocationBasedList | langCode(ko·en), mapX, mapY, radius | tid, tlid, title, mapX, mapY | 오디오가이드 테마 |
+| Odii | themeSearchList | langCode(ko·en), keyword | tid, tlid, themeCategory, addr1(시도까지만), addr2, title, mapX, mapY, langCheck, langCode, imageUrl | [P3-A] 오디오가이드 테마 · 장소명 완전일치만(ktoAudioService) |
 | Odii | storyBasedList | langCode, tid, tlid | audioTitle, script, playTime, audioUrl | 오디오가이드 이야기(P3 RAG) |
-| Odii | themeBasedList · themeSearchList | langCode · keyword | 테마 필드 동일 | 확인만 · 코드 미사용 |
+| Odii | themeLocationBasedList · themeBasedList | langCode, mapX, mapY, radius · langCode | 테마 필드 동일 | 확인만 · 코드 미사용([P3-A] 좌표 근접 매칭 폐지) |
 | PhotoGalleryService1 | galleryList1 · gallerySearchList1 | 없음 · keyword | galTitle, galWebImageUrl, galPhotographyLocation | 확인만 · 코드 미사용 |
 
 ## 코드 값 (런타임 조회 · 코드에 박지 않음 · server/cache/kto-ids.json · 참고 기록)

@@ -19,7 +19,8 @@
 ### 마일스톤
 - [x] P0 SETUP: v5 scaffold(스텁·DB·env·문서) — 프롬프트 1 (2026-09-11 · 브랜치 v5-kroute · [V5-1] 커밋 대기)
 - [x] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2 (2026-09-11 · 공사 실데이터 적재 완료 · [V5-2b] = 1823dc1 · V5-2 폴백 작업 포함)
-- [x] P2 화면: quiz·추천·build개조·go — 프롬프트 3 (2026-09-12 · [V5-3] 커밋 대기)
+- [x] P2 화면: quiz·추천·build개조·go — 프롬프트 3 (2026-09-12 · [V5-3] = b74803a)
+- [x] P3-A 정합성 수정: odii 정확매칭 · ktoText · 큐 X 포커스 (2026-09-12 · [V5-4] 커밋 대기)
 - [ ] P3 RAG봇 + 다국어 + 기능설명서·시연 — 프롬프트 4
 
 ### 리스크
@@ -105,7 +106,7 @@
 - 연관관광지를 recommend 연계(+2) 판정에 쓰는 건 후속(기준 관광지 29곳 이름과 앵커 매칭 설계 필요).
 - th 이름은 en 제목 폴백(LLM 번역은 P3) · 트래픽: 목록·집중률 하루 1회, 상세·연관은 항목별 24h 캐시.
 
-### P2 화면 결과 (2026-09-11~12 · 브랜치 v5-kroute · [V5-2b] = 1823dc1 · [V5-3] 커밋 대기)
+### P2 화면 결과 (2026-09-11~12 · 브랜치 v5-kroute · [V5-2b] = 1823dc1 · [V5-3] = b74803a)
 
 | 항목 | 결과 |
 |---|---|
@@ -135,6 +136,26 @@
 - Neon 연결 끊김으로 /api/me 등 간헐 실패(재요청 시 회복) · pool idleTimeoutMillis 등 운영 설정 검토.
 - th 번역(quiz·go·detail) 네이티브 검수 · Travel Log는 공사 id 코스를 표시하지 않음(venues id만 해석 · 기존 규칙).
 - setup StepIndicator(v4 4단계 문구)는 v5 흐름과 순서가 맞지 않음 · LLM 키 없어 추천 사유 LLM 경로(spot.reason) 미검증.
+
+### P3-A 정합성 수정 (2026-09-12 · 단독 · [V5-3] = b74803a · [V5-4] 커밋 대기)
+
+| 항목 | 결과 |
+|---|---|
+| odii | 좌표 근접(themeLocationBasedList 반경 최근접) + 이름 포함 판정 폐지 → themeSearchList(장소명) + 이름 완전일치(전체 또는 끝 괄호 별칭 제외 · 공백·기호 무시) + 테마 addr1 같은 시도 · 테마 응답에 contentid 필드 없음(실응답 확인) · 상세 패널 테마명 병기 제거(없으면 블록 비렌더) |
+| odii 감사 | 풀 206 × ko·en 이름 완전일치 테마 10건 전부 같은 장소(강촌레일파크 ko·en · 물레길 · 소양강댐 · 춘천 명동 닭갈비 골목 · 삼악산 호수케이블카 · Chuncheon Makguksu Museum · 김유정문학촌 · 애니메이션박물관 ko·en) · 원조숯불닭불고기집·통나무집 닭갈비 0건 |
+| ktoText | `<br>` + 원문 줄바꿈 1개 처리는 이미 적용(P2) · VenueDetail val(겹줄 합치기) 제거(캐시 상세 20건 intro 빈 줄 0 · \r 0 = 중복) · overview 빈 줄 4건은 원문 문단 구분(`<br /><br />` 1 · 원문 \n\n 3)이라 유지 |
+| 배지 truncate | KBadge·CongestionChip max-w-full + LangSwap min-w-0 grid-cols-1 [&>span]:truncate 는 P2 적용분 · 320 th·en·ko K배지 8 · 집중률 Chip 6 카드 밖 0 · th 1건 말줄임 동작 · 가로 스크롤 0 |
+| 죽은 코드 | togglePick·toggleMeal·setMealPlan·mealCap 참조 0(P2에서 제거 · 주석 1줄만) · mealPlan·meals 상태는 Travel Log 템플릿·예약 API 계약이라 유지 |
+| 큐 X 포커스 | 큐 X(키보드 Enter) → 그리드로 돌아온 그 카드(data-spot)로 포커스 · 다른 페이지면 그 페이지로 넘긴 뒤 · 2회 PASS |
+| 검증 | build 통과 · 회귀 E2E 티켓 EDXT8A 통과(콘솔 에러 0) · 3언어 1319키 동형 · 변경 파일 grep 금지 항목 0(줄표는 기존 12건 · 추가 0) |
+
+명세 밖 결정(보고):
+- 완전일치 = 이름 전체 또는 끝 괄호 별칭을 뗀 이름(공사 ko 제목 "강촌레일파크(김유정레일바이크)" · 테마 "강촌레일파크"). 공백·기호 무시.
+- 타 지역 동명 차단 = 테마 addr1이 같은 시도(ktoSpotService REGION 검색어 export). addr1이 시도까지만 와서 시군구 대조는 불가.
+
+다음 세션 참고:
+- 2026-09-12 01시대 감사 스크립트(병렬 4)가 Odii 초당 한도·일일 한도(LIMITED_NUMBER_OF_SERVICE_REQUESTS_*)를 소진 → 그날 상세 odii는 전부 null(폴백 동작). 강촌레일파크 UI 오디오 표기는 한도 초기화 후 재확인.
+- odii는 상세 열 때마다 1~2회 호출(캐시 없음 · P2와 동일) · 시연 전 호출량 주의.
 
 ## 상태
 

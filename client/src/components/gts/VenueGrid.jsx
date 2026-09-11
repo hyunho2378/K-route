@@ -47,6 +47,8 @@ export default function VenueGrid({
   const prevPos = useRef(new Map());
   const gridRef = useRef(null);
   const refocusAt = useRef(null); // [V5-3] 포커스 이관 자리(null = 첫 렌더 · 이관 안 함)
+  const prevSelected = useRef(selected); // [P3-A] 직전 선택(큐 X로 빠진 id 판별)
+  const backId = useRef(null); // [P3-A] 포커스를 돌려줄 카드 id(다른 페이지면 페이지 전환 뒤 포커스)
 
   // [V9] 큐 모드: 선택된 장소 제거 + sortCoord 기준 거리순 재정렬(비면 기본 순서)
   const shown = useMemo(() => {
@@ -59,14 +61,31 @@ export default function VenueGrid({
   }, [pool, selected, queueMode, sortCoord]);
 
   // [V5-3] 포커스 유실 방지 · 큐로 간 카드(또는 큐 X)가 사라지면 포커스가 body로 떨어져 모달 밖으로 샌다
-  //   → 담은 카드 자리(큐 X 제거면 첫 자리) 카드로 이관. 거절(정원 초과)은 카드가 남아 포커스 그대로.
+  //   → 담은 카드 자리 카드로 이관 · [P3-A] 큐 X 제거면 그리드로 돌아온 그 카드(다른 페이지면 그 페이지로 넘긴 뒤).
+  //   거절(정원 초과)은 카드가 남아 포커스 그대로.
   useEffect(() => {
     const at = refocusAt.current;
     refocusAt.current = 0;
+    const back = prevSelected.current.find((id) => !selected.includes(id));
+    prevSelected.current = selected;
     if (at == null || document.activeElement !== document.body) return;
+    const i = back ? shown.findIndex((v) => v.id === back) : -1;
+    if (i !== -1) {
+      backId.current = back;
+      setPage(Math.floor(i / pageSize));
+      return;
+    }
     const cards = gridRef.current.querySelectorAll('button[aria-pressed]');
     cards[Math.min(at, cards.length - 1)]?.focus();
   }, [shown]);
+
+  // [P3-A] 돌아온 카드가 렌더된 커밋에서 포커스(같은 페이지면 이번 커밋 · 아니면 페이지 전환 커밋)
+  useEffect(() => {
+    const el = backId.current && gridRef.current.querySelector(`[data-spot="${CSS.escape(backId.current)}"]`);
+    if (!el) return;
+    backId.current = null;
+    el.focus();
+  }, [shown, page]);
 
   const pages = Math.max(1, Math.ceil(shown.length / pageSize));
 
@@ -139,6 +158,7 @@ export default function VenueGrid({
                 type="button"
                 onClick={() => onCardClick(venue.id)}
                 aria-pressed={isSelected}
+                data-spot={venue.id}
                 className={`pressable relative flex h-full min-h-[124px] w-full flex-col items-start gap-4 overflow-hidden rounded-lg p-12 text-left shadow-sm ${
                   hasImage ? 'bg-ink' : venue.mock ? 'bg-surface' : 'bg-white'
                 } ${isSelected ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}
