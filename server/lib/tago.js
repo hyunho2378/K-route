@@ -4,8 +4,8 @@
 //   URLSearchParams 미사용, 쿼리 문자열에 원문 그대로 이어붙인다(이중 인코딩 = 최다 실패 원인).
 const TIMEOUT_MS = 8000;
 
-async function tagoGet(base, op, params) {
-  const key = process.env.TAGO_SERVICE_KEY;
+// [V5-2] key 인자 추가(기본 = TAGO_SERVICE_KEY · 기존 호출부 무변경) · 공사 API가 같은 data.go.kr 계약을 재사용(lib/kto.js)
+async function tagoGet(base, op, params, key = process.env.TAGO_SERVICE_KEY) {
   if (!key) throw new Error('TAGO_SERVICE_KEY 미설정');
   const qs = Object.entries(params)
     .filter(([, v]) => v !== undefined && v !== null && v !== '')
@@ -26,9 +26,10 @@ async function tagoGet(base, op, params) {
       // 키 미활성·게이트웨이 오류는 XML(OpenAPI_ServiceResponse)로 옴 — 원문 일부를 에러로 전달
       throw new Error(`비JSON 응답: ${text.slice(0, 160)}`);
     }
-    const header = json?.response?.header;
-    // 문서 "c) 응답 메시지 명세": resultCode 00 = NORMAL SERVICE
-    if (header && header.resultCode !== '00' && header.resultCode !== 0) {
+    // [V5-2b] 공사 API(lib/kto.js 경유)는 오류를 최상위 { resultCode, resultMsg }로 준다(probe-kto: 11 NO_MANDATORY_REQUEST_PARAMETERS_ERROR)
+    const header = json?.response?.header ?? (json?.resultCode !== undefined ? json : null);
+    // 문서 "c) 응답 메시지 명세": resultCode 00 = NORMAL SERVICE · [V5-2b] 공사 정상 = '0000'(probe-kto 실응답)
+    if (header && !['00', '0000', 0].includes(header.resultCode)) {
       throw new Error(`resultCode ${header.resultCode}: ${header.resultMsg}`);
     }
     return json?.response?.body ?? null;

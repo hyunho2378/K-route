@@ -91,6 +91,10 @@ app.listen(PORT, async () => {
   console.log(`Bomnae Helper server listening on port ${PORT}`);
   // [V12] 환율 캐시 워밍(기동 시 1회 + 6시간 간격) · 실패해도 서버는 산다(환산만 숨김)
   require('./services/rates').startRatesCache();
+  // [V5-2b] 공사 지역코드 매칭·캐시 + 춘천 목록 적재(24h 내 적재분 재사용) · 비차단 · 실패해도 서버는 산다(풀은 venues fallback)
+  require('./services/ktoSpotService')
+    .warm()
+    .catch((e) => console.error('[kto] 기동 적재 실패(fallback):', e.message));
   // TAGO ID 캐시 워밍(지시 2: 기동 시 1회 · 실패해도 서버는 산다 — 해당 기능만 fallback)
   try {
     const { ensureIds } = require('./services/busService');

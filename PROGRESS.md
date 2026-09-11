@@ -18,7 +18,7 @@
 
 ### 마일스톤
 - [x] P0 SETUP: v5 scaffold(스텁·DB·env·문서) — 프롬프트 1 (2026-09-11 · 브랜치 v5-kroute · [V5-1] 커밋 대기)
-- [ ] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2
+- [x] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2 (2026-09-11 · 공사 실데이터 적재 완료 · [V5-2b] 커밋 대기 · V5-2 폴백 작업 포함)
 - [ ] P2 화면: quiz·추천·build개조·go — 프롬프트 3
 - [ ] P3 RAG봇 + 다국어 + 기능설명서·시연 — 프롬프트 4
 
@@ -52,6 +52,58 @@
 - /gts/quiz·/gts/go 문서 title·Dock 라벨이 "Not found"(PageLayout routeKeyFromPath 미등록 · /admin 선례와 동일) → P2에서 routeKey + meta.title 키 추가.
 - server/routes/track.js STEPS 화이트리스트엔 quiz·recommend·go·chat 미추가(DB 제약만 확장) → 계측 붙일 때 추가.
 - 사용자 준비물: 공사 키 발급 + docs/kto 활용가이드 배치, Gemini 키 발급(키 이름 확정 후 .env.example 반영).
+
+### P1 데이터 결과 (2026-09-11 · 브랜치 v5-kroute · [V5-1] = e5e1fed · [V5-2] 커밋 대기)
+
+| 항목 | 결과 |
+|---|---|
+| 공사 키·문서 | 공사 전용 키·docs/kto 활용가이드 없음 → data.go.kr 계정 공통키(TAGO 키 값)로 probe(사용자 결정) · 6개 서비스 경로 존재, 전부 resultCode 30 미등록 = **활용신청 대기** · KorService1·EngService1 폐기(12) · 근거 = KTO_API.md probe 기록 |
+| 호출 코어 | lib/kto.js = tago.js 계약 재사용(tagoGet에 key 인자 추가 · 기존 호출부 무변경) · KTO_SERVICE_KEY 우선, 없으면 TAGO_SERVICE_KEY |
+| 공사 서비스 4종 | ktoSpot·Related·Congestion·Audio = 승인 대기 신호(KTO_PENDING) → 라우트 200 fallback(reason) · 집중률 3구간 band()는 PLACEHOLDER 경계 |
+| SOURCE 태깅 | server/data/ksource.js = SOURCE_SPOTS.md 런타임 파싱(사본 없음) · 표 24행·배지 14 · 3건 문자대조 OK(셀프체크 + API 출력 둘 다) · 원문 무변경 |
+| 하이브리드 풀 | services/spotPool.js · 공사 1차(현재 0) + venues 51(client venues.js 직접 import) · 배지 규칙 위반 0 · 약함·근거없음 배지 0 |
+| 추천 | recommendService.js(결정론 · 셀프체크) + POST /api/quiz/recommend · LLM off / on(키 없음) 순위 동일·reasonKey 폴백 · quiz_sessions 저장 · 로그인 시 journey_events 'recommend' · 잘못된 answers 400 |
+| 클라 | ktoApi.js 실호출(getSpots·getSpotDetail·getRelated·getCongestion·recommend · 실패 시 fallback) · GtsContext.runRecommend · i18n quiz.reason 5키 ×3 |
+| 검증 | migrate 2회 멱등 · build 통과 · 3언어 1186키 동형 · grep 0(B551011은 probe 스크립트만) · transit bus/train live 유지 · 회귀 E2E 티켓 5MWDEP 통과 |
+
+결정(사용자 확인 2026-09-11): TAGO 키로 probe · [V5-1] 선커밋 · 서버가 client venues.js 직접 import · 추천 가중표 초안 채택(q2 성향·q3 동행 = category·kType 파생).
+
+명세 밖 결정(보고):
+- venues 실제 51곳(SOURCE_SPOTS 문구는 52) · id 51/51 일치.
+- SOURCE evidence "상동"은 원문 유지 · §6 표(비고 열)는 note 필드로.
+- 추천 출력 수 = q4 반나절 8 / 하루 12 · 응답 reason(문자열|null) + reasonKey 병행.
+- LLM 키 이름 GEMINI_API_KEY · 모델 gemini-2.5-flash(키 발급 후 실호출 확인 필요).
+- 설문 답 허용값 = recommendService.ANSWERS(q1 kfood·kdrama·kanime·kpop·undecided / q2 photo·localfood·nature·cafe / q3 solo·friends·family / q4 half·day / q5 transit·taxi) → P2 quizQuestions.js가 이 값을 쓴다.
+
+다음 세션 참고:
+- coord:null(DEMO) 장소는 거리 조건(연계·시내 밖 -2)에서 빠져 대중교통 선택 시 상대적으로 유리(tongnamujip은 PLACEHOLDER 좌표라 -2). 실좌표 확보 시 해소.
+- 사용자 준비물: data.go.kr 같은 계정으로 공사 6개 서비스 활용신청 → `node server/scripts/probe-kto.js auth` 재실행 → 오퍼레이션 확인 후 서비스 구현(P1 잔여) · Gemini 키(GEMINI_API_KEY + LLM_PROVIDER=gemini) · quiz.reason th 네이티브 검수.
+
+### P1b 공사 실데이터 결과 (2026-09-11 · [V5-2b] 커밋 대기 · V5-2 폴백 작업 포함 · 미커밋)
+
+| 항목 | 결과 |
+|---|---|
+| probe | auth: 6개 서비스 전부 HTTP 200(403·30 해소) · 정상 코드 = '0000' · verify: 채택 체인 전 단계 0000(KTO_API.md 표) |
+| 계약 | tago.js 판정 확장('0000' + 최상위 오류 envelope · TAGO 동작 불변) · lib/kto.js = tagoGet 재사용 + 실호출 1줄 로그 |
+| 코드 매칭 | areaCode2 강원 32·춘천 13(ko·en) · ldongCode2 51·110 → signguCd 51110 · server/cache/kto-ids.json(하드코딩 0) |
+| 적재 | kto_spots ko 167 · en 17(원문 raw.list · 상세는 요청 시 common·intro·images) · 기동 시 + TTL 24h |
+| 풀 | 206 = 공사 162(ko 151 · 영문명 5 · en 전용 11 · venue 합류 7) + venue 44 · 배지 14 · 규칙 위반 0 · 집중률 붙은 항목 34 |
+| 사용처 4곳 | 목록 /kto/spots 200 live · 상세 /kto/spots/2605236 200(ko·en 원문) · 연관 /kto/related/2605236 200(baseYm 202608 · 50건) · 집중률 /kto/congestion/2605236 200(오늘 35.29 보통 · 가장 한가한 날 09-22 26.45) |
+| 추천 | kfood 질의 공사 1/8(원조숯불닭불고기집 ← wonjo-charcoal-dak 배지 승계) · 자연·가족 질의 공사 11/12 |
+| odii | getAudioGuide 실호출(강촌레일파크 이야기 1 · audioUrl 있음) · 라우트 없음(P3 RAG 소비) |
+| 검증 | migrate 2회 멱등 · build · 3언어 1186키 · grep 0 · transit live 유지 · 회귀 E2E 티켓 3A9P3J 통과 |
+
+명세 밖 결정(보고):
+- ko 목록이 풀의 기준 · en은 제목 끝 괄호의 한글 원명이 ko 제목과 같을 때만 영문명으로 연결(EngService2 contentid가 달라 조인 불가) · 불일치 en은 별도 항목.
+- 풀 제외 = 숙박(B02)·추천코스(C01) · 카페/전통찻집(A05020900) = foodspace · 공사 스팟 성향 = A01 자연 → nature, A02 인문 → photo.
+- venue와 같은 곳(이름 일치 또는 포함 + 300m)이면 공사 항목 하나로 합치고 venue SOURCE 태그 승계(venueId 표기).
+- 집중률 3구간 경계 = 춘천 1800행 분포 3분위(32.15 / 61.16) · IA "추천 시간대"는 API가 일 단위라 30일 중 가장 한가한 날로 대체.
+- 연관관광지 baseYm = KST 전월부터 최대 6개월 자동 탐색 · 이미지 http → https 치환은 응답에서만(원문 보존).
+
+다음 세션 참고:
+- 합류 7곳은 풀 id가 공사 contentid(venueId로 venues 연결) · P2 build·route가 kind·venueId·coord를 처리해야 함.
+- 연관관광지를 recommend 연계(+2) 판정에 쓰는 건 후속(기준 관광지 29곳 이름과 앵커 매칭 설계 필요).
+- th 이름은 en 제목 폴백(LLM 번역은 P3) · 트래픽: 목록·집중률 하루 1회, 상세·연관은 항목별 24h 캐시.
 
 ## 상태
 

@@ -1,0 +1,106 @@
+// [V5-2] 취향 설문 추천 엔진 · IA §11.4 결정론(LLM 무관) · 입력 = 하이브리드 풀 항목 + quiz answers.
+// 가중표 = IA §11.4 + 사용자 채택 초안(2026-09-11): 장소별 성향·동행 데이터가 없어 category·SOURCE kType·실좌표로 파생.
+//   q1 콘텐츠(복수) +5 배지 앵커 & kType 일치 / +2 연계 = 배지 없는 local 실좌표 장소가 매칭 앵커 LINK_KM 이내
+//   q2 성향 +3 (STYLE) · q3 동행 +1 (COMPANY) · q5 대중교통 & 실좌표 & 중심 CITY_KM 밖 -2
+//   동점 = 집중률 낮은 순(congestion 없는 항목은 뒤) → 풀 원래 순서 · 출력 수 = q4 반나절 8 / 하루 12
+// coord null(DEMO 좌표) 장소는 거리 조건(연계·시내 밖) 판정 제외. 셀프체크: node services/recommendService.js
+const ANSWERS = {
+  q1: ['kfood', 'kdrama', 'kanime', 'kpop', 'undecided'], // 복수 · kType 표기 동일(kpop은 venue 앵커 없음 · SOURCE §3)
+  q2: ['photo', 'localfood', 'nature', 'cafe'],
+  q3: ['solo', 'friends', 'family'],
+  q4: ['half', 'day'],
+  q5: ['transit', 'taxi'],
+};
+const CENTER = [127.73, 37.8813]; // PATTERNS §21 춘천 권역 중심 [lng, lat]
+const LINK_KM = 1.5; // PLACEHOLDER · 공사 연관관광지 연결 시 거리 대신 연관 목록으로 교체
+const CITY_KM = 5; // PLACEHOLDER · "시내" 반경
+const COUNT = { half: 8, day: 12 };
+// [V5-2b] 공사 스팟은 SOURCE kType이 없어(local) cat1으로 판정 · categoryCode2 이름: A01 자연 · A02 인문(문화/예술/역사)
+const STYLE = {
+  localfood: (s) => s.category === 'meal' || s.kType === 'kfood',
+  cafe: (s) => s.category === 'foodspace',
+  nature: (s) => s.category === 'activity' && (s.kType === 'landmark' || s.kType === 'kdrama' || s.cat1 === 'A01'),
+  photo: (s) => s.category === 'activity' && (s.kType === 'landmark' || s.kType === 'kanime' || s.cat1 === 'A02'),
+};
+const COMPANY = { solo: 'foodspace', friends: 'meal', family: 'activity' };
+
+// 하버사인 거리(km) · 좌표 [lng, lat]
+const km = ([lng1, lat1], [lng2, lat2]) => {
+  const r = Math.PI / 180;
+  const a =
+    Math.sin(((lat2 - lat1) * r) / 2) ** 2 +
+    Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(((lng2 - lng1) * r) / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(a));
+};
+
+// answers 검증 · 틀리면 null(라우트가 400)
+function validAnswers(a) {
+  if (!a || !Array.isArray(a.q1) || !a.q1.length || !a.q1.every((v) => ANSWERS.q1.includes(v))) return null;
+  for (const q of ['q2', 'q3', 'q4', 'q5']) if (!ANSWERS[q].includes(a[q])) return null;
+  return { q1: [...new Set(a.q1)], q2: a.q2, q3: a.q3, q4: a.q4, q5: a.q5 };
+}
+
+// pool 항목: { id, kind, category, coord, kType, badge, congestion? } → [{ id, kind, score, reasonKey }]
+function recommend(pool, answers) {
+  const picked = new Set(answers.q1);
+  const anchorCoords = pool.filter((s) => s.badge && picked.has(s.kType) && s.coord).map((s) => s.coord);
+  return pool
+    .map((s, order) => {
+      let score = 0;
+      let why = 'default';
+      if (s.badge && picked.has(s.kType)) {
+        score += 5;
+        why = 'anchor';
+      } else if (s.kType === 'local' && s.coord && anchorCoords.some((c) => km(c, s.coord) <= LINK_KM)) {
+        score += 2;
+        why = 'linked';
+      }
+      if (STYLE[answers.q2](s)) {
+        score += 3;
+        if (why === 'default') why = 'style';
+      }
+      if (s.category === COMPANY[answers.q3]) {
+        score += 1;
+        if (why === 'default') why = 'company';
+      }
+      if (answers.q5 === 'transit' && s.coord && km(CENTER, s.coord) > CITY_KM) score -= 2;
+      return { s, score, why, order };
+    })
+    .sort((a, b) => b.score - a.score || (a.s.congestion ?? Infinity) - (b.s.congestion ?? Infinity) || a.order - b.order)
+    .slice(0, COUNT[answers.q4])
+    .map(({ s, score, why }) => ({ id: s.id, kind: s.kind, score, reasonKey: `quiz.reason.${why}` }));
+}
+
+module.exports = { recommend, validAnswers, ANSWERS, km };
+
+if (require.main === module) {
+  const assert = require('assert');
+  const near = [127.7305, 37.8815];
+  const pool = [
+    { id: 'cafe-far', kind: 'venue', category: 'foodspace', coord: [127.9, 37.95], kType: 'local', badge: false },
+    { id: 'dak', kind: 'venue', category: 'meal', coord: near, kType: 'kfood', badge: true },
+    { id: 'near-local', kind: 'venue', category: 'foodspace', coord: [127.731, 37.882], kType: 'local', badge: false },
+    { id: 'weak', kind: 'venue', category: 'activity', coord: near, kType: 'kdrama', badge: false },
+    { id: 'demo', kind: 'venue', category: 'meal', coord: null, kType: 'local', badge: false },
+  ];
+  const r = recommend(pool, { q1: ['kfood'], q2: 'localfood', q3: 'friends', q4: 'half', q5: 'transit' });
+  // dak 5+3+1 앵커 / demo 3+1(좌표 없음 → 연계 제외) / near-local 연계 2 / weak 근거없음 kdrama 0 / cafe-far 시내 밖 -2
+  assert.deepStrictEqual(
+    r.map((x) => [x.id, x.score, x.reasonKey]),
+    [
+      ['dak', 9, 'quiz.reason.anchor'],
+      ['demo', 4, 'quiz.reason.style'],
+      ['near-local', 2, 'quiz.reason.linked'],
+      ['weak', 0, 'quiz.reason.default'],
+      ['cafe-far', -2, 'quiz.reason.default'],
+    ],
+  );
+  // 공사 스팟(kType local)은 cat1으로 성향 판정: A01 자연 → nature +3, 가족 → activity +1
+  const kto = recommend([{ id: '126', kind: 'kto', category: 'activity', coord: null, kType: 'local', badge: false, cat1: 'A01' }], {
+    q1: ['undecided'], q2: 'nature', q3: 'family', q4: 'half', q5: 'taxi',
+  });
+  assert.deepStrictEqual(kto.map((x) => [x.id, x.score, x.reasonKey]), [['126', 4, 'quiz.reason.style']]);
+  assert.strictEqual(validAnswers({ q1: ['kfood'], q2: 'x', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
+  assert.strictEqual(validAnswers({ q1: [], q2: 'cafe', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
+  console.log('recommend 셀프체크 PASS');
+}

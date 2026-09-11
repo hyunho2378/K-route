@@ -5,6 +5,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { splitItinerary } from '../components/gts/itinerary';
+import { recommend } from '../data/gts/ktoApi';
 import { matchVehicle } from '../data/gts/vehicles';
 
 // [V1] 여정 트래킹 · 비차단(실패해도 UX 진행 · 콘솔 경고만) — 서버 /api/track(로그인 필수)
@@ -112,6 +113,13 @@ export function GtsProvider({ children }) {
   const setTravelDate = useCallback((travelDate) => setState((s) => ({ ...s, travelDate })), []); // [V3]
   const reset = useCallback(() => setState(initial), []);
 
+  // [V5-2] 설문 답 → 서버 추천 → quizAnswers·recommended 채움(화면은 P2) · 실패 시 recommended = []
+  const runRecommend = useCallback(async (answers, lang) => {
+    const res = await recommend(answers, lang, sessionIdRef.current);
+    setState((s) => ({ ...s, quizAnswers: answers, recommended: res.items ?? [] }));
+    return res;
+  }, []);
+
   // [V3] Travel Log 템플릿 적용 · 로그의 식사 플랜·선택·동선을 그대로 프리필하고
   //   routeVisited까지 마킹(로그 동선 = 확정 동선 → setup 인원 선택 후 체크아웃 직행 가드 성립).
   //   /gts 이탈 리셋 정책은 그대로 — Travel Log → setup 진입은 "밖→안" 전이라 리셋 미발화(보존).
@@ -162,8 +170,9 @@ export function GtsProvider({ children }) {
       applyLogTemplate,
       reset,
       trackStep,
+      runRecommend,
     }),
-    [state, vehicle, mealPlanSatisfied, setParty, setLuggage, setMealPlan, toggleMeal, togglePick, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep],
+    [state, vehicle, mealPlanSatisfied, setParty, setLuggage, setMealPlan, toggleMeal, togglePick, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep, runRecommend],
   );
 
   return <GtsContext.Provider value={value}>{children}</GtsContext.Provider>;
