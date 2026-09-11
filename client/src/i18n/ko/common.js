@@ -11,6 +11,8 @@ export default {
       gtsBuild: "하루 조립",
       gtsRoute: "동선 확인",
       gtsCheckout: "결제 확인",
+      gtsQuiz: "취향 찾기", // [V5-3]
+      gtsGo: "출발", // [V5-3]
       travelLog: "트래블 로그",
       lineDetail: "라인",
       booking: "좌석 예약",

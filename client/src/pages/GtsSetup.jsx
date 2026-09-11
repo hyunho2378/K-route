@@ -26,7 +26,7 @@ const todayStr = () => {
 };
 
 export default function GtsSetup() {
-  const { party, luggage, vehicle, travelDate, logTemplate, setParty, setLuggage, setTravelDate, trackStep } = useGts();
+  const { party, luggage, vehicle, travelDate, logTemplate, routeVisited, setParty, setLuggage, setTravelDate, trackStep } = useGts();
   const navigate = useNavigate();
   const { t } = useLang();
 
@@ -129,10 +129,12 @@ export default function GtsSetup() {
               // [V1] setup 완료 계측(비차단) · [V3] 날짜 포함
               trackStep('setup', { party: party ?? 1, luggage, vehicle, travelDate });
               // [V3] Travel Log 템플릿 적용 상태 = 인원 선택만 진행 → 체크아웃 직행
-              navigate(logTemplate ? '/gts/checkout' : '/gts/build');
+              // [V5-3] K-Route route '차량으로 이동'(동선 확정 후 진입)도 체크아웃 직행
+              navigate(logTemplate || routeVisited ? '/gts/checkout' : '/gts/build');
             }}
           >
-            <LangSwap k="gts.setup.cta" />
+            {/* [V5-3] 체크아웃 직행 분기(route 경유·Travel Log 템플릿)면 라벨도 결제로 */}
+            <LangSwap k={logTemplate || routeVisited ? 'gts.setup.ctaCheckout' : 'gts.setup.cta'} />
           </Button>
           {/* [V9] 9명 이상 단체 문의 안내 · 버튼 아래 · 실제 메일은 config OFFICIAL_EMAIL */}
           {overCap && (

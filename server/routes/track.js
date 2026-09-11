@@ -6,7 +6,8 @@ const { readUserId } = require('../lib/session');
 
 const router = express.Router();
 
-const STEPS = new Set(['login', 'setup', 'meal_plan', 'meals', 'picks', 'route_confirm', 'pay_method', 'complete', 'log_template']); // [V3] Travel Log 템플릿 적용
+// [V3] Travel Log 템플릿 적용 · [V5-3] quiz·go(journey_events CHECK는 V5-0에서 확장 완료)
+const STEPS = new Set(['login', 'setup', 'meal_plan', 'meals', 'picks', 'route_confirm', 'pay_method', 'complete', 'log_template', 'quiz', 'go']);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 router.post('/track', async (req, res) => {

@@ -29,4 +29,5 @@ export const recommend = (answers, lang, sessionId) =>
     body: JSON.stringify({ answers, lang, sessionId }),
   });
 export const sendChat = async () => ({ source: 'fallback' }); // POST /api/chat · P3
-export const getGo = async () => ({ source: 'fallback' }); // GET /api/go?lat&lng&to · P2
+// [V5-3] 현위치 → 코스 장소 · { source, reason, to, km, estimates:[{mode:'walk'|'taxi', min}] } · live provider가 붙으면 legs[]
+export const getGo = (lat, lng, to) => call(`/api/go?lat=${lat}&lng=${lng}&to=${enc(to)}`);

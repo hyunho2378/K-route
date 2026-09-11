@@ -13,6 +13,8 @@ export default {
       gtsBuild: "Build your day",
       gtsRoute: "Your route",
       gtsCheckout: "Checkout",
+      gtsQuiz: "Find your Chuncheon", // [V5-3]
+      gtsGo: "Head to your stop", // [V5-3]
       travelLog: "Travel Log",
       lineDetail: "Line",
       booking: "Reserve seats",

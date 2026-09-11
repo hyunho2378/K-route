@@ -50,6 +50,7 @@ export default {
       luggageToggle: "짐 보관",
       matchTitle: "매칭된 차량",
       cta: "하루 조립하러 가기",
+      ctaCheckout: "결제로 이어서 하기", // [V5-3] route 경유·Travel Log 템플릿 → 체크아웃 직행
       // [V9] 9명 이상 단체 문의(뒤에 OFFICIAL_EMAIL 링크)
       partyCapHelp: "9명 이상 단체는 이메일로 문의해 주세요:",
     },
@@ -63,7 +64,7 @@ export default {
         picks: "하루 픽",
       },
       exitTitle: "조립을 나갈까요?",
-      exitBody: "설정 단계로 돌아갑니다. 코스 만들기 안에 있는 동안에는 선택이 유지돼요.",
+      exitBody: "답을 바꾸러 취향 찾기로 돌아갑니다.", // [V5-3] 나가기 = 취향 찾기 복귀
       exitStay: "계속 조립하기",
       exitLeave: "나가기",
       // §10.4 페이지네이션 페어(새로고침 폐지 · 경계 비활성)
@@ -87,6 +88,9 @@ export default {
         activity: "액티비티",
       },
       picksTitle: "하루를 채울 2곳 고르기",
+      // [V5-3] 담기 정원 = q4(반나절 3 · 하루 4)
+      picksHalf: "반나절을 채울 3곳 고르기",
+      picksDay: "하루를 채울 4곳 고르기",
       tabFoodspace: "음식 공간",
       tabActivity: "액티비티",
       counterLabel: "선택됨",
@@ -101,6 +105,8 @@ export default {
         plan: "식사 플랜을 선택하면 넘어갈 수 있어요",
         meals: "식사 장소 선택을 마치면 넘어갈 수 있어요",
         picks: "정확히 2곳을 고르면 넘어갈 수 있어요",
+        half: "정확히 3곳을 고르면 넘어갈 수 있어요", // [V5-3]
+        day: "정확히 4곳을 고르면 넘어갈 수 있어요", // [V5-3]
       },
     },
     route: {
@@ -110,6 +116,48 @@ export default {
       mapLabel: "동선 지도",
       proceed: "이 동선으로 진행",
       rebuild: "다시 조립",
+      // [V5-3] IA §11.6 CTA 3종(주 go · 보조 build · 텍스트링크 setup)
+      go: "첫 장소로 출발",
+      repick: "다시 고르기",
+      vehicle: "차량으로 이동",
+    },
+    // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
+    spot: {
+      kbadge: {
+        kfood: "K-푸드",
+        kdrama: "K-드라마",
+        kanime: "K-애니",
+        kpop: "K-팝",
+      },
+      crowd: {
+        label: "오늘 혼잡도",
+        relaxed: "여유",
+        moderate: "보통",
+        busy: "혼잡",
+      },
+    },
+    // [V5-3] 상세 패널 공사 원문 블록 라벨(detailCommon2·detailIntro2 · odii)
+    detail: {
+      about: "소개",
+      info: "이용 안내",
+      address: "주소",
+      contact: "문의",
+      hours: "이용 시간",
+      closed: "쉬는 날",
+      fee: "이용 요금",
+      menu: "대표 메뉴",
+      parking: "주차",
+      homepage: "홈페이지",
+      audio: "오디오 해설",
+      audioBy: "한국관광공사 오디 오디오 가이드",
+      source: "출처: 한국관광공사 TourAPI",
+      loading: "상세 정보를 불러오고 있어요",
+      error: "지금은 상세 정보를 불러올 수 없어요.",
+    },
+    // [V5-3] K-가이드 봇 FAB 자리(챗은 P3)
+    guide: {
+      fab: "K-가이드",
+      soon: "K-가이드 챗은 곧 열려요",
     },
     checkout: {
       title: "확인 및 결제",

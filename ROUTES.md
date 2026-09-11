@@ -81,3 +81,6 @@
 
 - useGtsGuard 스텝 순서 = quiz → build → route → go. setup·checkout은 별도 분기(가드 재설계는 IA §11 세션).
 - 나머지 라우트(/gate, /ticket, /travel-log, /reviews, /admin, /loop 등) 전부 불변.
+- [V5-3] 구현: `/gts` → `<Navigate to="/gts/quiz" replace />`(헤더 Tour Builder 링크 = 취향 찾기 진입). 가드 = build: 추천 결과 있음 / route: 정원(q4 반나절 3·하루 4)만큼 담음 /
+  go: route 경유 + 코스 있음 / checkout: route 경유(기존). setup은 가드 없음 · route "차량으로 이동" → setup CTA는 route 경유면 checkout 직행(Travel Log 템플릿과 동일 분기).
+  meta.title 키 gtsQuiz·gtsGo 추가(PageLayout routeKeyFromPath).

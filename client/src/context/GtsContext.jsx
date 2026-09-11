@@ -1,11 +1,15 @@
-// GTS 조립 상태기 · PATTERNS §31 (존 A4 소유 — 서브에이전트 수정 금지, 확장 요청은 보고).
+// GTS·K-Route 상태기 · PATTERNS §31 + IA §11 (존 A4 소유 — 서브에이전트 수정 금지, 확장 요청은 보고).
 // vehicle은 저장하지 않고 셀렉터로 파생(§9.3 규칙) — 인원·짐 변경 시 자동 재매칭.
-// in-memory 전용: 새로고침 시 setup부터(웹스토리지 금지 유지).
-// 가드: build = party 필수 / route = mealPlan 충족 && picks 2 / checkout = route 경유.
+// in-memory 전용: 새로고침 시 처음부터(웹스토리지 금지 유지).
+// [V5-3] 심사 경로 quiz → build → route → go(IA §11.1). 가드: build = 추천 결과 있음 / route = 정원(q4)만큼 담음 /
+//   go = route 경유 + 코스 있음 / checkout = route 경유(기존 유지). setup은 route '차량으로 이동' 보조 진입(가드 없음).
+//   코스(course) = picks(고른 순서) → 스팟(data/gts/spots · kind 'kto'|'venue' 이원화) · Travel Log 템플릿(meals+picks)도 같은 파생.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { splitItinerary } from '../components/gts/itinerary';
+import { itineraryVenues, splitItinerary } from '../components/gts/itinerary';
 import { recommend } from '../data/gts/ktoApi';
+import { Q1_EXCLUSIVE } from '../data/gts/quizQuestions';
+import { toSpot } from '../data/gts/spots';
 import { matchVehicle } from '../data/gts/vehicles';
 
 // [V1] 여정 트래킹 · 비차단(실패해도 UX 진행 · 콘솔 경고만) — 서버 /api/track(로그인 필수)
@@ -14,26 +18,23 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001';
 const GtsContext = createContext(null);
 
 const initial = {
-  party: null, // setup CTA에서 확정되기 전 null — build 가드 기준
+  party: null, // setup CTA에서 확정되기 전 null
   luggage: false,
-  mealPlan: null, // null | 'none' | 'lunch' | 'lunchDinner'
-  meals: [], // venue id, push 순서 = 점심 → 저녁(§31)
-  picks: [], // venue id, 합산 정확히 2(§9.4)
+  mealPlan: null, // null | 'none' | 'lunch' | 'lunchDinner' · [V5-3] 설문 제출 시 'none'(식사 플랜 폐지 · 예약 API 계약 유지)
+  meals: [], // venue id, push 순서 = 점심 → 저녁(§31 · Travel Log 템플릿 호환)
+  picks: [], // 스팟 id(공사 contentid | venue id) · 고른 순서 = 방문 순서 · [V5-3] 정원 = q4(3/4)
   dropoffText: '',
   routeVisited: false,
   travelDate: null, // [V3] YYYY-MM-DD · 셋업 진입 시 오늘 기본(당일 예약 허용)
   logTemplate: null, // [V3] Travel Log 템플릿 적용 시 로그 code — setup CTA가 체크아웃 직행 판단
-  quizAnswers: null, // [V5-0] K-Route 설문 응답(IA §11.3) · 필드만, 로직은 P2
-  recommended: [], // [V5-0] 추천 결과(IA §11.4)
-  goOrigin: null, // [V5-0] go 화면 현위치 출발점(IA §11.7)
+  quizAnswers: { q1: [] }, // [V5-3] IA §11.3 · q1 배열(복수) · q2~q5 단일 값(recommendService.ANSWERS)
+  recommended: [], // [V5-3] 추천 스팟(서버 풀 항목 + score·reasonKey·reason · toSpot)
+  goOrigin: null, // [V5-3] go 출발점 { kind: 'current' | 'station', coord: [lng, lat] }
 };
 
-// 플랜별 식사 픽 정원(§9.4 Step 1)
-export function mealCap(mealPlan) {
-  if (mealPlan === 'lunch') return 1;
-  if (mealPlan === 'lunchDinner') return 2;
-  return 0;
-}
+// [V5-3] q4 → 담기 정원(IA §11.3 반나절 3곳 · 하루 4곳)
+export const CAP = { half: 3, day: 4 };
+export const capOf = (answers) => CAP[answers?.q4] ?? 0;
 
 export function GtsProvider({ children }) {
   const [state, setState] = useState(initial);
@@ -75,50 +76,69 @@ export function GtsProvider({ children }) {
   const setParty = useCallback((party) => setState((s) => ({ ...s, party })), []);
   const setLuggage = useCallback((luggage) => setState((s) => ({ ...s, luggage })), []);
 
-  // 플랜 변경 시 meals를 새 정원으로 절삭(순서 보존) — §31 해제 시 순서 재계산과 동일 원칙
-  const setMealPlan = useCallback(
-    (mealPlan) => setState((s) => ({ ...s, mealPlan, meals: s.meals.slice(0, mealCap(mealPlan)) })),
-    [],
-  );
-
-  // 재클릭 해제·정원 초과 시 false 반환(자동 해제 금지 — 컴포넌트가 안내 렌더, §9.4)
-  const toggleMeal = useCallback((id) => {
-    let accepted = true;
-    setState((s) => {
-      if (s.meals.includes(id)) return { ...s, meals: s.meals.filter((m) => m !== id) };
-      if (s.meals.length >= mealCap(s.mealPlan)) {
-        accepted = false;
-        return s;
-      }
-      return { ...s, meals: [...s.meals, id] };
-    });
-    return accepted;
-  }, []);
-
-  const togglePick = useCallback((id) => {
-    let accepted = true;
-    setState((s) => {
-      if (s.picks.includes(id)) return { ...s, picks: s.picks.filter((p) => p !== id) };
-      if (s.picks.length >= 2) {
-        accepted = false;
-        return s;
-      }
-      return { ...s, picks: [...s.picks, id] };
-    });
-    return accepted;
-  }, []);
-
+  // [V5-3] v4 식사 플랜 3택·반반 분할 폐지로 setMealPlan·toggleMeal·togglePick 제거(담기 = selectSpot)
   const setDropoffText = useCallback((dropoffText) => setState((s) => ({ ...s, dropoffText })), []);
   const markRouteVisited = useCallback(() => setState((s) => ({ ...s, routeVisited: true })), []);
   const setTravelDate = useCallback((travelDate) => setState((s) => ({ ...s, travelDate })), []); // [V3]
   const reset = useCallback(() => setState(initial), []);
 
-  // [V5-2] 설문 답 → 서버 추천 → quizAnswers·recommended 채움(화면은 P2) · 실패 시 recommended = []
-  const runRecommend = useCallback(async (answers, lang) => {
-    const res = await recommend(answers, lang, sessionIdRef.current);
-    setState((s) => ({ ...s, quizAnswers: answers, recommended: res.items ?? [] }));
-    return res;
-  }, []);
+  // [V5-3] 설문 답 기록 · q1은 복수 토글('아직 안 정함'은 배타) · q2~q5는 단일 값 교체
+  const setQuizAnswer = useCallback(
+    (q, value) =>
+      setState((s) => {
+        const a = s.quizAnswers;
+        if (q !== 'q1') return { ...s, quizAnswers: { ...a, [q]: value } };
+        let q1;
+        if (a.q1.includes(value)) q1 = a.q1.filter((v) => v !== value);
+        else if (value === Q1_EXCLUSIVE) q1 = [value];
+        else q1 = [...a.q1.filter((v) => v !== Q1_EXCLUSIVE), value];
+        return { ...s, quizAnswers: { ...a, q1 } };
+      }),
+    [],
+  );
+
+  // [V5-3] 설문 제출 → 서버 추천(POST /api/quiz/recommend) · answers = 완성된 답(마지막 탭 값 포함 · 상태 갱신 전 호출 대비)
+  //   성공: 답·추천 스팟 교체 + 코스·동선 초기화(새 추천 = 새 코스) · 실패(items 없음): 상태 불변 · 반환 { ok, count }
+  const quizReqRef = useRef(0); // 최신 제출만 반영(결과 → 뒤로 → 재제출 경합 · 늦게 온 이전 응답 무시)
+  const submitQuiz = useCallback(
+    async (answers, lang) => {
+      const req = ++quizReqRef.current;
+      const res = await recommend(answers, lang, sessionIdRef.current);
+      if (req !== quizReqRef.current) return { ok: false, count: 0, stale: true };
+      if (!Array.isArray(res.items) || !res.items.length) return { ok: false, count: 0 };
+      trackStep('quiz', { answers, count: res.items.length, source: res.source });
+      setState((s) => ({
+        ...s,
+        quizAnswers: answers,
+        recommended: res.items.map(toSpot),
+        mealPlan: 'none',
+        meals: [],
+        picks: [],
+        routeVisited: false,
+        logTemplate: null,
+        goOrigin: null,
+      }));
+      return { ok: true, count: res.items.length };
+    },
+    [trackStep],
+  );
+
+  // [V5-3] 코스 담기 토글 · 재클릭 해제 · 정원(q4) 초과면 false(자동 해제 금지 · 화면이 기존 토스트 · §9.4)
+  //   반환값은 현재 렌더 기준, 최종 판정은 갱신 함수 안에서 한 번 더(연속 탭 경합에도 정원 초과 없음)
+  const selectSpot = useCallback(
+    (id) => {
+      const accepted = state.picks.includes(id) || state.picks.length < capOf(state.quizAnswers);
+      setState((s) => {
+        if (s.picks.includes(id)) return { ...s, picks: s.picks.filter((p) => p !== id) };
+        if (s.picks.length >= capOf(s.quizAnswers)) return s;
+        return { ...s, picks: [...s.picks, id] };
+      });
+      return accepted;
+    },
+    [state.picks, state.quizAnswers],
+  );
+
+  const setGoOrigin = useCallback((goOrigin) => setState((s) => ({ ...s, goOrigin })), []); // [V5-3]
 
   // [V3] Travel Log 템플릿 적용 · 로그의 식사 플랜·선택·동선을 그대로 프리필하고
   //   routeVisited까지 마킹(로그 동선 = 확정 동선 → setup 인원 선택 후 체크아웃 직행 가드 성립).
@@ -146,33 +166,39 @@ export function GtsProvider({ children }) {
     [state.party, state.luggage],
   );
 
-  // 식사 플랜 충족 판정(route 가드 성분)
-  const mealPlanSatisfied = useMemo(() => {
-    if (state.mealPlan === 'none') return true;
-    if (state.mealPlan === 'lunch') return state.meals.length === 1;
-    if (state.mealPlan === 'lunchDinner') return state.meals.length === 2;
-    return false;
-  }, [state.mealPlan, state.meals]);
+  // [V5-3] 담기 정원 + 코스(방문 순서 스팟) 파생
+  const cap = capOf(state.quizAnswers);
+  const course = useMemo(
+    () =>
+      itineraryVenues({
+        mealPlan: state.mealPlan,
+        meals: state.meals,
+        picks: state.picks,
+        recommended: state.recommended,
+      }),
+    [state.mealPlan, state.meals, state.picks, state.recommended],
+  );
 
   const value = useMemo(
     () => ({
       ...state,
       vehicle,
-      mealPlanSatisfied,
+      cap,
+      course,
       setParty,
       setLuggage,
-      setMealPlan,
-      toggleMeal,
-      togglePick,
       setDropoffText,
       markRouteVisited,
       setTravelDate,
       applyLogTemplate,
       reset,
       trackStep,
-      runRecommend,
+      setQuizAnswer,
+      submitQuiz,
+      selectSpot,
+      setGoOrigin,
     }),
-    [state, vehicle, mealPlanSatisfied, setParty, setLuggage, setMealPlan, toggleMeal, togglePick, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep, runRecommend],
+    [state, vehicle, cap, course, setParty, setLuggage, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep, setQuizAnswer, submitQuiz, selectSpot, setGoOrigin],
   );
 
   return <GtsContext.Provider value={value}>{children}</GtsContext.Provider>;
@@ -182,18 +208,22 @@ export function useGts() {
   return useContext(GtsContext);
 }
 
-// 스텝 가드(§31) · 미충족 시 앞 단계로 replace. 페이지는 반환값 false면 렌더 중단.
+// 스텝 가드(§31 · [V5-3] IA §11.1 순서 quiz → build → route → go) · 미충족 시 앞 단계로 replace.
+// 페이지는 반환값 false면 렌더 중단. quiz·setup은 가드 없음(진입점 · 보조 진입).
 export function useGtsGuard(step) {
-  const { party, mealPlanSatisfied, picks, routeVisited } = useGts();
+  const { recommended, picks, quizAnswers, routeVisited, course } = useGts();
   const navigate = useNavigate();
 
   let ok = true;
-  let target = '/gts/setup';
+  let target = '/gts/quiz';
   if (step === 'build') {
-    ok = party != null;
+    ok = recommended.length > 0;
   } else if (step === 'route') {
-    ok = party != null && mealPlanSatisfied && picks.length === 2;
-    target = party == null ? '/gts/setup' : '/gts/build';
+    ok = recommended.length > 0 && picks.length === capOf(quizAnswers);
+    if (recommended.length) target = '/gts/build';
+  } else if (step === 'go') {
+    ok = routeVisited && course.length > 0;
+    target = '/gts/route';
   } else if (step === 'checkout') {
     ok = routeVisited;
     target = '/gts/route';

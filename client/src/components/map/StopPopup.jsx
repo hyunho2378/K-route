@@ -76,20 +76,22 @@ export default function StopPopup({ map, stop, onClose, onViewLine, onPointerEnt
       <p className="text-small font-medium text-inkSec">
         {lang === 'ko' ? stop.preorder_ko : stop.preorder_en}
       </p>
-      {/* 체류시간 chip */}
-      <span className="inline-flex w-fit items-center rounded-pill bg-surface px-12 py-4 text-caption font-medium text-inkSec">
-        <span className="grid font-display">
-          {LANGS.map((code) => (
-            <span
-              key={code}
-              aria-hidden={lang !== code}
-              className={`col-start-1 row-start-1 ${lang === code ? '' : 'invisible'}`}
-            >
-              {stop.stay_min} {DICTS[code].loop.detail.stayUnit}
-            </span>
-          ))}
+      {/* 체류시간 chip · [V5-3] 체류 없음(go 출발 핀 stay 0·null)이면 비렌더 */}
+      {stop.stay_min > 0 && (
+        <span className="inline-flex w-fit items-center rounded-pill bg-surface px-12 py-4 text-caption font-medium text-inkSec">
+          <span className="grid font-display">
+            {LANGS.map((code) => (
+              <span
+                key={code}
+                aria-hidden={lang !== code}
+                className={`col-start-1 row-start-1 ${lang === code ? '' : 'invisible'}`}
+              >
+                {stop.stay_min} {DICTS[code].loop.detail.stayUnit}
+              </span>
+            ))}
+          </span>
         </span>
-      </span>
+      )}
       {/* View line 텍스트 버튼 · LinePreviewOverlay 오픈(페이지 이탈 없음 · IA §2.4)
           v4(§32): onViewLine 미전달 시 비렌더 — GTS ItineraryMap 재사용 대응(라인 개념 없음),
           기존 Loop 호출부는 항상 전달하므로 동작 불변 */}

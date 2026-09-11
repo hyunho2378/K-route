@@ -8,8 +8,11 @@ import th from './th/index.js';
 const dicts = { en, ko, th };
 const LANGS = ['en', 'ko', 'th'];
 const pick = (dict, key) => key.split('.').reduce((o, k) => o?.[k], dict);
+// [V5-3] vars = { 이름: 값 } → 각 언어 문자열의 {이름} 치환(숫자처럼 언어와 무관한 값 전용 · 겹침 렌더 구조는 불변)
+const fill = (text, vars) =>
+  vars ? Object.entries(vars).reduce((s, [name, v]) => s.replaceAll(`{${name}}`, String(v)), text) : text;
 
-export default function LangSwap({ k, as: Tag = 'span', className = '' }) {
+export default function LangSwap({ k, as: Tag = 'span', className = '', vars }) {
   const { lang } = useLang();
   return (
     <Tag className={`grid ${className}`}>
@@ -19,7 +22,7 @@ export default function LangSwap({ k, as: Tag = 'span', className = '' }) {
           aria-hidden={lang !== code}
           className={`col-start-1 row-start-1 ${lang === code ? '' : 'invisible'}`}
         >
-          {pick(dicts[code], k) ?? k}
+          {fill(pick(dicts[code], k) ?? k, vars)}
         </span>
       ))}
     </Tag>

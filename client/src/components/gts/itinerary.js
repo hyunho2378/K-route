@@ -1,7 +1,8 @@
 // 방문 순서 파생(IA §9.5) · route/checkout/ticket 공유 규칙.
 // 순서 = 점심 → 픽1 → 픽2 → 저녁(플랜별 가감). meals push 순서 = 점심, 저녁(PATTERNS §31),
 // picks는 고른 순서 보존. venues는 조회만(data/gts 값 수정 금지).
-import { venues } from '../../data/gts/venues';
+// [V5-3] K-Route는 mealPlan 'none' → 순서 = picks · id → 스팟은 spots.resolveSpot(추천 결과 우선 · venues 폴백)
+import { resolveSpot } from '../../data/gts/spots';
 
 export function itineraryIds({ mealPlan, meals, picks }) {
   const ids = [];
@@ -21,9 +22,10 @@ export function splitItinerary(mealPlan, ids) {
   return { meals, picks: rest };
 }
 
+// selection.recommended = 추천 스팟(없으면 venues.js만) · 반환 = 스팟(kind 'kto'|'venue')
 export function itineraryVenues(selection) {
   return itineraryIds(selection)
-    .map((id) => venues.find((v) => v.id === id))
+    .map((id) => resolveSpot(id, selection.recommended))
     .filter(Boolean);
 }
 

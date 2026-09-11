@@ -16,7 +16,6 @@ import PayMethodGrid from '../components/pay/PayMethodGrid';
 import { PAY_METHODS } from '../components/pay/payMethods';
 import PassBreakdown from '../components/gts/PassBreakdown';
 import TriText from '../components/gts/TriText';
-import { itineraryVenues } from '../components/gts/itinerary';
 import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import Money from '../components/ui/Money'; // [V12] 통화 환산 표시
@@ -68,7 +67,7 @@ export default function GtsCheckout() {
   const { user } = useAuth();
   const { t } = useLang();
   const { convert } = useCurrency(); // [V12] 외화 환산 활성 여부(고지 문구 노출 조건)
-  const { party, luggage, vehicle, mealPlan, meals, picks, dropoffText, travelDate, setDropoffText, trackStep } = useGts();
+  const { party, luggage, vehicle, mealPlan, meals, picks, course, dropoffText, travelDate, setDropoffText, trackStep } = useGts();
   const navigate = useNavigate();
   const [gateOpen, setGateOpen] = useState(false);
   const [payMethod, setPayMethod] = useState(null);
@@ -81,7 +80,7 @@ export default function GtsCheckout() {
 
   if (!ok) return null;
 
-  const entries = itineraryVenues({ mealPlan, meals, picks });
+  const entries = course; // [V5-3] 방문 순서 스팟(kind 'kto'|'venue' · GtsContext 파생)
   const total = computePassTotal(passType, luggage); // [V7] 이용권 + 짐 보관(선택 시) · 미선택 null
   const dropoffOk = dropoffText.trim().length > 0;
   const Icon = VEHICLE_ICON[vehicle];

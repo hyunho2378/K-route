@@ -57,7 +57,7 @@ router.post('/quiz/recommend', async (req, res) => {
         quizSessionId,
         uid,
         JSON.stringify(answers),
-        JSON.stringify(items),
+        JSON.stringify(items), // 저장은 추천 결과만(id·kind·score·사유) · 장소 원문은 풀이 소유
       ]);
       if (uid) {
         const sessionId = UUID_RE.test(String(req.body?.sessionId ?? '')) ? req.body.sessionId : quizSessionId;
@@ -69,7 +69,8 @@ router.post('/quiz/recommend', async (req, res) => {
     } catch (e) {
       console.warn('[quiz] 저장 실패(응답은 진행):', e.message);
     }
-    res.json({ source: spotPool.source, quizSessionId, llm: !!reasons, items });
+    // [V5-3] 응답은 풀 항목 전체(이름·좌표·이미지·배지·집중률)를 합쳐 내린다 · 화면(build·route·go)이 풀 재조회 없이 그린다
+    res.json({ source: spotPool.source, quizSessionId, llm: !!reasons, items: items.map((p) => ({ ...byId.get(p.id), ...p })) });
   } catch (e) {
     console.error('[quiz] fallback:', e.message);
     res.json({ source: 'fallback', reason: e.message.slice(0, 120) });

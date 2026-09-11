@@ -50,6 +50,7 @@ export default {
       luggageToggle: "Luggage storage",
       matchTitle: "Your ride",
       cta: "Build my day",
+      ctaCheckout: "Continue to checkout", // [V5-3] route 경유·Travel Log 템플릿 → 체크아웃 직행
       // [V9] 9명 이상 단체 문의(뒤에 OFFICIAL_EMAIL 링크)
       partyCapHelp: "Groups of 9 or more, please contact us by email:",
     },
@@ -63,7 +64,7 @@ export default {
         picks: "Day picks",
       },
       exitTitle: "Leave the builder?",
-      exitBody: "You will go back to the setup step. Your picks are kept while you stay in the tour builder.",
+      exitBody: "You will go back to the quiz to change your answers.", // [V5-3] 나가기 = 취향 찾기 복귀
       exitStay: "Keep building",
       exitLeave: "Leave",
       // §10.4 페이지네이션 페어(새로고침 폐지 · 경계 비활성)
@@ -87,6 +88,9 @@ export default {
         activity: "Activity",
       },
       picksTitle: "Pick 2 places for your day",
+      // [V5-3] 담기 정원 = q4(반나절 3 · 하루 4)
+      picksHalf: "Pick 3 places for your half day",
+      picksDay: "Pick 4 places for your full day",
       tabFoodspace: "Food spaces",
       tabActivity: "Activities",
       counterLabel: "selected",
@@ -101,6 +105,8 @@ export default {
         plan: "Choose a meal plan to continue",
         meals: "Finish your meal picks to continue",
         picks: "Pick exactly 2 places to continue",
+        half: "Pick exactly 3 places to continue", // [V5-3]
+        day: "Pick exactly 4 places to continue", // [V5-3]
       },
     },
     route: {
@@ -110,6 +116,48 @@ export default {
       mapLabel: "Itinerary map",
       proceed: "Continue with this route",
       rebuild: "Rebuild my day",
+      // [V5-3] IA §11.6 CTA 3종(주 go · 보조 build · 텍스트링크 setup)
+      go: "Head to the first stop",
+      repick: "Pick again",
+      vehicle: "Travel by private car",
+    },
+    // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
+    spot: {
+      kbadge: {
+        kfood: "K-Food",
+        kdrama: "K-Drama",
+        kanime: "K-Animation",
+        kpop: "K-Pop",
+      },
+      crowd: {
+        label: "Crowd level today",
+        relaxed: "Relaxed",
+        moderate: "Moderate",
+        busy: "Busy",
+      },
+    },
+    // [V5-3] 상세 패널 공사 원문 블록 라벨(detailCommon2·detailIntro2 · odii)
+    detail: {
+      about: "About",
+      info: "Visitor info",
+      address: "Address",
+      contact: "Contact",
+      hours: "Hours",
+      closed: "Closed",
+      fee: "Admission",
+      menu: "Menu",
+      parking: "Parking",
+      homepage: "Website",
+      audio: "Audio guide",
+      audioBy: "Odii audio guide by Korea Tourism Organization",
+      source: "Source: Korea Tourism Organization TourAPI",
+      loading: "Loading details",
+      error: "Details could not be loaded right now.",
+    },
+    // [V5-3] K-가이드 봇 FAB 자리(챗은 P3)
+    guide: {
+      fab: "K-Guide",
+      soon: "K-Guide chat is coming soon",
     },
     checkout: {
       title: "Checkout",

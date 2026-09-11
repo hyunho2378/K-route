@@ -164,3 +164,13 @@
 .pop-instant {
   transition: none;
 }
+
+/* [V5-3] 페이드 인(K배지 · go 레그 타임라인 순차 등장) · opacity만 · reduced-motion은 @layer base 전역 규칙이 즉시 표시로 축약 */
+@keyframes bh-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

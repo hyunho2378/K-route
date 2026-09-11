@@ -11,7 +11,8 @@ const FACE = {
   lake: 'bg-primary text-white',
 };
 
-export default function SuccessStamp({ line, children }) {
+// [V5-3] mark = 이니셜 대신 넣을 노드(quiz 결과 여행 타입 lucide 아이콘) · line 생략 시 lake(primary) 면
+export default function SuccessStamp({ line = { id: 'lake' }, mark = null, children }) {
   const [landed, setLanded] = useState(false);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function SuccessStamp({ line, children }) {
               }
         }
       >
-        {line.name_en[0]}
+        {mark ?? line.name_en[0]}
       </span>
       <div
         style={

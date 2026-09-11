@@ -8,11 +8,13 @@
 // 스탬프: 티켓 진입 시 1회 재생(신규 예약 직후만 · 재방문 무재생) — sessionStorage 금지,
 //   모듈 레벨 in-memory Set. 구 라인 예약 티켓 분기는 보존(§43).
 // 미존재 bookingId는 EmptyState 렌더(라우트 이동 아님 · ROUTES §3).
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { getBooking, getLine, getMeetingPoints, getStops } from '../data/api';
 import { getGtsBooking } from '../data/gts/api';
+import { getSpots } from '../data/gts/ktoApi';
+import { resolveSpot, toSpot } from '../data/gts/spots';
 import { venues } from '../data/gts/venues';
 import SuccessStamp from '../components/booking/SuccessStamp';
 import ItineraryMap from '../components/gts/ItineraryMap';
@@ -26,6 +28,7 @@ import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import Money from '../components/ui/Money'; // [V12] 통화 환산 표시
 import EmptyState from '../components/ui/EmptyState';
+import Skeleton from '../components/ui/Skeleton'; // [V5-3] 공사 id 해석 전 지도 자리
 import { LoadingLogoCenter } from '../components/ui/LoadingLogo'; // [V13] 로딩 로고
 import { useLang } from '../i18n/LangContext';
 import LangSwap from '../i18n/LangSwap';
@@ -132,9 +135,29 @@ function DetailRow({ labelKey, children }) {
 const LEGACY_VENUE_ID = { 'makguksu-museum': 'chuncheon-makguksu-museum' };
 
 function GtsTicket({ gts }) {
-  const entries = gts.itinerary
-    .map((id) => venues.find((v) => v.id === (LEGACY_VENUE_ID[id] ?? id)))
-    .filter(Boolean);
+  // [V5-3] K-Route 코스는 공사 contentid를 담는다 → venues.js에 없는 id가 있으면 하이브리드 풀(/api/kto/spots)로 해석
+  //   (티켓은 /gts 밖이라 GtsContext가 초기화된 상태 · 구 예약처럼 venue id만이면 호출 없이 기존과 동일)
+  const [pool, setPool] = useState(null); // null = 조회 전
+  const needsPool = gts.itinerary.some((id) => !venues.some((v) => v.id === (LEGACY_VENUE_ID[id] ?? id)));
+  useEffect(() => {
+    if (!needsPool) return undefined;
+    let alive = true;
+    getSpots('en').then((r) => {
+      if (alive) setPool((r.items ?? []).map(toSpot));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [needsPool]);
+  // 참조 고정(ItineraryMap은 venues 참조가 바뀌면 지도를 다시 만든다) · 공사 id가 섞인 예약은 풀이 올 때까지 일정 보류
+  //   (검증 2026-09-11: venue 2곳이 먼저 1·2번으로 그려진 뒤 공사 스팟이 1번으로 끼어드는 순번 튐 · 풀 실패면 [] → venue만)
+  const entries = useMemo(
+    () =>
+      needsPool && !pool
+        ? []
+        : gts.itinerary.map((id) => resolveSpot(LEGACY_VENUE_ID[id] ?? id, pool ?? [])).filter(Boolean),
+    [gts.itinerary, needsPool, pool],
+  );
   // [V7] 장소별 시각 표기 렌더 중단(타임테이블 제거) — 순서·장소명만. 시간 필드 모델은 보존(롤백 대비).
   const payLabel = payMethodLabel(gts.payMethod);
 
@@ -197,7 +220,8 @@ function GtsTicket({ gts }) {
 
             {/* [V3] 동선 미니맵 · 라인 상시 렌더(mockCoords — 어떤 조합에도 그린다) */}
             <div className="relative aspect-video overflow-hidden rounded-xl shadow-sm">
-              <ItineraryMap venues={entries} />
+              {/* [V5-3] 일정 해석 전(공사 id 풀 조회 중)은 같은 자리 스켈레톤 · ItineraryMap은 좌표 1개 이상 필요 */}
+              {entries.length ? <ItineraryMap venues={entries} /> : <Skeleton className="absolute inset-0" />}
             </div>
 
             {/* 일정 타임라인 · §28 문법(VisitTimeline 공유) */}

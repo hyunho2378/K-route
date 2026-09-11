@@ -18,8 +18,8 @@
 
 ### 마일스톤
 - [x] P0 SETUP: v5 scaffold(스텁·DB·env·문서) — 프롬프트 1 (2026-09-11 · 브랜치 v5-kroute · [V5-1] 커밋 대기)
-- [x] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2 (2026-09-11 · 공사 실데이터 적재 완료 · [V5-2b] 커밋 대기 · V5-2 폴백 작업 포함)
-- [ ] P2 화면: quiz·추천·build개조·go — 프롬프트 3
+- [x] P1 데이터: 공사 TourAPI 연동 + SOURCE_SPOTS 태깅 + 하이브리드 풀 — 프롬프트 2 (2026-09-11 · 공사 실데이터 적재 완료 · [V5-2b] = 1823dc1 · V5-2 폴백 작업 포함)
+- [x] P2 화면: quiz·추천·build개조·go — 프롬프트 3 (2026-09-12 · [V5-3] 커밋 대기)
 - [ ] P3 RAG봇 + 다국어 + 기능설명서·시연 — 프롬프트 4
 
 ### 리스크
@@ -104,6 +104,37 @@
 - 합류 7곳은 풀 id가 공사 contentid(venueId로 venues 연결) · P2 build·route가 kind·venueId·coord를 처리해야 함.
 - 연관관광지를 recommend 연계(+2) 판정에 쓰는 건 후속(기준 관광지 29곳 이름과 앵커 매칭 설계 필요).
 - th 이름은 en 제목 폴백(LLM 번역은 P3) · 트래픽: 목록·집중률 하루 1회, 상세·연관은 항목별 24h 캐시.
+
+### P2 화면 결과 (2026-09-11~12 · 브랜치 v5-kroute · [V5-2b] = 1823dc1 · [V5-3] 커밋 대기)
+
+| 항목 | 결과 |
+|---|---|
+| 구조 | 단독(공용 계약 확정·검증) → 병렬 3(A quiz · B build · C go · 파일 소유 계약) → 단독(통합·검증) |
+| 공용 | data/gts/spots.js(id 이원화 kind 'kto'·'venue' · 이미지 후보 · 공사 원문 텍스트화) · GtsContext(setQuizAnswer·submitQuiz·selectSpot·setGoOrigin · cap·course · 가드 quiz→build→route→go · v4 식사 액션 제거) · i18n quiz·go·gts.spot/detail/guide(3언어 1319키 동형) · KBadge·CongestionChip·GuideFab · StepStage(nextLabel·exitKey·세로 중앙·겹친 모달 Escape 수정) · /gts → /gts/quiz |
+| 서버 | recommend K-푸드 보정(kfood·강함 앵커 +2 · 거리 페널티 면제 · 48조합 강함 앵커 최소 8/8 · 보정 전 photo·solo 1/8, cafe·solo·taxi 0/8) · 추천 응답 = 풀 항목 전체 · 풀: 합류 7곳 venue 한 줄·webp·좌표·영문명 보강 + congestionBand + 10분 메모 · 상세 odii(이름 일치 장소만) · GET /api/go(직선거리 도보·택시 예상 · 좌표 없음 no-coord) · track quiz·go · db pool 'error' 리스너 |
+| quiz | StepStage 6스텝 · q1 복수('아직 안 정함' 배타) · 탭 120ms 자동 전진 · 결과 = q2 여행 타입 4종 + SuccessStamp 1회 + "See N places"(정원 안내) |
+| build | 단일 풀 = 추천 · 정원 q4(3/4) · 카드 = 공사 대표이미지 → 합류 webp → 텍스트 + K배지 + 사유 1줄 + 집중률 Chip · 상세 = detailCommon·Intro 원문 + odii · 리뷰 제거 |
+| route | 타임라인 K배지·집중률 · CTA 3종(첫 장소로 출발 · 다시 고르기 · 차량으로 이동 텍스트링크) · FAB 자리(비활성) |
+| go | §21 동의 → 현재 위치(거부 시 춘천역) · FieldSelect 도착 · 도보·택시 예상 레그 · 지도(출발 링 핀 · 거리 비례 draw-on) · 집중률 카드(3xl 이상 우측) · 다음 장소 |
+| 검증 | E2E 비로그인 게이트 → 홈 → /gate → /gts → quiz → build 3픽 → route → go(위치 허용) → 다음 장소 → 차량 → setup → checkout → 티켓 M47ENR(공사 id 포함 3곳 해석) · 콘솔 에러 0 · 폭 320/768/1440/2560/3840(go 1920 추가) 가로 스크롤 0 · ko·th 0 · 대비 전 조합 4.5:1 이상 · grep 금지 항목 0(58파일) · build 통과 · 셀프체크(recommend·spots) PASS |
+
+명세 밖 결정(보고):
+- K-푸드 보정은 점수 가산(+2) · 다른 앵커는 성향 일치 시 여전히 상위(kfood+kanime/photo/family에서 애니메이션박물관 2위).
+- /api/go: TAGO 시외버스·열차는 터미널·역 간 구간이라 시내 이동에 적용 불가 → fallback(직선거리 × 1.3 · 도보 4km/h · 택시 30km/h PLACEHOLDER) · UI는 '예상' 표시.
+- odii는 테마 이름이 장소 이름과 일치할 때만(좌표 근접 판정은 통나무집 → 막국수박물관, 원조숯불닭 → 춘천낭만시장처럼 다른 장소 해설을 붙여 폐기).
+- 합류 항목 영문명: 공사 영문 대응 항목이 없으면 venues.js 영문·태국어 이름.
+- K배지·집중률 Chip = 흰 pill + ink 라벨 + 원색 도트 · spice 텍스트(글래스 위 2.2:1 · 흰 면 3.4:1)는 AA 미달이라 StepStage 사유·정원 안내를 ink로.
+- 여행 타입명 Frame Hunter / Local Taster / Lakeside Walker / Cafe Hopper(KR 프레임 헌터·로컬 테이스터·호숫가 산책러·카페 호퍼).
+- setup CTA는 route 경유·Travel Log 템플릿이면 "Continue to checkout"(gts.setup.ctaCheckout 신규).
+- 티켓: 공사 id가 섞인 예약은 풀 조회 후 일정 표시(부분 목록·순번 튐 방지).
+- server/db/pool.js 'error' 리스너 추가(Neon 유휴 연결 종료로 동시 검증 중 API 서버 exit 1 재현).
+
+다음 세션 참고:
+- 내비 표시명 "Tour Builder" → IA §11.2 "K-Route"(케이로드) 교체 미실시.
+- 춘천 시내 교통 provider(ODsay 등) 연결 시 /api/go legs[] 채우기(클라는 이미 legs 유무 분기 자리).
+- Neon 연결 끊김으로 /api/me 등 간헐 실패(재요청 시 회복) · pool idleTimeoutMillis 등 운영 설정 검토.
+- th 번역(quiz·go·detail) 네이티브 검수 · Travel Log는 공사 id 코스를 표시하지 않음(venues id만 해석 · 기존 규칙).
+- setup StepIndicator(v4 4단계 문구)는 v5 흐름과 순서가 맞지 않음 · LLM 키 없어 추천 사유 LLM 경로(spot.reason) 미검증.
 
 ## 상태
 

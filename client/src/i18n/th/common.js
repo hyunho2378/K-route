@@ -12,6 +12,8 @@ export default {
       gtsBuild: "จัดวันของคุณ",
       gtsRoute: "ดูเส้นทาง",
       gtsCheckout: "ยืนยันการจอง",
+      gtsQuiz: "ค้นหาสไตล์ของคุณ", // [V5-3]
+      gtsGo: "ออกเดินทาง", // [V5-3]
       travelLog: "บันทึกการเดินทาง",
       lineDetail: "สาย",
       booking: "จองที่นั่ง",

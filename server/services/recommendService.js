@@ -4,6 +4,9 @@
 //   q2 성향 +3 (STYLE) · q3 동행 +1 (COMPANY) · q5 대중교통 & 실좌표 & 중심 CITY_KM 밖 -2
 //   동점 = 집중률 낮은 순(congestion 없는 항목은 뒤) → 풀 원래 순서 · 출력 수 = q4 반나절 8 / 하루 12
 // coord null(DEMO 좌표) 장소는 거리 조건(연계·시내 밖) 판정 제외. 셀프체크: node services/recommendService.js
+// [V5-3] K-푸드 보정(사용자 지시 2026-09-11): q1에 kfood가 있으면 SOURCE kfood·강함 앵커 +KFOOD_BOOST ·
+//   대중교통 거리 페널티 면제(좌표 없음·PLACEHOLDER 좌표 앵커 포함). SOURCE 원문·태그는 그대로, 점수 로직만 보정.
+//   진단(보정 전): 성향 photo·동행 solo/family면 연계 2 + 성향 3 + 동행 1 = 6점 로컬이 앵커(5)를 밀어 강함 앵커 1/8 노출.
 const ANSWERS = {
   q1: ['kfood', 'kdrama', 'kanime', 'kpop', 'undecided'], // 복수 · kType 표기 동일(kpop은 venue 앵커 없음 · SOURCE §3)
   q2: ['photo', 'localfood', 'nature', 'cafe'],
@@ -15,6 +18,8 @@ const CENTER = [127.73, 37.8813]; // PATTERNS §21 춘천 권역 중심 [lng, la
 const LINK_KM = 1.5; // PLACEHOLDER · 공사 연관관광지 연결 시 거리 대신 연관 목록으로 교체
 const CITY_KM = 5; // PLACEHOLDER · "시내" 반경
 const COUNT = { half: 8, day: 12 };
+// 비앵커 최고점(연계 2 + 성향 3 + 동행 1 = 6) < kfood·강함 앵커 최저점(앵커 5 + 보정 2 = 7)
+const KFOOD_BOOST = 2;
 // [V5-2b] 공사 스팟은 SOURCE kType이 없어(local) cat1으로 판정 · categoryCode2 이름: A01 자연 · A02 인문(문화/예술/역사)
 const STYLE = {
   localfood: (s) => s.category === 'meal' || s.kType === 'kfood',
@@ -48,8 +53,9 @@ function recommend(pool, answers) {
     .map((s, order) => {
       let score = 0;
       let why = 'default';
+      const kfoodFirst = picked.has('kfood') && s.badge && s.kType === 'kfood' && s.grade === '강함';
       if (s.badge && picked.has(s.kType)) {
-        score += 5;
+        score += 5 + (kfoodFirst ? KFOOD_BOOST : 0);
         why = 'anchor';
       } else if (s.kType === 'local' && s.coord && anchorCoords.some((c) => km(c, s.coord) <= LINK_KM)) {
         score += 2;
@@ -63,7 +69,7 @@ function recommend(pool, answers) {
         score += 1;
         if (why === 'default') why = 'company';
       }
-      if (answers.q5 === 'transit' && s.coord && km(CENTER, s.coord) > CITY_KM) score -= 2;
+      if (!kfoodFirst && answers.q5 === 'transit' && s.coord && km(CENTER, s.coord) > CITY_KM) score -= 2;
       return { s, score, why, order };
     })
     .sort((a, b) => b.score - a.score || (a.s.congestion ?? Infinity) - (b.s.congestion ?? Infinity) || a.order - b.order)
@@ -100,6 +106,20 @@ if (require.main === module) {
     q1: ['undecided'], q2: 'nature', q3: 'family', q4: 'half', q5: 'taxi',
   });
   assert.deepStrictEqual(kto.map((x) => [x.id, x.score, x.reasonKey]), [['126', 4, 'quiz.reason.style']]);
+  // [V5-3] K-푸드 보정: photo·가족 6점 연계 로컬보다 강함 앵커(7)가 위 · 먼 강함 앵커도 거리 페널티 면제 · 중간 앵커는 보정 없음
+  const kf = recommend(
+    [
+      { id: 'photo-local', kind: 'kto', category: 'activity', coord: near, kType: 'local', badge: false, cat1: 'A02' },
+      { id: 'far-dak', kind: 'venue', category: 'meal', coord: [127.9, 37.95], kType: 'kfood', badge: true, grade: '강함' },
+      { id: 'near-dak', kind: 'venue', category: 'meal', coord: near, kType: 'kfood', badge: true, grade: '강함' },
+      { id: 'mid-dak', kind: 'venue', category: 'meal', coord: null, kType: 'kfood', badge: true, grade: '중간' },
+    ],
+    { q1: ['kfood'], q2: 'photo', q3: 'family', q4: 'half', q5: 'transit' },
+  );
+  assert.deepStrictEqual(
+    kf.map((x) => [x.id, x.score]),
+    [['far-dak', 7], ['near-dak', 7], ['photo-local', 6], ['mid-dak', 5]],
+  );
   assert.strictEqual(validAnswers({ q1: ['kfood'], q2: 'x', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
   assert.strictEqual(validAnswers({ q1: [], q2: 'cafe', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
   console.log('recommend 셀프체크 PASS');

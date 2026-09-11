@@ -1,6 +1,6 @@
-// CourseQueue · [V9] 선택 큐 (food·activity 공용 · 유일한 공유 지점).
+// CourseQueue · [V9] 선택 큐 ([V5-3] 추천 단일 풀 · items = course(고른 순서 = 방문 순서 스팟)).
 // 스몰 카드(순번 + 이름 + X) 선택 순서대로 · 우측 끝 합계 배지(거리·시간). 큐 비면 미표시.
-// X = 큐에서 제거 → 해당 장소 그리드 복귀(GtsBuild가 togglePick으로 처리).
+// X = 큐에서 제거 → 해당 장소 그리드 복귀(GtsBuild가 selectSpot 재클릭 해제로 처리).
 import { X } from 'lucide-react';
 import TriText from './TriText';
 import LangSwap from '../../i18n/LangSwap';
@@ -23,20 +23,21 @@ export default function CourseQueue({ items, onRemove, km, minutes }) {
       {items.map((v, i) => (
         <span
           key={v.id}
-          className="flex shrink-0 items-center gap-8 rounded-pill bg-white py-4 pl-12 pr-4 shadow-sm"
+          className="flex shrink-0 items-center gap-8 rounded-pill bg-white pl-12 shadow-sm"
           style={{ animation: `bh-queue-in 220ms ${motion.easeOut} both` }}
         >
           {/* [V22] "1: 이름" 형식 · gap-8(gap-6은 spacing 스케일 부재로 무효였음 → 붙어 보이던 문제 수리) */}
           <span className="font-display text-caption font-bold text-primary">{i + 1}:</span>
           <TriText text={v.name} className="text-small font-semibold" />
+          {/* [V5-3] X 히트 영역 44(§18.3 터치 타깃 · pill 높이 = 44) · 아이콘 16(§8 5단계) */}
           <button
             type="button"
             aria-label={t('gts.build.queueRemove')}
             title={t('gts.build.queueRemove')}
             onClick={() => onRemove(v.id)}
-            className="pressable inline-flex h-24 w-24 items-center justify-center rounded-pill text-inkMeta hover:text-ink"
+            className="pressable inline-flex h-44 w-44 items-center justify-center rounded-pill text-inkMeta hover:text-ink"
           >
-            <X size={14} aria-hidden="true" />
+            <X size={16} aria-hidden="true" />
           </button>
         </span>
       ))}

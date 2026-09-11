@@ -24,7 +24,11 @@ const trapTab = (e, root) => {
   if (!els.length) return;
   const first = els[0];
   const last = els[els.length - 1];
-  if (e.shiftKey && document.activeElement === first) {
+  // [V5-3] 포커스가 목록 밖(패널 자체 tabIndex -1 등)이면 처음/끝으로 · Shift+Tab 누출 방지(에이전트 A 제보)
+  if (![...els].includes(document.activeElement)) {
+    e.preventDefault();
+    (e.shiftKey ? last : first).focus();
+  } else if (e.shiftKey && document.activeElement === first) {
     e.preventDefault();
     last.focus();
   } else if (!e.shiftKey && document.activeElement === last) {
@@ -44,6 +48,8 @@ export default function StepStage({
   reasonKey = null,
   onExit,
   toast = null, // [V22] 상단중앙 오버레이 토스트(레이아웃 높이 미점유 · 초과 안내용)
+  nextLabel = null, // [V5-3] 다음 버튼 라벨 노드(기본 common.next · quiz 결과 "추천 N곳 보기")
+  exitKey = 'gts.build', // [V5-3] 나가기 확인 카피 접두(exitTitle·exitBody·exitStay·exitLeave)
   children,
 }) {
   const { t } = useLang();
@@ -53,6 +59,7 @@ export default function StepStage({
   const [leaving, setLeaving] = useState(null);
   const timerRef = useRef(0);
   const panelRef = useRef(null);
+  const rootRef = useRef(null); // [V5-3] 스테이지 dialog 루트(겹친 모달 Escape 판별)
 
   useEffect(() => {
     if (shown.key !== stepKey) {
@@ -89,6 +96,10 @@ export default function StepStage({
   useEffect(() => {
     const onKey = (e) => {
       if (e.key !== 'Escape' || exitOpen) return;
+      // [V5-3] 겹친 모달(나가기 확인 Dialog·Sheet 등) 안의 Escape는 그 모달 몫 · 모달이 닫히며 리스너가 재등록된 뒤
+      //   같은 이벤트가 window에 도달해 확인창이 즉시 다시 열리던 문제(에이전트 A 실측 · Dialog·BottomSheet 둘 다 재현)
+      const owner = e.target instanceof Element ? e.target.closest('[role="dialog"]') : null;
+      if (owner && owner !== rootRef.current) return;
       handleBack();
     };
     window.addEventListener('keydown', onKey);
@@ -100,6 +111,7 @@ export default function StepStage({
 
   return createPortal(
     <div
+      ref={rootRef}
       role="dialog"
       aria-modal="true"
       aria-label={t(titleKey)}
@@ -143,23 +155,28 @@ export default function StepStage({
             {Array.from({ length: stepCount }, (_, i) => (
               // 정적 도트 열 · 개수 고정이라 인덱스 키 허용
               // eslint-disable-next-line react/no-array-index-key
-              <span key={i} className={`h-8 w-8 rounded-pill ${i <= stepIndex ? 'bg-primary' : 'bg-line'}`} />
+              // [V5-3] MOTION quiz 절: 진행 도트 = 색 채움 전환(width 등 레이아웃 속성 미사용)
+              <span
+                key={i}
+                className={`h-8 w-8 rounded-pill transition-colors duration-fast ${i <= stepIndex ? 'bg-primary' : 'bg-line'}`}
+              />
             ))}
           </div>
         </div>
 
         {/* 콘텐츠 · 내부 스크롤 scroll-quiet(§41) — 전환 중엔 나가는 씬을 절대배치로 겹침 · [V22] 하단 패딩 축소(무스크롤) */}
-        <div className="relative flex-1 overflow-y-auto scroll-quiet px-24 pb-12 lg:px-32">
+        {/* [V5-3] 짧은 스텝은 패널 세로 중앙(my-auto · 4K 하단 여백 과다 해소) · 넘치면 auto 마진 0 → 위부터 스크롤 */}
+        <div className="relative flex flex-1 flex-col overflow-y-auto scroll-quiet px-24 pb-12 lg:px-32">
           {leaving && (
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-24 top-0 lg:inset-x-32"
+              className="pointer-events-none absolute inset-0 flex flex-col px-24 pb-12 lg:px-32"
               style={stepAnim('bh-step-out')}
             >
-              {leaving.node}
+              <div className="my-auto">{leaving.node}</div>
             </div>
           )}
-          <div key={shown.key} style={leaving ? stepAnim('bh-step-in') : undefined}>
+          <div key={shown.key} className="my-auto" style={leaving ? stepAnim('bh-step-in') : undefined}>
             {shown.node}
           </div>
         </div>
@@ -172,7 +189,8 @@ export default function StepStage({
           {/* [V13] 안내(사유)와 버튼 사이 16px 여백 확보(gap-16) */}
           <div aria-live="polite" className="min-h-[18px]">
             {nextDisabled && reasonKey && (
-              <LangSwap k={reasonKey} className="text-caption font-medium text-spice" />
+              // [V5-3] 사유 = ink(글래스 위 spice 텍스트는 약 2.2:1 · AA 4.5:1 미달)
+              <LangSwap k={reasonKey} className="text-caption font-semibold text-ink" />
             )}
           </div>
           {/* [H2-13] Back = white 채움 + primary 텍스트 + shadow.sm(글래스 위 가시성) · 두 버튼 높이 48 */}
@@ -183,22 +201,22 @@ export default function StepStage({
               </Button>
             </span>
             <Button disabled={nextDisabled} onClick={onNext} style={{ height: 48 }}>
-              <LangSwap k="common.next" />
+              {nextLabel ?? <LangSwap k="common.next" />}
             </Button>
           </div>
         </div>
       </div>
 
       {/* 첫 스텝 뒤로 = 플로우 나가기 확인(§41) */}
-      <Modal open={exitOpen} onClose={() => setExitOpen(false)} title="gts.build.exitTitle">
+      <Modal open={exitOpen} onClose={() => setExitOpen(false)} title={`${exitKey}.exitTitle`}>
         <div className="flex flex-col gap-24">
-          <LangSwap k="gts.build.exitBody" as="p" className="text-body" />
+          <LangSwap k={`${exitKey}.exitBody`} as="p" className="text-body" />
           <div className="flex flex-wrap items-center gap-12">
             <Button onClick={() => setExitOpen(false)}>
-              <LangSwap k="gts.build.exitStay" />
+              <LangSwap k={`${exitKey}.exitStay`} />
             </Button>
             <Button variant="secondary" onClick={onExit}>
-              <LangSwap k="gts.build.exitLeave" />
+              <LangSwap k={`${exitKey}.exitLeave`} />
             </Button>
           </div>
         </div>

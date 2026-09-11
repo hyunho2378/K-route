@@ -242,3 +242,27 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 ### 존 C5 (서브에이전트 BUILDER-PAY)
 | 소유 | pages/{GtsSetup,GtsBuild,GtsRoute,GtsCheckout,Ticket,Reviews}.jsx, components/{gts,pay,reviews}/**, data/reviews.js, i18n */gts.js·reviews 키 |
 | 항목 | §41 StepStage 전면 적용(진행 바 폐지·자동 전진·전환 모션), 스텝2 반반 분할, 페이지네이션 페어(새로고침 폐지), §10.5 방문순서 타임라인, §42 결제, 성공 인터스티셜 삭제→티켓 직행, §43 티켓 개편, §10.8 리뷰 페이지+시드 12개(다국적·mock:true·과장 금지) |
+
+---
+
+## v5 K-Route 증분 ([V5-3] P2 화면 · 2026-09-11) · 충돌 시 이 표가 이긴다
+
+### 공용(오케스트레이터 단독 확정 · 병렬 에이전트 읽기 전용)
+| 파일 | 스펙 |
+|---|---|
+| `src/data/gts/spots.js` | 스팟 규약(id 이원화: kind 'kto' = 공사 contentid · 합류 7곳 venueId 역링크 / kind 'venue' = venues.js id) · toSpot(stayMin 120) · resolveSpot(id, known)(추천·풀 우선 · 합류 구 venue id 매칭 · venues.js 폴백) · spotImages(공사 대표이미지 → 합류 webp) · ktoText(공사 원문 HTML → 텍스트 · 엔티티 복원) · ktoHref(http(s)만) |
+| `src/data/gts/quizQuestions.js` | IA §11.3 5문항(option id = server recommendService.ANSWERS) · Q1_EXCLUSIVE('아직 안 정함' 배타) · TRAVEL_TYPE_ICONS(q2 → lucide) |
+| `src/components/gts/KBadge.jsx` | props `spot`. badge(SOURCE anchor && 강함·중간) + K 4종(kfood·kdrama·kanime·kpop)만 · 흰 pill + BadgeCheck(primary) + ink 라벨 · 페이드 인 · 좁으면 말줄임 |
+| `src/components/gts/CongestionChip.jsx` | props `band`('relaxed'·'moderate'·'busy'), `labelKey`(스크린리더 맥락 · null이면 생략). 흰 pill + 원색 도트(green·yellow·spice) + ink 라벨 · 색 전환만 · 경계 32.15 / 61.16(서버 band) |
+| `src/components/gts/GuideFab.jsx` | K-가이드 봇 FAB 자리(비활성 · 우하단 fixed · z-dock · 챗 BottomSheet는 P3) |
+| GtsContext | 상태 quizAnswers·recommended·goOrigin · 액션 setQuizAnswer·submitQuiz(answers, lang)·selectSpot·setGoOrigin · 파생 cap(q4 반나절 3·하루 4)·course(방문 순서 스팟) · 가드 quiz → build → route → go(checkout = route 경유 유지) · v4 setMealPlan·toggleMeal·togglePick 제거 |
+| StepStage | 신규 prop `nextLabel`(다음 버튼 노드) · `exitKey`(나가기 카피 접두) · 진행 도트 색 전환 · 짧은 스텝 세로 중앙 · 겹친 모달 안 Escape 무시 · 사유 문구 ink |
+| SuccessStamp · LangSwap · VisitTimeline · StopPopup | `mark`(이니셜 대신 노드) · `vars`({이름} 치환) · items[].extra(부가 노드) · 체류 0이면 체류 칩 비렌더 |
+
+### 병렬 존(파일 소유 계약)
+| 존 | 소유 | 항목 |
+|---|---|---|
+| A 취향 찾기 | pages/GtsQuiz.jsx · components/quiz/{QuizQuestion,QuizResult}.jsx | StepStage 6스텝(q1~q5 + 결과) · q1 복수 · 탭 자동 전진 · 결과 = 여행 타입 배지(q2 결정론 4종) + SuccessStamp 1회 + "추천 N곳 보기" |
+| B 코스 담기 | pages/GtsBuild.jsx · components/gts/{VenueGrid,VenueDetail,CourseQueue}.jsx | 단일 풀 = 추천 결과 · 정원 q4 · 카드 = 공사 대표이미지 → webp → 텍스트 + K배지 + 사유 1줄 + 집중률 Chip · 상세 = 공사 detailCommon·Intro 원문 + odii(같은 장소 이름 일치만) · 리뷰 제거 |
+| C 출발 | pages/GtsGo.jsx · components/go/{LegTimeline,CrowdCard}.jsx · ItineraryMap 선택 prop(pinLabels·drawMs·labelKey) | §21 동의 → 현재 위치(거부 시 춘천역) → FieldSelect 도착 · /api/go 도보·택시 '예상' 레그 · 지도 폴리라인(거리 비례 draw-on) · 집중률 카드(3xl 이상 우측) · 다음 장소 |
+| 통합(오케스트레이터) | pages/GtsRoute.jsx · Ticket(공사 id 풀 해석) · GtsSetup(route 경유 체크아웃 직행) · GtsCheckout(course) | route CTA 3종 + K배지·집중률 + FAB |

@@ -4,6 +4,9 @@
 // 핀 hover/탭 = StopPopup 재사용(§13 · hover 즉시 표시 + 200ms 유지 §16.9), fitBounds 패딩 80 1회.
 // [V3] §32 리스트 폴백 폐지 — coord:null(목업)은 mockCoords 결정적 DEMO 좌표로 대체해
 //   어떤 조합에서도 라인을 항상 그린다(지시 [3] · 고지는 페이지 mockNotice 지속).
+// [V5-3] go 화면 선택 prop(전부 생략 시 기존 동작 동일 · route·checkout·ticket 호출부 무변경):
+//   pinLabels = 핀 텍스트 배열(기본 순번 · null 항목 = 출발 핀: 순번 없는 white 원 + primary 링),
+//   drawMs = draw-on 지속(기본 720), labelKey = 지도 region aria-label 사전 키(기본 gts.route.mapLabel).
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -55,7 +58,12 @@ const toStop = (venue) => ({
   stay_min: venue.stayMin,
 });
 
-export default function ItineraryMap({ venues }) {
+export default function ItineraryMap({
+  venues,
+  pinLabels,
+  drawMs = DRAW_MS,
+  labelKey = 'gts.route.mapLabel',
+}) {
   const node = useRef(null);
   const closeTimer = useRef(null);
   const [mapObj, setMapObj] = useState(null);
@@ -130,11 +138,15 @@ export default function ItineraryMap({ venues }) {
 
       // 번호 마커 · 28px primary 원 + white 숫자 700(§32) · hover 즉시 팝업(§16.9)
       venues.forEach((venue, i) => {
+        const label = pinLabels ? pinLabels[i] : String(i + 1);
         const el = document.createElement('button');
         el.type = 'button';
-        el.className = 'gts-pin bg-primary font-display text-small font-bold text-white shadow-sm';
-        el.textContent = String(i + 1);
-        el.setAttribute('aria-label', `${i + 1} ${venue.name.en}`);
+        el.className =
+          label === null
+            ? 'gts-pin bg-white shadow-sm ring-4 ring-inset ring-primary' // [V5-3] 출발 핀 · 순번 대신 링 표기
+            : 'gts-pin bg-primary font-display text-small font-bold text-white shadow-sm';
+        el.textContent = label ?? '';
+        el.setAttribute('aria-label', label === null ? venue.name.en : `${label} ${venue.name.en}`);
         el.addEventListener('click', (e) => {
           e.stopPropagation(); // 지도 클릭 닫기와 분리(§13)
           cancelClose();
@@ -163,7 +175,7 @@ export default function ItineraryMap({ venues }) {
       } else {
         const startT = performance.now();
         const step = (now) => {
-          const p = Math.min((now - startT) / DRAW_MS, 1);
+          const p = Math.min((now - startT) / drawMs, 1);
           const eased = easeOut(p);
           LAYERS.forEach(([id, color]) => {
             if (!map.getLayer(id)) return;
@@ -199,7 +211,7 @@ export default function ItineraryMap({ venues }) {
   }, [venues]);
 
   return (
-    <div role="region" aria-label={t('gts.route.mapLabel')} className="relative h-full w-full bg-surface">
+    <div role="region" aria-label={t(labelKey)} className="relative h-full w-full bg-surface">
       <div ref={node} className="h-full w-full" />
       {!mapObj && <Skeleton className="absolute inset-0" />}
       {/* 팝업 · StopPopup 재사용(§32) — onViewLine 미전달(GTS는 라인 개념 없음) */}

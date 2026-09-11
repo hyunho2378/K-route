@@ -28,6 +28,8 @@ export default function VisitTimeline({ items }) {
               {item.oneLine && (
                 <TriText text={item.oneLine} className="text-caption font-medium text-inkSec" />
               )}
+              {/* [V5-3] extra = 부가 노드(route K배지·집중률 Chip) · 생략 시 기존과 동일 */}
+              {item.extra}
             </div>
           </li>
         );

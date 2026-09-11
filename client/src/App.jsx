@@ -17,8 +17,8 @@ import Profile from './pages/Profile'; // [V10]
 import Gate from './pages/Gate';
 import GtsBuild from './pages/GtsBuild';
 import GtsCheckout from './pages/GtsCheckout';
-import GtsGo from './pages/GtsGo'; // [V5-0] 스텁
-import GtsQuiz from './pages/GtsQuiz'; // [V5-0] 스텁
+import GtsGo from './pages/GtsGo'; // [V5-3]
+import GtsQuiz from './pages/GtsQuiz'; // [V5-3]
 import GtsRoute from './pages/GtsRoute';
 import GtsSetup from './pages/GtsSetup';
 import Home from './pages/Home';
@@ -63,13 +63,13 @@ export default function App() {
                   <Route element={<PageLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/gate" element={<Gate />} />
-                    {/* /gts = setup(IA §9.1 "(=setup)") · /gts/setup도 동일 화면 정식 경로 */}
-                    <Route path="/gts" element={<RequireAuth><GtsSetup /></RequireAuth>} />
+                    {/* [V5-3] /gts = 취향 찾기(IA §11.2 진입점 setup→quiz · ROUTES v5) · /gts/setup은 route '차량으로 이동' 보조 진입 */}
+                    <Route path="/gts" element={<Navigate to="/gts/quiz" replace />} />
                     <Route path="/gts/setup" element={<RequireAuth><GtsSetup /></RequireAuth>} />
                     <Route path="/gts/build" element={<RequireAuth><GtsBuild /></RequireAuth>} />
                     <Route path="/gts/route" element={<RequireAuth><GtsRoute /></RequireAuth>} />
                     <Route path="/gts/checkout" element={<RequireAuth><GtsCheckout /></RequireAuth>} />
-                    {/* [V5-0] K-Route 스텁(IA §11.3·§11.7) · /gts→/gts/quiz 리다이렉트는 P2로 연기(사용자 결정 2026-09-11) */}
+                    {/* [V5-3] K-Route 취향 찾기·출발(IA §11.3·§11.7) */}
                     <Route path="/gts/quiz" element={<RequireAuth><GtsQuiz /></RequireAuth>} />
                     <Route path="/gts/go" element={<RequireAuth><GtsGo /></RequireAuth>} />
                     <Route path="/ticket/:bookingId" element={<Ticket />} />
