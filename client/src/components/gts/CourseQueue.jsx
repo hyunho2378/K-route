@@ -3,6 +3,7 @@
 // X = 큐에서 제거 → 해당 장소 그리드 복귀(GtsBuild가 selectSpot 재클릭 해제로 처리).
 import { X } from 'lucide-react';
 import TriText from './TriText';
+import { LINE_BG, lineOfSpot } from '../../data/gts/lineSystem';
 import LangSwap from '../../i18n/LangSwap';
 import { useLang } from '../../i18n/LangContext';
 import { motion } from '../../tokens';
@@ -20,12 +21,16 @@ export default function CourseQueue({ items, onRemove, km, minutes }) {
         className="shrink-0 text-caption font-semibold uppercase tracking-eyebrow text-inkMeta"
       />
       <div className="flex min-w-0 flex-1 items-center gap-8 overflow-x-auto scroll-quiet">
-      {items.map((v, i) => (
+      {items.map((v, i) => {
+        // [V5-9] 담은 곳이 어느 K-콘텐츠 라인의 역인지 · 배지 없는 연계 로컬은 도트를 달지 않는다(라인 주장 금지)
+        const line = lineOfSpot(v);
+        return (
         <span
           key={v.id}
           className="flex shrink-0 items-center gap-8 rounded-pill bg-white pl-12 shadow-sm"
           style={{ animation: `bh-queue-in 220ms ${motion.easeOut} both` }}
         >
+          {line && <span aria-hidden="true" className={`h-8 w-8 shrink-0 rounded-pill ${LINE_BG[line]}`} />}
           {/* [V22] "1: 이름" 형식 · gap-8(gap-6은 spacing 스케일 부재로 무효였음 → 붙어 보이던 문제 수리) */}
           <span className="font-display text-caption font-bold text-primary">{i + 1}:</span>
           <TriText text={v.name} className="text-small font-semibold" />
@@ -40,7 +45,8 @@ export default function CourseQueue({ items, onRemove, km, minutes }) {
             <X size={16} aria-hidden="true" />
           </button>
         </span>
-      ))}
+        );
+      })}
       </div>
       {/* [V13] 우측 끝 추정 거리 · 라벨(3언어) + 값(SUIT·medium·body). 픽 1개 이하면 숨김 · [V22] 스크롤 밖 고정 우측 */}
       {showEstimate && (
