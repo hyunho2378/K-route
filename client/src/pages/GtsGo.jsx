@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowRight, LocateFixed, MapPin, RotateCcw, TrainFront } from 'lucide-react';
 import CrowdCard from '../components/go/CrowdCard';
 import LegTimeline from '../components/go/LegTimeline';
-import GuideFab from '../components/gts/GuideFab';
 import ItineraryMap from '../components/gts/ItineraryMap';
 import TriText from '../components/gts/TriText';
 import Container from '../components/layout/Container';
@@ -289,8 +288,7 @@ export default function GtsGo() {
         </div>
       </Container>
 
-      {/* K-가이드 봇 FAB 자리(IA §11.8 · 우하단 고정) */}
-      <GuideFab />
+      {/* [V5-9] K-가이드 FAB 제거(챗봇을 헤드라인에서 내린다) · 챗 기능·컴포넌트는 보존 */}
 
       {/* 위치 사용 사전 설명 모달 · §21 동의 패턴(GateForm 구조 동형) · "허용"에서만 실제 geolocation 요청 */}
       <Modal open={locateOpen} onClose={later} title="go.locate.title">

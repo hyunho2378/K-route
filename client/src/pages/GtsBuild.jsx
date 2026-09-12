@@ -11,7 +11,6 @@ import TriText from '../components/gts/TriText';
 import VenueDetail from '../components/gts/VenueDetail';
 import VenueGrid from '../components/gts/VenueGrid';
 import CourseQueue from '../components/gts/CourseQueue';
-import GuideFab from '../components/gts/GuideFab';
 import Container from '../components/layout/Container';
 import { useGts, useGtsGuard } from '../context/GtsContext';
 import { venueCoord } from '../data/gts/mockCoords';
@@ -180,8 +179,7 @@ export default function GtsBuild() {
         </section>
       </StepStage>
 
-      {/* [V5-6] K-가이드 FAB · StepStage 다음에 붙어 그 위에 온다 · 하단 버튼 줄 위로 */}
-      <GuideFab lift />
+      {/* [V5-9] K-가이드 FAB 제거(챗봇을 헤드라인에서 내린다) · 챗 기능·컴포넌트는 보존 */}
 
       {/* [V2] 장소 상세 확장 카드 · StepStage 형제(포털은 body — 늦은 마운트라 StepStage 위) */}
       {detail && (

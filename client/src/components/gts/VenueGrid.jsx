@@ -12,7 +12,6 @@ import { ZoomIn } from 'lucide-react';
 import LangSwap from '../../i18n/LangSwap';
 import { useLang } from '../../i18n/LangContext';
 import Pagination from '../ui/Pagination';
-import CongestionChip from './CongestionChip';
 import KBadge from './KBadge';
 import TriText from './TriText';
 import { venueCoord } from '../../data/gts/mockCoords';
@@ -222,8 +221,8 @@ export default function VenueGrid({
                 {/* [V5-3] 배지 행 = 좌하단 · K배지 → 집중률 Chip → 카테고리 칩 순(좁으면 줄바꿈 · 배지·칩 우선).
                     끝 스페이서 = 돋보기(우하단 absolute) 자리 예약: 마지막 줄 칩과 겹치지 않고, 자리가 없으면 다음 줄로 */}
                 <span className="relative z-[1] mt-auto flex w-full flex-wrap items-center gap-4">
+                  {/* [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면 CrowdCard 만 유지) · 컴포넌트는 보존 */}
                   <KBadge spot={venue} />
-                  <CongestionChip band={venue.congestionBand} />
                   <span
                     className={`inline-flex shrink-0 items-center rounded-pill px-8 py-2 text-caption font-medium ${
                       hasImage

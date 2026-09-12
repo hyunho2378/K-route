@@ -29,7 +29,6 @@ import LangSwap from '../../i18n/LangSwap';
 import { useLang } from '../../i18n/LangContext';
 import Button from '../ui/Button';
 import Skeleton from '../ui/Skeleton';
-import CongestionChip from './CongestionChip';
 import KBadge from './KBadge';
 import TriText from './TriText';
 import { colors, motion } from '../../tokens';
@@ -339,10 +338,9 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
         ) : (
           <LangSwap k={`${keyBase}.hero`} className="text-small font-medium text-inkSec" />
         )}
-        {/* [V5-3] K배지(SOURCE 조건 충족분만) · 집중률 Chip(band 있을 때만) · 둘 다 없으면 빈 행 */}
+        {/* [V5-3] K배지(SOURCE 조건 충족분만) · [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면만 · 컴포넌트 보존) */}
         <div className="flex flex-wrap items-center gap-8">
           <KBadge spot={venue} />
-          <CongestionChip band={venue.congestionBand} />
         </div>
         {/* 추천 사유 · LLM 문장(제출 언어) 우선 → 없으면 사전 폴백(quiz.reason.*) */}
         {venue.reason ? (

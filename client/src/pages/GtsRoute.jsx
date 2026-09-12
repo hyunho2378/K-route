@@ -9,8 +9,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { planRoute } from '../data/gts/ktoApi';
-import CongestionChip from '../components/gts/CongestionChip';
-import GuideFab from '../components/gts/GuideFab';
 import ItineraryMap from '../components/gts/ItineraryMap';
 import KBadge from '../components/gts/KBadge';
 import VisitTimeline from '../components/gts/VisitTimeline';
@@ -158,14 +156,8 @@ export default function GtsRoute() {
                   lineId: lines[i], // [V5-9] 순번 원을 그 역의 라인 색으로
                   name: spot.name,
                   oneLine: spot.oneLine?.en ? spot.oneLine : null, // 공사 단독 스팟은 한 줄 소개 없음
-                  // [V5-3] K배지(SOURCE 근거 anchor·grade만) + 집중률 Chip(오늘 3구간)
-                  extra:
-                    spot.badge || spot.congestionBand ? (
-                      <span className="flex flex-wrap items-center gap-4">
-                        <KBadge spot={spot} />
-                        <CongestionChip band={spot.congestionBand} />
-                      </span>
-                    ) : null,
+                  // [V5-3] K배지(SOURCE 근거 anchor·grade만) · [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면만)
+                  extra: spot.badge ? <KBadge spot={spot} /> : null,
                   // [V5-5] 다음 장소까지 구간 · 이동·대기(가정 배차) · 막차 이후면 고지 · 좌표 없으면 거리 미계산
                   leg: leg ? (
                     <span className="flex flex-wrap items-center gap-8 text-caption font-medium text-inkSec">
@@ -211,7 +203,7 @@ export default function GtsRoute() {
           </section>
         </div>
       </div>
-      <GuideFab />
+      {/* [V5-9] K-가이드 FAB 제거(챗봇을 헤드라인에서 내린다) · 챗 기능·컴포넌트는 보존 */}
     </Container>
   );
 }
