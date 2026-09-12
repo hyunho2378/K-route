@@ -1,4 +1,4 @@
-// venues 네임스페이스(TH) · Venue details.md v5 번역 — [V2] 장소 상세 확장 카드.
+// venues 네임스페이스(TH) · docs/Venue details.md v5 번역 — [V2] 장소 상세 확장 카드.
 // 기계 번역 초안(네이티브 검수 대기 · venues.js th 표기와 동일 정책) · 도로명 주소는 로마자 유지.
 // [VERIFY] 값 미노출 · 줄표 금지 · en/venues.js와 키 완전 동형.
 export default {

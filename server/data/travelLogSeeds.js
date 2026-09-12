@@ -2,7 +2,7 @@
 // 결정: DB gts_bookings 시드 대신 서버 상수 — users 스키마에 국가 컬럼이 없어 DB 경유로는
 //   카드 명세(이니셜+국가)를 채울 수 없음(명세 밖 결정 · 완료 보고). 실 로그는 DB에서 집계.
 // 장소는 전부 venues.js 실명 id 조합(창작 장소 0) · 날짜는 고정 연출값(과거 완료 여정) ·
-// 이니셜·국가는 목업 여행자(실인물 아님 · Venue details.md 목업 리뷰 메타와 동일 세계관).
+// 이니셜·국가는 목업 여행자(실인물 아님 · docs/Venue details.md 목업 리뷰 메타와 동일 세계관).
 // itinerary 순서 = 점심 → 픽 → (저녁) — 클라 itinerary.js 공유 규칙과 동일.
 // 클라 오프라인 폴백 미러: client/src/data/gts/travelLogSeeds.js (동시 수정 계약).
 const MOCK_LOGS = [

@@ -1,4 +1,4 @@
-// legal 네임스페이스(EN) · 존 A 전용. LEGAL_COPY.md 전문 이식(임의 축약·창작 금지).
+// legal 네임스페이스(EN) · 존 A 전용. docs/LEGAL_COPY.md 전문 이식(임의 축약·창작 금지).
 export default {
   legal: {
     updated: "Last updated: 2026-07-21",

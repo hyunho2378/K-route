@@ -1,4 +1,4 @@
-// legal 네임스페이스(KR) · 존 A 전용. LEGAL_COPY.md 전문 이식(임의 축약·창작 금지).
+// legal 네임스페이스(KR) · 존 A 전용. docs/LEGAL_COPY.md 전문 이식(임의 축약·창작 금지).
 export default {
   legal: {
     updated: "최종 갱신일: 2026. 7. 21.",

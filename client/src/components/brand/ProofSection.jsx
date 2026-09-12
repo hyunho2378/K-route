@@ -1,6 +1,6 @@
 // About §6 Proof(IA §2.8.6 · id="proof") · 구 Pilot 페이지 전체 흡수:
 // 실운행 영상(자막 상시) + 지표 3(Kanit Bold · 값은 data/pilot.js PLACEHOLDER) + 갤러리.
-// 헤더 카피는 BRAND_COPY.md §6(brand.proof.*). 홈 Proof strip이 /about#proof로 진입한다.
+// 헤더 카피는 docs/BRAND_COPY.md §6(brand.proof.*). 홈 Proof strip이 /about#proof로 진입한다.
 import { gallery, metrics } from '../../data/pilot'; // api.js에 접근자 없음 · 직접 import(기 확정 결정)
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';

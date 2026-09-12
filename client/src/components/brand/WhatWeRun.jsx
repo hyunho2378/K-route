@@ -1,5 +1,5 @@
 // About §4 What we run(IA §2.8.4) · 3필러 카드(Gate/Loop/Hands-Free) + 아이콘 배지 + 페이지 링크.
-// 카피는 BRAND_COPY.md §4(brand.run.*). 무보더 카드 + hover 리프트(DESIGN §7).
+// 카피는 docs/BRAND_COPY.md §4(brand.run.*). 무보더 카드 + hover 리프트(DESIGN §7).
 import { Link } from 'react-router-dom';
 import { Bus, Luggage, Plane } from 'lucide-react';
 import { useLang } from '../../i18n/LangContext';

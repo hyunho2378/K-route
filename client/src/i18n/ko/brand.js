@@ -1,4 +1,4 @@
-// brand 네임스페이스(KR) · 존 C(LOOP) 소유. BRAND_COPY.md 전문 이식(창작·요약 금지).
+// brand 네임스페이스(KR) · 존 C(LOOP) 소유. docs/BRAND_COPY.md 전문 이식(창작·요약 금지).
 // v3.1: 레거시 pilot 그룹 제거(About이 Pilot 흡수 · IA §2.8). en·th와 키 완전 동형.
 // proof.metrics KR 라벨은 BRAND_COPY 미기재 · 기존 data/pilot.js 라벨 재사용(질문 목록 보고).
 // bm.blocks 라벨은 BRAND_COPY 표기 그대로 영문 BMC 용어 유지.
@@ -142,7 +142,7 @@ export default {
       title: "지역과 함께 만들고, 세계로 갑니다",
       body: "판매된 모든 좌석은 여러분이 도착하기 전에 작은 가게로 먼저 흘러갑니다. 그리고 이 플랫폼은 이미 영어, 한국어, 태국어를 씁니다. 춘천의 다음 손님들이 벌써 비행기를 알아보고 있으니까요.",
     },
-    // [H2-19] 크라우드펀딩 카피(어바웃.md 전문 이식 · 이모지 제거 · Web platform 교정 · Tourism 통일)
+    // [H2-19] 크라우드펀딩 카피(docs/어바웃.md 전문 이식 · 이모지 제거 · Web platform 교정 · Tourism 통일)
     // [I1] v4.4 크라우드펀딩 전사 카피(레퍼런스 구도 · 지시 문자열 우선 · 13~15 일부 DEMO 초안)
     crowd: {
       hero: {

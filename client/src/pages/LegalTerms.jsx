@@ -1,4 +1,4 @@
-// /legal/terms · LEGAL_COPY.md 전문(i18n legal 네임스페이스, 임의 축약 금지). PATTERNS §17.
+// /legal/terms · docs/LEGAL_COPY.md 전문(i18n legal 네임스페이스, 임의 축약 금지). PATTERNS §17.
 // 푸터에서 새 탭 진입. 본문 측정폭 캡 금지(v3.1) · 줄바꿈은 컨테이너가 결정.
 import Container from '../components/layout/Container';
 import { useLang } from '../i18n/LangContext';

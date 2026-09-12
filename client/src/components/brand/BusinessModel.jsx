@@ -1,5 +1,5 @@
 // About §9 Business model(IA §2.8.9) · BMC 9블록 그리드(무보더 카드) + 수익 구조 한 줄.
-// 카피는 BRAND_COPY.md §9(brand.bm.*) · 블록 라벨은 BMC 영문 용어 그대로(3언어 공통).
+// 카피는 docs/BRAND_COPY.md §9(brand.bm.*) · 블록 라벨은 BMC 영문 용어 그대로(3언어 공통).
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';
 import Section from '../layout/Section';

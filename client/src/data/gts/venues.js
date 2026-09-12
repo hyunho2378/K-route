@@ -1,7 +1,7 @@
 // ============================================================
 // venues.js · GTS 조립 카드 풀 (IA §9.4 · PATTERNS §30)
 // 할루시네이션 방지 계약:
-//   실명은 CC_PROMPT_9 허용 11곳 + [V5] 사용자 제공 mockup1.md 20곳(Restaurant 1~6·Food 12~20·Activity 21~25).
+//   실명은 CC_PROMPT_9 허용 11곳 + [V5] 사용자 제공 docs/mockup1.md 20곳(Restaurant 1~6·Food 12~20·Activity 21~25).
 //   [V5] 좌표는 지어내지 않고 네이버 place redirect / 구글맵 !3d!4d 실측값 사용(주석에 출처 표기).
 //   나머지 목업 슬롯(meal 7~11)만 name "Mockup N" + mock:true + coord null 유지.
 //   구 실명 좌표(tongnamujip 등)는 대략값 + // PLACEHOLDER — verify (현장 핀 교체 대상).
@@ -28,7 +28,7 @@ const RAW_VENUES = [
     coord: [127.746, 37.95], // PLACEHOLDER — verify
     mock: false,
   },
-  // [V5] mockup1.md Restaurant 1~6 실명 반영 · 좌표 = 구글맵/네이버 실측(!3d!4d·place redirect).
+  // [V5] docs/mockup1.md Restaurant 1~6 실명 반영 · 좌표 = 구글맵/네이버 실측(!3d!4d·place redirect).
   //   th는 en 폴백(네이티브 검수 대기 · 파일 상단 th-초안 정책). coord [lng, lat].
   {
     id: 'baekil-kalguksu',
@@ -394,7 +394,7 @@ const RAW_VENUES = [
     coord: [127.716055, 37.8872075], // 네이버 실측 · 화동2571 복합문화공간(영서로 2571, id 1018763789)
     mock: false,
   },
-  // [V5] mockup1.md Food Spaces 12~20 실명 반영 · 좌표 = 네이버 place redirect / 구글맵 !3d!4d 실측.
+  // [V5] docs/mockup1.md Food Spaces 12~20 실명 반영 · 좌표 = 네이버 place redirect / 구글맵 !3d!4d 실측.
   {
     id: 'earth17-cafe',
     name: { en: 'Earth17 Cafe', ko: 'earth17', th: 'Earth17 Cafe' },
@@ -749,7 +749,7 @@ const RAW_VENUES = [
     coord: [127.7269438, 37.8936299], // 네이버 실측 · 소양아트서클(소양2교 앞, id 4090051998)
     mock: false,
   },
-  // [V5] mockup1.md Activities 21~25 실명 반영 · 좌표 = 네이버 place redirect 실측.
+  // [V5] docs/mockup1.md Activities 21~25 실명 반영 · 좌표 = 네이버 place redirect 실측.
   {
     id: 'gangchon-railpark',
     name: { en: 'Gangchon Rail Park', ko: '강촌레일파크', th: 'Gangchon Rail Park' },

@@ -1,4 +1,4 @@
-// venues 네임스페이스(KO) · Venue details.md v5 번역 — [V2] 장소 상세 확장 카드.
+// venues 네임스페이스(KO) · docs/Venue details.md v5 번역 — [V2] 장소 상세 확장 카드.
 // EN 원문 의미 보존 번역 · [VERIFY] 값 미노출 · 줄표 금지 · en/venues.js와 키 완전 동형.
 export default {
   venues: {

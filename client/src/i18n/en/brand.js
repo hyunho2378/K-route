@@ -1,4 +1,4 @@
-// brand 네임스페이스(EN) · 존 C(LOOP) 소유. BRAND_COPY.md 전문 이식(창작·요약 금지).
+// brand 네임스페이스(EN) · 존 C(LOOP) 소유. docs/BRAND_COPY.md 전문 이식(창작·요약 금지).
 // v3.1: 레거시 pilot 그룹 제거(About이 Pilot 흡수 · IA §2.8). ko·th와 키 완전 동형.
 // proof.metrics 값(숫자)은 data/pilot.js PLACEHOLDER를 그대로 사용한다.
 export default {
@@ -141,7 +141,7 @@ export default {
       title: "Built with the town, ready for the world",
       body: "Every seat sold routes money to a small shop before you arrive. And the platform already speaks English, Korean and Thai, because Chuncheon's next guests are already booking flights.",
     },
-    // [H2-19] 크라우드펀딩 카피(어바웃.md 전문 이식 · 이모지 제거 · Web platform 교정 · Tourism 통일)
+    // [H2-19] 크라우드펀딩 카피(docs/어바웃.md 전문 이식 · 이모지 제거 · Web platform 교정 · Tourism 통일)
     // [I1] v4.4 크라우드펀딩 전사 카피(레퍼런스 구도 · 지시 문자열 우선 · 13~15 일부 DEMO 초안)
     crowd: {
       hero: {

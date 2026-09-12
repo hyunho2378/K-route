@@ -1,6 +1,6 @@
 // About §2·§3 Problem 섹션(IA §2.8.2~3) · 넘버링 카드 3(Return Hound 레퍼런스).
 // props: { id, titleKey, cardKeys } · cardKeys = brand.{before|after}.cards.* 경로 3개.
-// 카피는 BRAND_COPY.md 이식분(brand 네임스페이스). 무보더 카드(shadow.sm · DESIGN §7).
+// 카피는 docs/BRAND_COPY.md 이식분(brand 네임스페이스). 무보더 카드(shadow.sm · DESIGN §7).
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';
 import Section from '../layout/Section';

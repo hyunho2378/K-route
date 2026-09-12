@@ -1,4 +1,4 @@
-// venues 네임스페이스(EN) · Venue details.md v5 전사 — [V2] 장소 상세 확장 카드.
+// venues 네임스페이스(EN) · docs/Venue details.md v5 전사 — [V2] 장소 상세 확장 카드.
 // EN은 문서 원문 그대로. [VERIFY] 표기는 UI 미노출 규칙에 따라 값에서 제거(주석 이관: data/gts/venueDetails.js).
 // 문서 id ↔ 데이터 id: gamja-batt → gamja-farm · mullegil → jungdo-mullegil. 줄표 금지 · 3언어 키 동형.
 export default {

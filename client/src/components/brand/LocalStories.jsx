@@ -1,5 +1,5 @@
 // About §7 Local stories(IA §2.8.7) · 사장님·정류장 스토리 카드(감자밭 대표).
-// 카피는 BRAND_COPY.md §7(brand.stories.*) · 썸네일은 data/stories.js 자산 재사용.
+// 카피는 docs/BRAND_COPY.md §7(brand.stories.*) · 썸네일은 data/stories.js 자산 재사용.
 import stories from '../../data/stories'; // api.js에 접근자 없음 · 직접 import(기 확정 결정)
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';

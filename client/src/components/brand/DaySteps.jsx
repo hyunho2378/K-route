@@ -1,5 +1,5 @@
 // About §5 How a day works(IA §2.8.5) · 수평 단계 스트립 5.
-// 카피는 BRAND_COPY.md §5(brand.day.steps.s1~s5). 번호는 실제 순서 · 숫자 마커 허용.
+// 카피는 docs/BRAND_COPY.md §5(brand.day.steps.s1~s5). 번호는 실제 순서 · 숫자 마커 허용.
 import LangSwap from '../../i18n/LangSwap';
 import Section from '../layout/Section';
 

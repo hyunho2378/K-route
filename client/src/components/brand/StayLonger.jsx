@@ -1,5 +1,5 @@
 // About §8 Stay longer(IA §2.8.8) · 1일 → 1박2일 → 롱스테이 확장 로드맵 타임라인.
-// 카피는 BRAND_COPY.md §8(brand.stay.steps.*).
+// 카피는 docs/BRAND_COPY.md §8(brand.stay.steps.*).
 import LangSwap from '../../i18n/LangSwap';
 import Section from '../layout/Section';
 

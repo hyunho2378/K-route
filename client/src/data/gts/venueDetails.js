@@ -1,5 +1,5 @@
 // ============================================================
-// venueDetails.js · [V2] 장소 상세 구조 데이터 (Venue details.md v5)
+// venueDetails.js · [V2] 장소 상세 구조 데이터 (docs/Venue details.md v5)
 // 텍스트 전문은 i18n venues 네임스페이스 소유 — 여기는 구조(문단 수·별점)만.
 // guestReviews 는 전부 목업(mockReviews: true) — 실후기 아님(문서 규칙을 데이터에 명시).
 // 문서 id ↔ 카드 데이터 id 매핑(venues.js가 카드 원본): gamja-batt → gamja-farm · mullegil → jungdo-mullegil.

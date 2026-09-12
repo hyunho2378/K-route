@@ -1,4 +1,4 @@
-// legal 네임스페이스(TH) · 존 A 전용. LEGAL_COPY.md 전문 번역.
+// legal 네임스페이스(TH) · 존 A 전용. docs/LEGAL_COPY.md 전문 번역.
 // 초안: en 기반 번역. 네이티브 검수 대기(PROGRESS 준비물).
 export default {
   legal: {
