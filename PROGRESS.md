@@ -22,6 +22,7 @@
 - [x] P2 화면: quiz·추천·build개조·go — 프롬프트 3 (2026-09-12 · [V5-3] = b74803a)
 - [x] P3-A 정합성 수정: odii 정확매칭 · ktoText · 큐 X 포커스 (2026-09-12 · [V5-4] = 7a508ae)
 - [x] P3-C K-가이드 RAG(공사 데이터) + NFC 스탬프 + 제출팩 (2026-09-12 · [V5-6] 커밋 대기)
+- [x] P4 게이미피케이션 이식: K-콘텐츠 노선 체계 · 스탯 게이지 · 라인 판독 · 노선 여권 · 스탬프 단일화 · 오염 정리 (2026-09-13 · [V5-9] bd82615~44e3d73)
 
 ### 리스크
 - 공사 키 승인 지연 → 스텁 폴백으로 화면 먼저, 키 오면 실데이터 스왑.
@@ -213,6 +214,37 @@
 - 스탬프 스티커 URL 은 **배포 서버와 같은 SESSION_SECRET** 으로 다시 뽑아야 인증된다.
 - 검증 흔적(Neon): kroute.test 계정 8 · stamps 6행(2명) · chat_logs 24행(ko 16 · en 3 · th 5) · spot_chunks 346행.
 - th 문안은 여전히 네이티브 검수 대기(사전·챗 답변 모두).
+
+### P4 게이미피케이션 이식 (2026-09-13 · 단독 · [V5-9] bd82615 · 7e11f5e · b3f9637 · 5074a8d · e562656 · c930a8a · 44e3d73)
+
+지시서 = "GenLocal 재미 루프를 메커니즘만 이식"(픽셀·다람쥐·GenLocal 코드·localStorage 금지 · 데이터는 공사 TourAPI).
+
+| 항목 | 결과 |
+|---|---|
+| 라인 체계 | `data/gts/lineSystem.js` 신설(순수 함수 · 셀프체크 별도 파일) · 라인 3종은 기존 3색 재배정(drama=lake · food=dakgalbi · anime=potato) · 신규 색 0 |
+| 역 판정 | 역 = K배지 통과분만(SOURCE UI 규칙) · 실측 배지 13 = kfood 13 · kdrama 1(남이섬) · kanime 1 · 나머지는 연계 로컬 |
+| 퀴즈 게이지 | 문항마다 라인 축 3막대 + 크루 레벨 · 채움은 `transform: scaleX`(MOTION 준수) · 실측 K-Food 선택 시 food 0.75, q2 photo 추가 시 drama 0.25 |
+| 타입 리빌 | "너는 ○○ 라인" 판독 · 실측 q1 K-Drama(3) > q2 cafe 보정(1) → Drama Line · 스탬프 면 rgb(0,115,236) · 기존 여행 타입은 보조 칩 보존 |
+| 노선 여권 | route 라인 요약 칩 + 지도 핀·타임라인 노드 라인 색 · 실측 K-푸드 코스 3곳 전부 spice · 혼합 코스는 drama primary + 연계 로컬 surface 로 구분 |
+| 편집 agency | 담기·빼기는 기존 경로(VenueGrid ↔ CourseQueue) 유지 · 큐 pill 에 라인 도트 추가(실측: 남이섬만 도트, 로컬 2곳 없음) |
+| 스탬프 | 로컬 KIND 표 폐기 → lineSystem 단일화 · 실측 kfood 면 spice · kanime 면 yellow(구 코드는 파랑) · 진행바 scaleX 0.5 → 1 |
+| 오염 정리 | 집중률 Chip 노출 제거(build·route) · go `CrowdCard` 유지 · K-가이드 FAB 3곳 제거 · 참조 grep 확인(CongestionChip = 정의+CrowdCard / GuideFab = 정의만) |
+| 축제 API | `searchFestival2` probe 채택 근거 확보(KTO_API.md) · 코드 미사용(아래 대기) |
+| 검증 | E2E 회귀 PASS(홈 → gate → quiz → build → route → go → setup → checkout → 티켓 JBCBFW) · 3언어 1367키 동형 · build 통과 · 320/768/1440 가로 스크롤 0 · 콘솔 에러 0 · 변경 파일 HEX·웹스토리지·네이티브 select·TS 0건 |
+
+명세 밖 결정(보고):
+- **문항을 6~8개로 늘리지 않고 기존 5문항을 유지했다.** 지시서의 추가 문항 후보인 식이(할랄·비건)는 근거 데이터가 0건이고(venues·공사 풀·SOURCE 전수 grep), 서버 `validAnswers` 가 q1~q5 를 엄격 검증해 계약 변경이 필요하다. 스탯 축은 기존 답에서 파생했다.
+- q3·q4·q5 는 스탯 축을 올리지 않는다(장소 조건이지 취향 축이 아니다 · 없는 상관관계를 만들지 않으려고). 문항마다의 반응은 레벨이 담당한다.
+- 애니 라인은 q1 kanime 명시 선택으로만 올라간다(근거 있는 애니 앵커가 1곳뿐이라 성향만으로 배정하지 않는다).
+- 게이지·진행바 채움에 `transform: scaleX` 를 썼다(DESIGN §17.3 기능적 scale 4범주 밖이지만 MOTION.md 가 width 애니메이션을 금지한다 · VenueGrid `scale(0.6)`·CourseQueue `scale(0.9)` 선례와 같은 기능적 상태 표시).
+- **연계 로컬 면을 `NO_LINE_FACE`(surface)로 분리했다.** drama = lake = primary 라서 "기본 primary" 를 폴백으로 두면 드라마 역과 연계 로컬이 같은 색이 된다(실측으로 잡았고 셀프체크 어서션으로 고정).
+- 챗봇은 FAB 만 내리고 코드는 전부 보존했다(사용자 결정 "기능 유지") → `GuideFab`·`ChatSheet`·`useGuideChat`·`openChat` 은 호출부 0 상태로 남는다.
+- 봄내크루 레벨업은 라인 아이콘으로 대체했다(크루 PNG 3종이 32×32 단색 스텁 · IA §7 PLACEHOLDER 대기). 에셋이 들어오면 `LINES.crew` 경로만 갈아 끼우면 된다.
+
+다음 세션 참고:
+- **축제(`searchFestival2`) 코드 미연결.** 오퍼레이션은 실재하나 areaCode 필터로는 0건이고, 춘천 축제 8건이 전부 지역코드 공란·법정동 51/110 이다(남이섬과 같은 구조). 채택하려면 지역 필터 없이 받아 법정동으로 거른다. 춘천막국수닭갈비축제·춘천애니토이페스티벌이 각각 K-푸드·애니 라인과 직결이다.
+- 집중률은 풀 일부만 이름 매칭된다(실측: 춘천막국수체험박물관 matched, 원조숯불닭·통나무집 unmatched) → go `CrowdCard` 가 미매칭 장소에서는 "정보 없음" 문구를 그린다(정상 동작 · 데이터 한계).
+- 봄내크루 실제 에셋, th 네이티브 검수는 여전히 대기.
 
 ## 상태
 

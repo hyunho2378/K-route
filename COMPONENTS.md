@@ -295,3 +295,22 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | GtsBuild | `<GuideFab lift />` · `location.state.spot`(챗 출처 칩)으로 VenueDetail instant 오픈(도킹 크기 중앙 rect) 후 state 비움 |
 | `src/data/gts/ktoApi.js` | `openChat(body)` → Response(ndjson · 네트워크 오류 null) · `getStamps()` · `postStamp(spotId, t)` · sendChat 스텁 제거 |
 | 서버 | `services/rag.mjs`(동해사이 검색 로직 이식 · setKnowledge) · `services/byteFallback.mjs`(원본 바이트 동일) · `services/ragService.js`(spot_chunks 적재·검색 적재) · `services/llmService.js` chatRequest·translate(Ollama · Gemini) · `routes/chat.js` · `services/stampService.js` · `routes/stamps.js` · `scripts/{build-knowledge,stamp-tags}.js` |
+
+---
+
+## v5-9 게이미피케이션 이식 (2026-09-13 · K-콘텐츠 노선 체계) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `src/data/gts/lineSystem.js` | 라인 3종(drama=lake · food=dakgalbi · anime=potato · 신규 색 없음) · kType→라인(kpop 은 앵커가 없어 라인 없음) · `lineOfSpot`(배지 통과분만 역) · 스탯 축(라인 3 + 보조 4) · `statsOf`·`levelOf`·`lineOf`(동점은 LINE_AXES 순서 결정론) · 클래스 표 `LINE_BG`·`LINE_RING`·`LINE_FACE`(yellow 면은 ink 글자 · DESIGN §2)·`NO_LINE_FACE`(연계 로컬 중립 면) · 순수 함수(lucide 없음) |
+| `src/data/gts/lineSystem.check.mjs` | 셀프체크 `node client/src/data/gts/lineSystem.check.mjs` · 번들 미포함(어디서도 import 하지 않음) · 라인 색 = tokens.lineColors 1:1 · 대비 규칙 · `NO_LINE_FACE` 가 어떤 라인 면과도 다름 · 점수·레벨·동점 케이스 |
+| `src/data/gts/quizQuestions.js` | `LINE_ICONS`(drama Clapperboard · food UtensilsCrossed · anime Palette) 추가 · lineSystem 이 순수 파일이라 lucide 의존을 여기가 소유 |
+| `components/quiz/QuizQuestion.jsx` | prop `answers` 추가 · 상단 `LineGauge`(라인 축 3막대 + 크루 레벨 인디케이터) · 막대 채움은 `transform: scaleX`(MOTION.md · width 금지) · 크루 자리는 라인 아이콘(봄내크루 PNG 가 32×32 스텁 · IA §7 대기) |
+| `components/quiz/QuizResult.jsx` | prop `answers` 추가 · 리빌 주인공 = K-콘텐츠 라인(`gts.line.*`) · 스탬프 면 = 라인 색 · 기존 여행 타입은 보조 칩으로 보존 · 라인 판독 불가 시 종전 타입 리빌로 폴백 |
+| `components/gts/ItineraryMap.jsx` | prop `pinLines` 추가(역별 라인 id) · 번호 핀 면 = `LINE_FACE` / 라인 없는 역 = `NO_LINE_FACE` / `pinLines` 미전달 호출부(checkout·ticket·go)는 종전 primary |
+| `components/gts/VisitTimeline.jsx` | `items[].lineId` 추가 · 순번 원 면 동일 규칙(`undefined` = 기존 호출부 primary · `null` = 연계 로컬) |
+| `components/gts/CourseQueue.jsx` | 큐 pill 앞에 라인 도트(배지 통과 역만 · 연계 로컬은 도트 없음) |
+| `pages/GtsRoute.jsx` | 노선 여권 1층 = 라인 요약 칩(라인별 역 수 + 연계 로컬 수) · 지도·타임라인에 라인 색 전달 |
+| `pages/GtsStamp.jsx` | 로컬 `KIND` 표 폐기 → lineSystem 단일화(구 표는 kanime 을 lake·클래퍼보드로 둬 라인 체계와 어긋났다) · 갈래 배지 = 라인 색 면 · 완주 진행바(분모 = 서버 `kinds`) |
+| 제거(노출만) | `CongestionChip` 렌더 = VenueGrid·VenueDetail·GtsRoute 에서 제거(go `CrowdCard` 는 유지 · 컴포넌트 보존) · `GuideFab` 렌더 = build·route·go 에서 제거(챗 기능·컴포넌트는 보존 · 호출부 0) |
+| i18n | `gts.line.{drama,food,anime}.{name,body}` · `gts.route.lineTitle`·`lineLocal` · `quiz.gauge`·`quiz.level` · `quiz.result.eyebrow`·`quiz.step.result` 문구 교체 · 3언어 동형 1367키 |
