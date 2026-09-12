@@ -4,7 +4,7 @@
 //   찍을 수 있는 곳·배지 규칙은 서버 stampService(SOURCE_SPOTS 앵커 · grade 강함)가 정한다 · 화면은 결과만 그린다
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { BadgeCheck, Clapperboard, Download, UtensilsCrossed } from 'lucide-react';
+import { BadgeCheck, Download } from 'lucide-react';
 import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import { LoadingLogoCenter } from '../components/ui/LoadingLogo';
@@ -12,15 +12,15 @@ import SuccessStamp from '../components/booking/SuccessStamp';
 import { useAuth } from '../context/AuthContext';
 import { postStamp } from '../data/gts/ktoApi';
 import { resolveSpot } from '../data/gts/spots';
+import { LINE_FACE, lineMeta, lineOfKType } from '../data/gts/lineSystem';
+import { LINE_ICONS } from '../data/gts/quizQuestions';
 import LangSwap from '../i18n/LangSwap';
 import { useLang } from '../i18n/LangContext';
-import { colors, fonts } from '../tokens';
+import { colors, fonts, motion } from '../tokens';
 
-// 갈래 → 스탬프 면(SuccessStamp 라인 3색 중) · 아이콘
-const KIND = {
-  kfood: { line: 'dakgalbi', Icon: UtensilsCrossed },
-  kanime: { line: 'lake', Icon: Clapperboard },
-};
+// [V5-9] 갈래(kType) → K-콘텐츠 라인은 lineSystem 단일 출처로 파생한다.
+//   구 로컬 표는 kanime 을 lake(파랑)·클래퍼보드로 둬서 라인 체계(anime = potato · 팔레트)와 어긋나 있었다.
+//   찍을 수 있는 갈래는 서버 stampService 가 정한다(SOURCE 앵커 grade 강함 = 현재 kfood · kanime).
 const LOCALE = { en: 'en-US', ko: 'ko-KR', th: 'th-TH' };
 
 // 완주 인증서 · DOM 캡처 라이브러리 금지 · canvas 직접 렌더(PATTERNS §7 · §43) · 사용자 언어로 그린다
@@ -67,7 +67,9 @@ export default function GtsStamp() {
 
   const ok = Array.isArray(res.stamps);
   const here = ok && res.stamps.find((s) => s.spotId === spotId);
-  const kind = here && KIND[here.kType];
+  // [V5-9] 이 스탬프가 속한 K-콘텐츠 라인 · 라인이 없으면(대상 아님) 스탬프 면을 그리지 않는다
+  const line = here ? lineOfKType(here.kType) : null;
+  const Mark = line ? LINE_ICONS[line] : null;
   const nameOf = (id) => {
     const s = resolveSpot(id);
     return s?.name?.[lang] ?? s?.name?.en ?? id;
@@ -91,8 +93,8 @@ export default function GtsStamp() {
       <div className="mx-auto flex max-w-dialog flex-col items-center gap-32 pb-96 pt-96 text-center">
         <LangSwap k="gts.stamp.eyebrow" className="text-caption font-medium uppercase tracking-eyebrow text-inkMeta" />
 
-        {kind ? (
-          <SuccessStamp line={{ id: kind.line }} mark={<kind.Icon size={48} aria-hidden="true" />}>
+        {line ? (
+          <SuccessStamp line={{ id: lineMeta(line).colorToken }} mark={<Mark size={48} aria-hidden="true" />}>
             <h1 className="text-h2 font-bold tracking-tight">{nameOf(spotId)}</h1>
             <LangSwap k={res.added ? 'gts.stamp.added' : 'gts.stamp.already'} as="p" className="mt-8 text-body text-inkSec" />
           </SuccessStamp>
@@ -104,8 +106,21 @@ export default function GtsStamp() {
           <section className="flex w-full flex-col gap-16">
             <div className="flex items-baseline justify-center gap-8">
               <LangSwap k="gts.stamp.progress" className="text-small font-medium text-inkSec" />
-              <span className="font-display text-h3 font-bold">{res.stamps.length}</span>
+              <span className="font-display text-h3 font-bold">
+                {res.badges.length} / {res.kinds.length}
+              </span>
             </div>
+            {/* [V5-9] 노선 완주 진행바 · 채움은 transform만(MOTION.md · width 금지) ·
+                분모는 서버가 정한 실제 갈래 수다(찍을 수 없는 라인을 세어 영영 안 차는 막대를 만들지 않는다) */}
+            <span aria-hidden="true" className="flex h-8 w-full overflow-hidden rounded-pill bg-line">
+              <span
+                className="block h-full w-full origin-left rounded-pill bg-primary"
+                style={{
+                  transform: `scaleX(${res.kinds.length ? res.badges.length / res.kinds.length : 0})`,
+                  transition: `transform ${motion.dur} ${motion.easeOut}`,
+                }}
+              />
+            </span>
 
             <ul className="flex flex-wrap justify-center gap-8" aria-label={t('gts.stamp.badges')}>
               {res.kinds.map((k) => {
@@ -113,8 +128,9 @@ export default function GtsStamp() {
                 return (
                   <li
                     key={k}
+                    // [V5-9] 획득한 배지는 그 갈래가 속한 라인 색 면(LINE_FACE = 대비 규칙 포함)
                     className={`inline-flex min-h-44 items-center gap-8 rounded-pill px-16 text-small font-semibold ${
-                      got ? 'bg-primary text-white' : 'bg-surface text-inkSec'
+                      got ? LINE_FACE[lineOfKType(k)] ?? 'bg-primary text-white' : 'bg-surface text-inkSec'
                     }`}
                   >
                     {got && <BadgeCheck size={16} aria-hidden="true" />}
