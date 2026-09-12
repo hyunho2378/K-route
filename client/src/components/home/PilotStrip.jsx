@@ -8,6 +8,7 @@ import { ArrowRight } from 'lucide-react';
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';
 import { gallery } from '../../data/pilot';
+import { colors } from '../../tokens';
 
 const HERO_SRC = '/images/home/van-hero.webp';
 
@@ -33,7 +34,8 @@ export default function PilotStrip() {
         <div
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-2/3"
-          style={{ background: 'linear-gradient(to top, rgba(20,23,46,0.55), rgba(20,23,46,0))' }}
+          /* [V5-8] 하드코딩 rgba → tokens.colors.scrim(같은 값) · 끝점은 같은 색의 알파 0 */
+          style={{ background: `linear-gradient(to top, ${colors.scrim}, rgba(20,23,46,0))` }}
         />
         {/* 좌하단 오버레이 텍스트 · body + CTA(흰색) */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-12 p-24 lg:p-40">

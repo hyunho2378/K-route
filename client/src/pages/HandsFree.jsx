@@ -154,7 +154,7 @@ export default function HandsFree() {
                       />
                     </div>
                     {errors.date && (
-                      <p id="handsfree-date-error" className="text-small text-spice">
+                      <p id="handsfree-date-error" role="alert" className="text-small text-spice">
                         {t('handsfree.form.errors.date')}
                       </p>
                     )}
@@ -175,7 +175,7 @@ export default function HandsFree() {
                         }`}
                       />
                       {errors.address && (
-                        <p id="handsfree-address-error" className="text-small text-spice">
+                        <p id="handsfree-address-error" role="alert" className="text-small text-spice">
                           {t('handsfree.form.errors.address')}
                         </p>
                       )}
@@ -197,7 +197,7 @@ export default function HandsFree() {
                         }`}
                       />
                       {errors.email && (
-                        <p id="handsfree-email-error" className="text-small text-spice">
+                        <p id="handsfree-email-error" role="alert" className="text-small text-spice">
                           {t('handsfree.form.errors.email')}
                         </p>
                       )}
@@ -222,7 +222,7 @@ export default function HandsFree() {
                       </p>
                     </div>
 
-                    <Button type="submit" disabled={submitting}>
+                    <Button type="submit" disabled={submitting} aria-busy={submitting}>
                       <LangSwap k="handsfree.form.submit" />
                       {submitting && (
                         <Loader2

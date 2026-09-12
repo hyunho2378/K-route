@@ -10,7 +10,7 @@ import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import { useAuth } from '../context/AuthContext';
-import { motion } from '../tokens';
+import { colors, motion } from '../tokens';
 import { venues } from '../data/gts/venues';
 import NotFound from './NotFound';
 
@@ -275,7 +275,8 @@ function LiveTimeline() {
       {loadedAt && (
         <p className="text-caption text-inkMeta">Updated {loadedAt.toLocaleTimeString('en-GB')} · polls every 15s</p>
       )}
-      <style>{`@keyframes bh-admin-flash { from { background: ${'#F5F6FA'}; } to { background: transparent; } }`}</style>
+      {/* [V5-8] 하드코딩 #F5F6FA → tokens.colors.surface(같은 값 · 테마 단일 진실) */}
+      <style>{`@keyframes bh-admin-flash { from { background: ${colors.surface}; } to { background: transparent; } }`}</style>
     </div>
   );
 }

@@ -101,11 +101,11 @@ function InfoSection({ user }) {
           </Row>
           <div className="flex flex-col items-start gap-4 pt-4">
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
-            <Button variant="secondary" onClick={() => fileRef.current?.click()} disabled={busy}>
+            <Button variant="secondary" onClick={() => fileRef.current?.click()} disabled={busy} aria-busy={busy}>
               <LangSwap k={busy ? 'profile.avatarUploading' : 'profile.avatarCta'} />
             </Button>
             <LangSwap k="profile.avatarHint" className="text-caption font-medium text-inkMeta" />
-            {errKey && <LangSwap k={errKey} className="text-small font-medium text-spice" />}
+            {errKey && <LangSwap k={errKey} as="p" role="alert" className="text-small font-medium text-spice" />}
           </div>
         </div>
       </div>
@@ -178,12 +178,12 @@ function ReservationCard({ b, onCancelled }) {
             <LangSwap k="gts.checkout.refundTitle" as="h3" className="text-small font-semibold" />
             <LangSwap k="gts.checkout.refundBody" as="p" className="text-small text-inkSec" />
           </div>
-          {errKey && <LangSwap k={errKey} className="text-small font-medium text-spice" />}
+          {errKey && <LangSwap k={errKey} as="p" role="alert" className="text-small font-medium text-spice" />}
           <div className="flex justify-end gap-12">
             <Button variant="secondary" onClick={() => setConfirmOpen(false)}>
               <LangSwap k="profile.cancelKeep" />
             </Button>
-            <Button onClick={doCancel} disabled={busy}>
+            <Button onClick={doCancel} disabled={busy} aria-busy={busy}>
               <LangSwap k="profile.cancelConfirm" />
             </Button>
           </div>

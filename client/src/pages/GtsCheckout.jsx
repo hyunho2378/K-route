@@ -337,7 +337,7 @@ export default function GtsCheckout() {
             <div className="grid gap-8">
               {/* 비활성 시 Button은 pointer-events-none — 래퍼가 클릭을 받아 제출 시도 계측+포커스 처리 */}
               <div className="grid" onClick={blocked && !submitting ? onBlockedAttempt : undefined}>
-                <Button disabled={submitting || blocked} onClick={onPay}>
+                <Button disabled={submitting || blocked} aria-busy={submitting} onClick={onPay}>
                   <LangSwap k="gts.checkout.payCta" />
                   {submitting && (
                     <Loader2 size={16} aria-hidden="true" className="animate-spin motion-reduce:animate-none" />

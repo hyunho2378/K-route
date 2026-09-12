@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import Container from '../components/layout/Container';
 import ItineraryMap from '../components/gts/ItineraryMap';
+import Skeleton from '../components/ui/Skeleton';
 import { useAuth } from '../context/AuthContext';
 import NotFound from './NotFound';
 import {
@@ -84,7 +85,8 @@ function BookingBlock({ b }) {
 
 function UserDetail({ id }) {
   const { data } = useAdminApi(`/api/admin/users/${id}`, { poll: 10000 });
-  if (!data) return <p className="text-small text-inkSec">Loading…</p>;
+  // [V5-8] raw 로딩 문구 → 공용 Skeleton(로딩 표면 일원화 · 레이아웃 이동 축소)
+  if (!data) return <Skeleton className="h-64 w-full" />;
   const { user, bookings, events } = data;
   return (
     <div className="flex flex-col gap-16">

@@ -58,7 +58,13 @@ export default function Header() {
     // §18.1: <lg 모바일 컴팩트 헤더 56(메뉴 없음 · Dock이 내비 소유) / lg+ 풀 헤더 80
     <header className="chrome fixed inset-x-0 top-0 z-header h-56 lg:h-80">
       <div className="mx-auto flex h-full w-full max-w-lg items-center justify-between px-16 md:px-24 lg:px-40 2xl:max-w-2xl 3xl:max-w-3xl">
-        <Link to="/" aria-label={t('nav.home')} className="flex items-center gap-8">
+        {/* [V5-8] 히트 영역 44×44(§18.3 터치 타깃) · 심볼 24는 그대로 두고 링크 상자만 키운다.
+            좌측 여백은 -ml-8/pl-8 로 상쇄해 로고의 시각 정렬선(컨테이너 좌측)은 그대로 유지한다. */}
+        <Link
+          to="/"
+          aria-label={t('nav.home')}
+          className="-ml-8 flex min-h-44 min-w-44 items-center gap-8 rounded-md pl-8 pr-8"
+        >
           <LogoMark className="h-24 w-24 shrink-0 text-primary" aria-hidden="true" />
           {/* 모바일은 심볼만 — 워드마크 22px가 375px 폭 초과(사용자 결정) */}
           {/* 워드마크는 ink 단색 — 이니셜 색 분기 폐지(사용자 결정) */}

@@ -7,53 +7,17 @@
 //   로드 = fetchReviews(실패 시 seedReviews 세션 메모리 폴백 · 명세 5-②),
 //   게시 = postReview / 좋아요 = toggleLikeRemote(실패 시 기존 세션 로직 유지).
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ReviewCard from '../components/reviews/ReviewCard';
 import ReviewForm from '../components/reviews/ReviewForm';
 import Container from '../components/layout/Container';
 import Chip from '../components/ui/Chip';
+import Pagination from '../components/ui/Pagination';
 import { seedReviews, fetchReviews, postReview, toggleLikeRemote } from '../data/reviews';
 import LangSwap from '../i18n/LangSwap';
-import { useLang } from '../i18n/LangContext';
 
 // [V11] 리뷰 100+건 페이지네이션 · 페이지당 24개. 숫자 페이지 + 이전/다음 화살표(접근성 aria).
+// [V5-8] 페이지 로컬 사본을 공용 ui/Pagination 으로 이관(같은 행동·상태 계약 = 공용 1곳 · 히트 영역 44).
 const PAGE_SIZE = 24;
-
-function Pagination({ page, totalPages, onGoto, t }) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  const arrow = (dir, disabled, to, Icon, labelKey) => (
-    <button
-      type="button"
-      aria-label={t(labelKey)}
-      disabled={disabled}
-      onClick={() => onGoto(to)}
-      className={`flex h-40 w-40 items-center justify-center rounded-pill ${
-        disabled ? 'text-inkMeta opacity-40' : 'text-ink hover:bg-surface'
-      }`}
-    >
-      <Icon size={18} aria-hidden="true" />
-    </button>
-  );
-  return (
-    <nav aria-label={t('nav.pagination')} className="flex flex-wrap items-center justify-center gap-8 pt-8">
-      {arrow('prev', page === 1, page - 1, ChevronLeft, 'reviews.prevPage')}
-      {pages.map((p) => (
-        <button
-          key={p}
-          type="button"
-          aria-current={p === page ? 'page' : undefined}
-          onClick={() => onGoto(p)}
-          className={`flex h-40 min-w-40 items-center justify-center rounded-pill px-12 font-display text-small font-semibold transition-colors duration-fast ${
-            p === page ? 'bg-primary text-white' : 'bg-white text-ink shadow-sm hover:bg-surface'
-          }`}
-        >
-          {p}
-        </button>
-      ))}
-      {arrow('next', page === totalPages, page + 1, ChevronRight, 'reviews.nextPage')}
-    </nav>
-  );
-}
 
 export default function Reviews() {
   const [reviews, setReviews] = useState(seedReviews);
@@ -87,7 +51,7 @@ export default function Reviews() {
   }, [reviews, sort]);
 
   // [V11] 페이지네이션 · 정렬 변경 시 1페이지로 · 페이지 이동 시 그리드 상단으로 스크롤
-  const { t } = useLang();
+  //   [V5-8] 화살표 라벨은 공용 Pagination이 직접 t로 읽는다 → 이 화면의 t는 더 이상 쓰지 않는다
   const [page, setPage] = useState(1);
   useEffect(() => {
     setPage(1);
@@ -180,9 +144,14 @@ export default function Reviews() {
             />
           ))}
         </div>
-        {totalPages > 1 && (
-          <Pagination page={pageClamped} totalPages={totalPages} onGoto={goto} t={t} />
-        )}
+        {/* 공용 Pagination 은 0-based · 이 화면은 1-based라 경계에서 변환한다 */}
+        <Pagination
+          page={pageClamped - 1}
+          pages={totalPages}
+          onSelect={(i) => goto(i + 1)}
+          arrows
+          align="center"
+        />
       </div>
     </Container>
   );
