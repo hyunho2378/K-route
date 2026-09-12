@@ -223,8 +223,10 @@ export default function VenueGrid({
                 <span className="relative z-[1] mt-auto flex w-full flex-wrap items-center gap-4">
                   {/* [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면 CrowdCard 만 유지) · 컴포넌트는 보존 */}
                   <KBadge spot={venue} />
+                  {/* [V5-9] 320px 2열에서 긴 라벨("Food space")이 카드 밖으로 3px 넘쳤다(실측) ·
+                      KBadge 와 같은 처리로 좁으면 말줄임한다(shrink-0 + 말줄임 없음이 원인이었다) */}
                   <span
-                    className={`inline-flex shrink-0 items-center rounded-pill px-8 py-2 text-caption font-medium ${
+                    className={`inline-flex min-w-0 max-w-full items-center rounded-pill px-8 py-2 text-caption font-medium ${
                       hasImage
                         ? 'bg-white/25 text-white'
                         : venue.mock
@@ -232,7 +234,10 @@ export default function VenueGrid({
                           : 'bg-surface text-inkSec'
                     }`}
                   >
-                    <LangSwap k={venue.mock ? 'gts.build.comingSoon' : `gts.build.cat.${venue.category}`} />
+                    <LangSwap
+                      k={venue.mock ? 'gts.build.comingSoon' : `gts.build.cat.${venue.category}`}
+                      className="min-w-0 grid-cols-1 [&>span]:truncate"
+                    />
                   </span>
                   {onDetail && <span aria-hidden="true" className="h-32 w-32 shrink-0" />}
                 </span>
