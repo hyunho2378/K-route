@@ -81,6 +81,9 @@ export default {
       nature: { name: 'Lakeside Walker', body: 'Open air and an easy pace make your kind of day.' },
       cafe: { name: 'Cafe Hopper', body: 'You collect quiet corners and a good cup.' },
     },
+    // [V5-9] 스탯 게이지(라인 축 3개) · 크루 레벨 인디케이터 · 라인 이름은 gts.line.* 재사용
+    gauge: 'Your taste meter',
+    level: 'Level {n}',
     reason: {
       anchor: 'A verified K-content spot that matches your pick.',
       linked: 'A local favorite close to a K-content spot you picked.',

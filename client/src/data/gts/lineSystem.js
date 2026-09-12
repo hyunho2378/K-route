@@ -1,7 +1,7 @@
 // ============================================================
-// lineSystem.js · [V5-9] K-콘텐츠 노선 체계 — 라인 3종 · 스탯 축 · 라인(타입) 판독
+// lineSystem.js · [V5-9] K-콘텐츠 노선 체계 · 라인 3종 · 스탯 축 · 라인(타입) 판독
 // 근거: SOURCE_SPOTS.md 태그(kType·anchor·grade) · tokens.lineColors 3색 · IA §11.3 설문 허용값.
-// 라인 색·크루는 기존 3종(potato·dakgalbi·lake)을 K-콘텐츠 축으로 재배정한 것이다 — 신규 색 금지(DESIGN §3·§16.1).
+// 라인 색·크루는 기존 3종(potato·dakgalbi·lake)을 K-콘텐츠 축으로 재배정한 것이다. 신규 색은 만들지 않는다(DESIGN §3·§16.1).
 // 이 파일은 순수 데이터·순수 함수만 둔다(lucide·JSX 없음) → 아이콘은 quizQuestions.LINE_ICONS 소유.
 // 셀프체크: node client/src/data/gts/lineSystem.check.mjs
 // ============================================================

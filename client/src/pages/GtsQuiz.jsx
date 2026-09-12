@@ -95,7 +95,7 @@ export default function GtsQuiz() {
         }
       >
         {question ? (
-          <QuizQuestion question={question} answer={answer} onPick={onPick} />
+          <QuizQuestion question={question} answer={answer} answers={quizAnswers} onPick={onPick} />
         ) : (
           <QuizResult
             status={status}

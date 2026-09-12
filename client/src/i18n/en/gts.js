@@ -141,6 +141,13 @@ export default {
         unknown: "Distance is not calculated until this place is confirmed",
       },
     },
+    // [V5-9] K-콘텐츠 노선 · 라인 이름과 한 줄(퀴즈 결과 리빌 · 노선 여권 공용).
+    //   카피는 SOURCE_SPOTS 근거 안에서만 쓴다(남이섬은 원문대로 "배경" · 'filming location' 표현 금지 · §8).
+    line: {
+      drama: { name: "Drama Line", body: "A line through the settings of Winter Sonata." },
+      food: { name: "K-Food Line", body: "A line that follows dakgalbi and makguksu." },
+      anime: { name: "Animation Line", body: "A line around the Animation Museum exhibits and hands on programs." },
+    },
     // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
     spot: {
       kbadge: {
