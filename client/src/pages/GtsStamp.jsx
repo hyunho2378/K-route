@@ -60,7 +60,13 @@ export default function GtsStamp() {
     if (sent.current === key) return;
     sent.current = key;
     setRes(null);
-    postStamp(spotId, tag).then(setRes);
+    postStamp(spotId, tag).then((r) => {
+      // [V5-12] 게스트(비로그인)는 서버가 저장하지 않고 빈 요약을 준다 → 방금 찍은 것만 이번 세션 화면에 합성한다.
+      //   아래 렌더는 그대로 두고 여기서만 모양을 맞춘다 · 새로고침하면 사라진다(데모 범위 · stamps 스키마 불변).
+      if (!r?.guest) return setRes(r);
+      const kType = (r.spots ?? []).find((s) => s.id === spotId)?.kType ?? null;
+      return setRes(kType ? { ...r, stamps: [{ spotId, kType }], badges: [kType] } : r);
+    });
   }, [spotId, tag]);
 
   if (!res) return <LoadingLogoCenter className="min-h-screen" />;
@@ -155,6 +161,11 @@ export default function GtsStamp() {
                   <p className="text-body font-semibold">{remaining.map((s) => nameOf(s.id)).join(', ')}</p>
                 </div>
               )
+            )}
+
+            {/* [V5-12] 게스트 안내 · 이번 화면에만 남는다는 사실을 숨기지 않는다 */}
+            {res.guest && (
+              <LangSwap k="gts.stamp.guestNotice" as="p" className="text-caption font-medium text-inkMeta" />
             )}
 
             <Link

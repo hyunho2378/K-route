@@ -67,15 +67,18 @@ export default function App() {
                     <Route path="/gate" element={<Gate />} />
                     {/* [V5-3] /gts = 취향 찾기(IA §11.2 진입점 setup→quiz · ROUTES v5) · /gts/setup은 route '차량으로 이동' 보조 진입 */}
                     <Route path="/gts" element={<Navigate to="/gts/quiz" replace />} />
-                    <Route path="/gts/setup" element={<RequireAuth><GtsSetup /></RequireAuth>} />
-                    <Route path="/gts/build" element={<RequireAuth><GtsBuild /></RequireAuth>} />
-                    <Route path="/gts/route" element={<RequireAuth><GtsRoute /></RequireAuth>} />
-                    <Route path="/gts/checkout" element={<RequireAuth><GtsCheckout /></RequireAuth>} />
+                    {/* [V5-12] 케이로드 전 구간 공개 · 심사위원은 로그인하지 않는다(로그인 벽이 있으면 데모 자체가 열리지 않는다).
+                        서버도 추천·동선·확산·축제·집중률·챗은 이미 비로그인으로 동작하고, 스탬프는 게스트 폴백을 넣었다.
+                        로그인이 실제로 필요한 곳(/profile·관리자)만 가드를 유지한다. */}
+                    <Route path="/gts/setup" element={<GtsSetup />} />
+                    <Route path="/gts/build" element={<GtsBuild />} />
+                    <Route path="/gts/route" element={<GtsRoute />} />
+                    <Route path="/gts/checkout" element={<GtsCheckout />} />
                     {/* [V5-3] K-Route 취향 찾기·출발(IA §11.3·§11.7) */}
-                    <Route path="/gts/quiz" element={<RequireAuth><GtsQuiz /></RequireAuth>} />
-                    <Route path="/gts/go" element={<RequireAuth><GtsGo /></RequireAuth>} />
-                    {/* [V5-6] NFC 성지 스탬프(IA §11.10 개정 · 스티커 URL · 토큰은 경로에 둬야 로그인 후에도 남는다) */}
-                    <Route path="/stamp/:spotId/:t" element={<RequireAuth><GtsStamp /></RequireAuth>} />
+                    <Route path="/gts/quiz" element={<GtsQuiz />} />
+                    <Route path="/gts/go" element={<GtsGo />} />
+                    {/* [V5-6] NFC 성지 스탬프(IA §11.10 개정 · 스티커 URL) · [V5-12] 게스트는 이번 세션 화면 표시만(서버 저장 없음) */}
+                    <Route path="/stamp/:spotId/:t" element={<GtsStamp />} />
                     <Route path="/ticket/:bookingId" element={<Ticket />} />
                     <Route path="/travel-log" element={<TravelLog />} />
                     <Route path="/reviews" element={<Reviews />} />

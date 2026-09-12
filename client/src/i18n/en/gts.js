@@ -205,6 +205,8 @@ export default {
       certBody: "completed the stamp tour of Chuncheon",
       next: "Keep collecting at the places below",
       toRoute: "Back to my route",
+      // [V5-12] 게스트 스탬프는 서버에 저장하지 않는다(이번 화면에만 표시)
+      guestNotice: "Guest preview: this stamp shows on this screen only. Sign in to collect stamps.",
     },
     checkout: {
       title: "Checkout",
@@ -243,6 +245,8 @@ export default {
       consentLabel: "I agree to the cancellation and refund policy above.",
       // §42: 폼 하단 caption 1줄 프로토타입 고지(Terms §2 취지) — 확인 Dialog·성공 인터스티셜 폐지
       prototypeNotice: "Prototype: no real payment is processed.",
+      // [V5-12] 게스트(비로그인) 진행 표기 · 로그인 없이 끝까지 체험할 수 있다는 사실과 한계를 함께 밝힌다
+      guestNotice: "You are exploring as a guest. No sign in is needed, and no real payment or account is created.",
     },
     // §42 결제 수단 그리드 + 카드 폼(존 C5)
     pay: {

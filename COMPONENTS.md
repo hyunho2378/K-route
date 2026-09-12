@@ -338,3 +338,16 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `components/home/EvidenceStrip.jsx` | dl/dt/dd(ProofSection 문법 · 값 먼저) · 값 = Kanit Bold primary · 라벨·출처 = i18n · 출처는 캡션(caption inkMeta)과 `data-source` 속성 양쪽에 남긴다 · 그리드 1 → sm 2 → lg 4열 |
 | `pages/Home.jsx` | `#evidence` 섹션을 Hero 다음에 삽입(문제 제기 → 해법 순서) · IA §10.2 섹션 목록에 항목 1개 증가(기존 5섹션 상대 순서 불변) |
 | i18n | `home.evidence.{eyebrow,title,items.*,source.*}` 16키 · `gate.js` 의 home 블록 안(hero 다음 · services 앞) · 3언어 동형 1384키 |
+
+---
+
+## v5-12 게스트 공개 진입 (2026-09-13 · 로그인 없이 케이로드 전 구간) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `App.jsx` | RequireAuth 를 케이로드 전 구간에서 제거(quiz·build·route·go·setup·checkout·stamp) · 로그인이 실제로 필요한 `/profile` 만 유지(관리자 API 는 서버 requireAdmin 이 그대로 막는다) |
+| `server/routes/stamps.js` | 게스트는 401 대신 `ensureAnonKey` 로 세션 키만 발급하고 빈 요약 반환 · 태그 유효성(없는 스팟 404 · 위조 토큰 403)은 게스트에게도 동일 · DB 저장 없음(stamps.user_id NOT NULL · 스키마 불변) |
+| `server/routes/track.js` | 게스트는 401 대신 200 + `skipped:'guest'` · 저장은 로그인 사용자만(journey_events 는 사용자 귀속이 전제) · 게스트 콘솔에 실패가 쌓이지 않는다 |
+| `pages/GtsStamp.jsx` | 게스트 응답(`guest:true`)이면 방금 찍은 것만 이번 세션 화면에 합성(렌더 코드 불변 · 새로고침 시 사라짐) + 게스트 안내 |
+| `pages/GtsCheckout.jsx` | `onPay` 게스트 통과(LoginGate 제거) + 게스트 데모 표기 · 예약은 user_id 없이 저장되고 계정은 만들어지지 않는다(resolveUserId 는 DEMO_MODE 가 아니면 null) |
+| i18n | `gts.checkout.guestNotice` · `gts.stamp.guestNotice` · 3언어 동형 1386키 |

@@ -19,7 +19,6 @@ import TriText from '../components/gts/TriText';
 import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import Money from '../components/ui/Money'; // [V12] 통화 환산 표시
-import LoginGate from '../components/ui/LoginGate';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext'; // [V12] 환산 고지 조건
 import { useGts, useGtsGuard } from '../context/GtsContext';
@@ -69,7 +68,6 @@ export default function GtsCheckout() {
   const { convert } = useCurrency(); // [V12] 외화 환산 활성 여부(고지 문구 노출 조건)
   const { party, luggage, vehicle, mealPlan, meals, picks, course, dropoffText, travelDate, setDropoffText, trackStep } = useGts();
   const navigate = useNavigate();
-  const [gateOpen, setGateOpen] = useState(false);
   const [payMethod, setPayMethod] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false); // [V23] 제출 시도 후에만 인라인 오류 노출
@@ -138,11 +136,10 @@ export default function GtsCheckout() {
     navigate(`/ticket/${booking.id}`, { replace: true });
   };
 
-  // 데모 유저 기본 로그인(§10.6) — user 없을 때만 LoginGate(Guest-first 폴백)
-  const onPay = () => {
-    if (user) submit();
-    else setGateOpen(true);
-  };
+  // [V5-12] 게스트도 그대로 진행한다(로그인 벽 제거 · 심사위원은 로그인하지 않는다).
+  //   서버 resolveUserId 는 DEMO_MODE 가 아니면 null 을 주므로 예약은 user_id 없이 저장되고 계정은 만들어지지 않는다.
+  //   실결제도 없다(프로토타입 고지 유지) · 비로그인임은 아래 게스트 표기로 밝힌다.
+  const onPay = () => submit();
 
   return (
     <Container>
@@ -350,6 +347,10 @@ export default function GtsCheckout() {
                   {t('gts.checkout.needLabel')}: {missing.map((k) => t(k)).join(', ')}
                 </p>
               )}
+              {/* [V5-12] 게스트 데모 표기 · 비로그인으로 진행 중이고 실결제·계정 생성이 없음을 밝힌다 */}
+              {!user && (
+                <LangSwap k="gts.checkout.guestNotice" as="p" className="text-caption font-medium text-inkMeta" />
+              )}
             </div>
             {/* [V3] 수정하기 · 현재 선택(템플릿 포함)이 프리필된 채 build 스텝으로 복귀 —
                 StepStage 정상 동작(카운터·정원 규칙 유지 · Context 상태 그대로) */}
@@ -362,7 +363,7 @@ export default function GtsCheckout() {
         </div>
       </div>
 
-      <LoginGate open={gateOpen} onClose={() => setGateOpen(false)} returnTo="/gts" />
+      {/* [V5-12] LoginGate 제거 · 결제 단계도 게스트로 진행한다(계정·실결제는 여전히 없음) */}
     </Container>
   );
 }
