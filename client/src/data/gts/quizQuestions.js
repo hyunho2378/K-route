@@ -71,3 +71,6 @@ export const Q1_EXCLUSIVE = 'undecided';
 
 // 결과 여행 타입 = q2 성향 결정론 4종(이름·설명 i18n quiz.type.{id}.name·body)
 export const TRAVEL_TYPE_ICONS = { photo: Camera, localfood: UtensilsCrossed, nature: Trees, cafe: Coffee };
+
+// [V5-9] K-콘텐츠 라인 아이콘 · lineSystem.js는 순수 데이터라 lucide 의존을 여기(이미 lucide를 쓰는 파일)에 둔다.
+export const LINE_ICONS = { drama: Clapperboard, food: UtensilsCrossed, anime: Palette };
