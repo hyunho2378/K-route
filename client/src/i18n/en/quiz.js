@@ -14,7 +14,7 @@ export default {
       q3: 'Company',
       q4: 'Time',
       q5: 'Getting around',
-      result: 'Your type',
+      result: 'Your line', // [V5-9] 결과 스텝이 라인 판독으로 바뀌어 스텝 이름도 맞춘다
     },
     multiHint: 'Pick all that apply.',
     needOne: 'Pick at least one to continue',
@@ -66,7 +66,7 @@ export default {
       taxiSub: 'Short taxi rides are okay',
     },
     result: {
-      eyebrow: 'Your travel type',
+      eyebrow: 'Your line', // [V5-9] 리빌 주인공이 여행 타입에서 K-콘텐츠 라인으로 바뀌었다
       loading: 'Finding places for you',
       ready: 'We picked {n} places for you.',
       capHalf: 'Choose 3 of them for your half day.',

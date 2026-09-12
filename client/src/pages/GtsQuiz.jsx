@@ -102,6 +102,7 @@ export default function GtsQuiz() {
             type={quizAnswers.q2}
             stay={quizAnswers.q4}
             count={recommended.length}
+            answers={quizAnswers}
             onRetry={() => submit(lastRef.current)}
           />
         )}
