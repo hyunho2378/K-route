@@ -22,6 +22,30 @@ export default {
         d3: "Show photo 3",
       },
     },
+    // [V5-11] 문제 근거 스트립 · 검증 확정 수치만(값은 data/evidence.js) · 각 수치에 출처를 병기한다.
+    //   설문 기반(외래관광객조사)과 통신 기반(한국관광 데이터랩)은 정의가 다르므로 출처에 그 구분을 남긴다.
+    evidence: {
+      eyebrow: "Why Chuncheon",
+      title: "The problem in numbers",
+      items: {
+        stage: "Share of performance ticket sales in the capital area",
+        transit: "Public transport share gap (Seoul 37% vs Gangwon 5.3%)",
+        headway: "Average rural bus headway (minutes)",
+        seoul: "Inbound travelers who visited Seoul (2023)",
+        fit: "Independent travelers (FIT) among inbound visitors (2023)",
+        nami: "Nami Island share of Chuncheon's top 10 destinations",
+        daytrip: "Chuncheon visitors who return home the same day",
+      },
+      source: {
+        stage: "Korea Arts Management Service, 2025 performance ticket sales report",
+        transit: "Ministry of Land, Infrastructure and Transport, modal share 2024",
+        headway: "Rural Development Administration, 2024 welfare survey",
+        seoul: "Ministry of Culture, Sports and Tourism, International Visitor Survey 2023 (survey based)",
+        fit: "Ministry of Culture, Sports and Tourism, International Visitor Survey 2023",
+        nami: "Gangwon State official statistics",
+        daytrip: "Korea Tourism Data Lab 2022 (mobile network based)",
+      },
+    },
     services: {
       eyebrow: "Start here",
       title: "Two services, one trip",

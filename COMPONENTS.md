@@ -327,3 +327,14 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `src/data/gts/ktoApi.js` | `getFestivals(date)` |
 | `pages/GtsRoute.jsx` | 라인 요약 아래 기간 한정 배지 행 · 라인 근거 있는 축제만 라인 색 도트 · 날짜 밖이면 행 자체 비렌더 · 상시 역이 아니므로 방문 순서(VisitTimeline)에는 넣지 않는다 |
 | i18n | `gts.route.festivalTitle` · 3언어 동형 1368키 |
+
+---
+
+## v5-11 문제 지표 근거 스트립 (2026-09-13 · 검증 확정 수치만) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `src/data/evidence.js` | 문제 지표 단일 출처 · 검증 확정 7항목(id + value) · value 는 언어 무관 숫자·기호만(단위·설명은 i18n) · 검증 안 된 수치는 넣지 않는다 · 폐기 수치는 숫자로 적지 않는다(검수 grep 오탐 방지) |
+| `components/home/EvidenceStrip.jsx` | dl/dt/dd(ProofSection 문법 · 값 먼저) · 값 = Kanit Bold primary · 라벨·출처 = i18n · 출처는 캡션(caption inkMeta)과 `data-source` 속성 양쪽에 남긴다 · 그리드 1 → sm 2 → lg 4열 |
+| `pages/Home.jsx` | `#evidence` 섹션을 Hero 다음에 삽입(문제 제기 → 해법 순서) · IA §10.2 섹션 목록에 항목 1개 증가(기존 5섹션 상대 순서 불변) |
+| i18n | `home.evidence.{eyebrow,title,items.*,source.*}` 16키 · `gate.js` 의 home 블록 안(hero 다음 · services 앞) · 3언어 동형 1384키 |
