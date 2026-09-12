@@ -19,11 +19,18 @@ const TTL_MS = 24 * 60 * 60 * 1000;
 // 풀 대상 분류 · categoryCode2 이름: A01 자연 · A02 인문(문화/예술/역사) · A03 레포츠 · A04 쇼핑 · A05 음식 (B02 숙박·C01 추천코스 제외)
 const POOL_CAT1 = new Set(['A01', 'A02', 'A03', 'A04', 'A05']);
 const CAFE_CAT3 = 'A05020900'; // categoryCode2(cat1=A05, cat2=A0502): 카페/전통찻집
+// [V5-5] 지역 목록 보강 키워드 · 근거 probe-kto verify(searchKeyword2 '0000' · KTO_API.md 표)
+//   남이섬은 구 areaCode·sigunguCode·cat1이 전부 공란이라 areaCode 기반 areaBasedList2에 잡히지 않는다
+//   (실응답 2026-09-12: contentid 128019 ko · 264244 en · 주소 춘천시 남산면 · 법정동 51/110 · contenttypeid 12/76).
+//   → 키워드 조회 결과 중 "제목 완전일치 + 법정동이 춘천"인 항목만 목록에 더한다(contentid·지역코드 하드코딩 없음).
+const EXTRA_KEYWORDS = { ko: ['남이섬'], en: ['Nami Island'] };
 
 const call = (lang, op, params) => ktoGet(SVC[lang], op, { ...COMMON, ...params });
 const norm = (s) => String(s ?? '').replace(/\s/g, '');
 // en title 끝 괄호의 한글 원명(예: "Soyang Dam (소양강댐)" → 소양강댐 · 한 단계 중첩 괄호 허용)
 const koNameOf = (title) => /\(([^()]*[가-힣][^()]*(?:\([^()]*\)[^()]*)?)\)\s*$/.exec(title)?.[1] ?? null;
+// 끝 괄호 별칭을 뗀 제목("Nami Island (남이섬)" → "Nami Island") · 키워드 완전일치 비교용
+const baseTitle = (title) => String(title ?? '').replace(/\s*\([^()]*\)\s*$/, '').trim();
 
 let ids = null;
 let idsP = null;
@@ -65,6 +72,35 @@ async function loadIds() {
   return ids;
 }
 
+// [V5-5] 키워드 보강 항목(제목 완전일치 + 법정동 춘천 + 목록에 없는 것만) · 실패해도 목록 적재는 계속
+async function extraItems(lang, listed) {
+  const { ldong } = await ensureKtoIds();
+  const regnCd = String(ldong.areaCd);
+  const signguCd = String(ldong.signguCd).slice(regnCd.length); // 51110 → 110(시군구 3자리)
+  const have = new Set(listed.map((i) => String(i.contentid)));
+  const out = [];
+  for (const keyword of EXTRA_KEYWORDS[lang] ?? []) {
+    let items = [];
+    try {
+      items = asItems(await call(lang, 'searchKeyword2', { keyword, numOfRows: 30, pageNo: 1 }));
+    } catch (e) {
+      console.warn(`[kto] 목록 보강 실패(계속) · ${lang} "${keyword}":`, e.message);
+      continue;
+    }
+    for (const i of items) {
+      if (norm(baseTitle(i.title)) !== norm(keyword)) continue;
+      if (String(i.lDongRegnCd) !== regnCd || String(i.lDongSignguCd) !== signguCd) continue;
+      if (have.has(String(i.contentid))) continue;
+      have.add(String(i.contentid));
+      out.push(i);
+      console.log(
+        `[kto] 목록 보강 · ${lang} "${i.title}" contentid=${i.contentid} (검색어 "${keyword}" · 법정동 ${i.lDongRegnCd}/${i.lDongSignguCd})`,
+      );
+    }
+  }
+  return out;
+}
+
 async function refreshList(lang) {
   const { areaCode, sigunguCode } = (await ensureKtoIds())[lang];
   const items = [];
@@ -75,18 +111,23 @@ async function refreshList(lang) {
     if (!got.length || items.length >= Number(body?.totalCount ?? 0)) break;
   }
   if (!items.length) throw new Error(`${lang} 목록 0건 · 기존 캐시 유지`);
+  const extras = await extraItems(lang, items);
   const client = await db.connect();
   try {
     await client.query('BEGIN');
-    await client.query(
-      `INSERT INTO kto_spots (contentid, lang, raw, fetched_at)
-       SELECT x->>'contentid', $1, jsonb_build_object('list', x), now() FROM jsonb_array_elements($2::jsonb) AS x
-       ON CONFLICT (contentid, lang) DO UPDATE SET raw = EXCLUDED.raw, fetched_at = now()`,
-      [lang, JSON.stringify(items)],
-    );
+    // raw 원문 무결성: 항목 자체는 그대로 두고 보강 여부는 형제 키(extra)로만 표시
+    for (const [rows, extra] of [[items, false], [extras, true]]) {
+      if (!rows.length) continue;
+      await client.query(
+        `INSERT INTO kto_spots (contentid, lang, raw, fetched_at)
+         SELECT x->>'contentid', $1, jsonb_build_object('list', x) || $3::jsonb, now() FROM jsonb_array_elements($2::jsonb) AS x
+         ON CONFLICT (contentid, lang) DO UPDATE SET raw = EXCLUDED.raw, fetched_at = now()`,
+        [lang, JSON.stringify(rows), JSON.stringify(extra ? { extra: true } : {})],
+      );
+    }
     await client.query('DELETE FROM kto_spots WHERE lang = $1 AND NOT (contentid = ANY($2::text[]))', [
       lang,
-      items.map((i) => String(i.contentid)),
+      [...items, ...extras].map((i) => String(i.contentid)),
     ]);
     await client.query('COMMIT');
   } catch (e) {
@@ -95,8 +136,11 @@ async function refreshList(lang) {
   } finally {
     client.release();
   }
-  console.log(`[kto] 목록 적재 · ${lang} ${items.length}건 (areaBasedList2 areaCode=${areaCode} sigunguCode=${sigunguCode})`);
-  return items.length;
+  console.log(
+    `[kto] 목록 적재 · ${lang} ${items.length}건 (areaBasedList2 areaCode=${areaCode} sigunguCode=${sigunguCode})` +
+      (extras.length ? ` + 키워드 보강 ${extras.length}건` : ''),
+  );
+  return items.length + extras.length;
 }
 
 const inflight = {};
@@ -130,8 +174,9 @@ async function poolItems() {
   await Promise.all(
     Object.keys(SVC).map((l) => ensureFresh(l).catch((e) => console.warn(`[kto] ${l} 목록 갱신 실패(캐시 사용):`, e.message))),
   );
-  const { rows } = await db.query("SELECT lang, raw->'list' AS item FROM kto_spots WHERE raw ? 'list'");
-  const list = (lang) => rows.filter((r) => r.lang === lang && POOL_CAT1.has(r.item.cat1)).map((r) => r.item);
+  const { rows } = await db.query("SELECT lang, raw->'list' AS item, (raw ? 'extra') AS extra FROM kto_spots WHERE raw ? 'list'");
+  // [V5-5] 키워드 보강분(extra)은 cat1이 공란이라 분류 필터를 통과하지 못한다 → 분류 필터 예외
+  const list = (lang) => rows.filter((r) => r.lang === lang && (POOL_CAT1.has(r.item.cat1) || r.extra)).map((r) => r.item);
   const ko = list('ko');
   const koByName = new Map(ko.map((i) => [norm(i.title), i]));
   const enOf = new Map();

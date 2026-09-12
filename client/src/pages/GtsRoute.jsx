@@ -8,6 +8,7 @@
 // 가드(§31 · [V5-3]): 추천 결과 + 정원(q4)만큼 담음 · 미충족 시 build(또는 quiz)로 replace. 통과 시 route 경유 마킹.
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { planRoute } from '../data/gts/ktoApi';
 import CongestionChip from '../components/gts/CongestionChip';
 import GuideFab from '../components/gts/GuideFab';
 import ItineraryMap from '../components/gts/ItineraryMap';
@@ -18,17 +19,39 @@ import Button from '../components/ui/Button';
 import { useGts, useGtsGuard } from '../context/GtsContext';
 import LangSwap from '../i18n/LangSwap';
 
+// [V5-5] 추천 날짜 표기 · 20260916 → 09.16(언어 무관 숫자)
+const fmtDate = (ymd) => (String(ymd).length === 8 ? `${String(ymd).slice(4, 6)}.${String(ymd).slice(6, 8)}` : ymd);
+
 export default function GtsRoute() {
   const ok = useGtsGuard('route');
   // course = Context 파생(useMemo) · 참조 고정이라 ItineraryMap 재마운트 없음
-  const { course, markRouteVisited, trackStep } = useGts();
+  //   [V5-5] plan이 있으면 course는 설계 순서다(Context에서 적용) · plan 없으면 담은 순서
+  const { course, markRouteVisited, trackStep, plan, setPlan } = useGts();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (ok) markRouteVisited();
   }, [ok, markRouteVisited]);
 
+  // [V5-5] 동선 설계 1회 · 담기가 바뀌면 Context가 plan을 비우므로 다시 조회한다
+  //   실패·fallback이면 order null로 저장 → 담은 순서 유지(재조회 루프 없음)
+  const ids = course.map((s) => s.id).join(',');
+  useEffect(() => {
+    if (!ok || plan || !course.length) return undefined;
+    let alive = true;
+    planRoute(course.map((s) => s.id)).then((r) => {
+      if (alive) setPlan(r.order ? r : { ...r, order: null });
+    });
+    return () => {
+      alive = false;
+    };
+    // course는 설계 적용 시 순서만 바뀐다 → 의존성은 id 목록(ids)으로 고정
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ok, plan, ids]);
+
   if (!ok) return null;
+
+  const m = plan?.metrics;
 
   const hasMock = course.some((spot) => !spot.coord);
 
@@ -39,6 +62,52 @@ export default function GtsRoute() {
           {/* v4.2 §10.4: 사용자 노출 DRAFT 고지 삭제 · 시각 초안 여부는 코드 주석만 */}
           <LangSwap k="gts.route.title" as="h1" className="text-h1 font-bold tracking-display" />
         </div>
+
+        {/* [V5-5] 순서 근거 · 공사 연관(묶기)·집중률(날짜)·배차 가정(막차) 산출값 · 값 없는 줄은 렌더 안 함 */}
+        {m && (
+          <section className="flex flex-col gap-8 rounded-xl bg-white p-24 shadow-sm">
+            <LangSwap k="gts.route.plan.title" as="h2" className="text-h3 font-semibold" />
+            <ul className="flex flex-col gap-4">
+              {m.relatedPairs > 0 && (
+                <li>
+                  <LangSwap
+                    k="gts.route.plan.related"
+                    vars={{ n: m.relatedPairs }}
+                    className="text-small font-medium text-inkSec"
+                  />
+                </li>
+              )}
+              {m.timeSavedMin > 0 && (
+                <li>
+                  <LangSwap
+                    k="gts.route.plan.wait"
+                    vars={{ n: m.timeSavedMin }}
+                    className="text-small font-medium text-inkSec"
+                  />
+                </li>
+              )}
+              <li>
+                <LangSwap
+                  k={m.lastBusOk ? 'gts.route.plan.lastBusOk' : 'gts.route.plan.lastBusWarn'}
+                  vars={{ time: m.lastBusAt, n: m.firstFailIdx + 1 }}
+                  className="text-small font-semibold text-ink"
+                />
+              </li>
+              {m.busyOnDate != null && (
+                <li>
+                  <LangSwap
+                    k="gts.route.plan.crowd"
+                    vars={{ n: m.busyOnDate, m: m.busyOnBest, date: fmtDate(m.bestDate) }}
+                    className="text-small font-medium text-inkSec"
+                  />
+                </li>
+              )}
+            </ul>
+            {plan.assumed && (
+              <LangSwap k="gts.route.plan.assumed" className="text-caption font-medium text-inkMeta" />
+            )}
+          </section>
+        )}
 
         <div className="flex flex-col gap-24 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-12">
           {/* 지도 · [V3] 목업 포함 상시 렌더(리스트 폴백 폐지 · mockCoords DEMO 좌표) */}
@@ -53,19 +122,38 @@ export default function GtsRoute() {
               <LangSwap k="gts.route.mockNotice" as="p" className="text-small font-medium text-inkSec" />
             )}
             <VisitTimeline
-              items={course.map((spot) => ({
-                id: spot.id,
-                name: spot.name,
-                oneLine: spot.oneLine?.en ? spot.oneLine : null, // 공사 단독 스팟은 한 줄 소개 없음
-                // [V5-3] K배지(SOURCE 근거 anchor·grade만) + 집중률 Chip(오늘 3구간)
-                extra:
-                  spot.badge || spot.congestionBand ? (
-                    <span className="flex flex-wrap items-center gap-4">
-                      <KBadge spot={spot} />
-                      <CongestionChip band={spot.congestionBand} />
+              items={course.map((spot, i) => {
+                const leg = plan?.legs?.[i]; // 이 장소 → 다음 장소 구간(마지막은 없음)
+                return {
+                  id: spot.id,
+                  name: spot.name,
+                  oneLine: spot.oneLine?.en ? spot.oneLine : null, // 공사 단독 스팟은 한 줄 소개 없음
+                  // [V5-3] K배지(SOURCE 근거 anchor·grade만) + 집중률 Chip(오늘 3구간)
+                  extra:
+                    spot.badge || spot.congestionBand ? (
+                      <span className="flex flex-wrap items-center gap-4">
+                        <KBadge spot={spot} />
+                        <CongestionChip band={spot.congestionBand} />
+                      </span>
+                    ) : null,
+                  // [V5-5] 다음 장소까지 구간 · 이동·대기(가정 배차) · 막차 이후면 고지 · 좌표 없으면 거리 미계산
+                  leg: leg ? (
+                    <span className="flex flex-wrap items-center gap-8 text-caption font-medium text-inkSec">
+                      {leg.travelMin != null && (
+                        <LangSwap k="gts.route.plan.legRide" vars={{ n: leg.travelMin }} />
+                      )}
+                      {leg.waitMin > 0 && <LangSwap k="gts.route.plan.legWait" vars={{ n: leg.waitMin }} />}
+                      {leg.unknown && <LangSwap k="gts.route.plan.unknown" />}
+                      {leg.afterLastBus && (
+                        <LangSwap
+                          k="gts.route.plan.legLate"
+                          className="rounded-pill bg-white px-8 font-semibold text-ink shadow-sm"
+                        />
+                      )}
                     </span>
                   ) : null,
-              }))}
+                };
+              })}
             />
             <div className="flex flex-wrap items-center gap-12 pt-8">
               <Button

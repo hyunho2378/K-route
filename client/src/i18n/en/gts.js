@@ -108,6 +108,12 @@ export default {
         half: "Pick exactly 3 places to continue", // [V5-3]
         day: "Pick exactly 4 places to continue", // [V5-3]
       },
+      // [V5-5] 내륙 확산 · 담은 곳에서 이어 가는 공사 연관 관광지(장소명은 TriText 노드로 옆에 붙는다 · vars 없음)
+      spread: {
+        title: "Where visitors head next",
+        basis: "Based on KTO related attractions for",
+        basisNearby: "No related attractions inside Chuncheon, so this follows the nearest one with data:",
+      },
     },
     route: {
       title: "Your route",
@@ -120,6 +126,20 @@ export default {
       go: "Head to the first stop",
       repick: "Pick again",
       vehicle: "Travel by private car",
+      // [V5-5] 리듬 코스 · 순서 근거와 정량 지표(서버 routePlanner 산출 · {n}·{m}·{time}·{date}는 LangSwap vars)
+      plan: {
+        title: "Why this order",
+        related: "{n} legs follow places visitors pair up",
+        wait: "About {n} min less travel and waiting than a random order",
+        lastBusOk: "You can finish the course before the last bus ({time})",
+        lastBusWarn: "Leg {n} falls after the last bus ({time}), so that hop needs a taxi",
+        crowd: "Busy spots: {n} on your date, {m} on the quietest day ({date})",
+        assumed: "Headway and last bus are assumed values, not a published timetable.",
+        legWait: "Wait {n} min",
+        legRide: "Ride {n} min",
+        legLate: "After last bus",
+        unknown: "Distance is not calculated until this place is confirmed",
+      },
     },
     // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
     spot: {
@@ -157,7 +177,22 @@ export default {
     // [V5-3] K-가이드 봇 FAB 자리(챗은 P3)
     guide: {
       fab: "K-Guide",
-      soon: "K-Guide chat is coming soon",
+    },
+    // [V5-6] NFC 성지 스탬프(IA §11.10 개정)
+    stamp: {
+      title: "Stamp tour",
+      eyebrow: "K-Route stamp",
+      added: "Stamp collected",
+      already: "You already have this stamp",
+      bad: "We could not read this tag. Scan the sticker at the place again.",
+      progress: "Stamps",
+      badges: "Badges",
+      complete: "Tour complete",
+      certificate: "Save certificate",
+      certTitle: "Chuncheon K-Content Stamp Tour",
+      certBody: "completed the stamp tour of Chuncheon",
+      next: "Keep collecting at the places below",
+      toRoute: "Back to my route",
     },
     checkout: {
       title: "Checkout",

@@ -87,6 +87,7 @@ export default {
       style: 'Fits the kind of trip you said you like.',
       company: 'Works well for who you are traveling with.',
       default: 'A well-loved stop in Chuncheon.',
+      spread: 'An inland Chuncheon place that visitors head to next.', // [V5-5] 내륙 확산 추천
     },
   },
 };

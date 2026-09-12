@@ -25,12 +25,13 @@
 | KorService2 · EngService2 | detailCommon2 | contentId | overview, homepage, tel, addr1, mapx, mapy | 상세 |
 | KorService2 · EngService2 | detailIntro2 | contentId, contentTypeId | 유형별(음식점 firstmenu·opentimefood / 문화시설 usetimeculture·usefee) | 상세 |
 | KorService2 · EngService2 | detailImage2 | contentId | originimgurl, smallimageurl, imgname, cpyrhtDivCd | 상세 |
+| KorService2 · EngService2 | searchKeyword2 | keyword, numOfRows, pageNo | areaBasedList2와 동일 필드(areacode·sigungucode·cat1은 공란일 수 있음) | [V5-5] 지역 목록 누락분 보강(ktoSpotService) |
 | KorService2 | categoryCode2 | 없음(cat1 7) · cat1 + cat2(cat3) | code, name | 분류 이름 근거(아래) |
 | TatsCnctrRateService | tatsCnctrRatedList | areaCd, signguCd(시도+시군구 5자리), tAtsNm(선택), numOfRows, pageNo | baseYmd, tAtsNm, cnctrRate | 집중률 |
 | TarRlteTarService1 | areaBasedList1 | areaCd, signguCd(5자리), baseYm(YYYYMM) | baseYm, tAtsNm, rlteTatsNm, rlteRank, rlteCtgryLclsNm·Mcls·Scls | 최신 baseYm 탐색 |
 | TarRlteTarService1 | searchKeyword1 | areaCd, signguCd, baseYm, keyword | areaBasedList1과 동일 | 연관 |
-| Odii | themeSearchList | langCode(ko·en), keyword | tid, tlid, themeCategory, addr1(시도까지만), addr2, title, mapX, mapY, langCheck, langCode, imageUrl | [P3-A] 오디오가이드 테마 · 장소명 완전일치만(ktoAudioService) |
-| Odii | storyBasedList | langCode, tid, tlid | audioTitle, script, playTime, audioUrl | 오디오가이드 이야기(P3 RAG) |
+| Odii | themeSearchList | langCode(ko·en), keyword | tid, tlid, themeCategory, addr1(시도까지만), addr2, title, mapX, mapY, langCheck, langCode, imageUrl | [P3-A] 오디오가이드 테마 · 장소명 완전일치만(ktoAudioService) · [V5-6] K-가이드 지식(ragService · 관광지만) |
+| Odii | storyBasedList | langCode, tid, tlid | audioTitle, script, playTime, audioUrl | 오디오가이드 이야기 · [V5-6] spot_chunks odii(ragService) |
 | Odii | themeLocationBasedList · themeBasedList | langCode, mapX, mapY, radius · langCode | 테마 필드 동일 | 확인만 · 코드 미사용([P3-A] 좌표 근접 매칭 폐지) |
 | PhotoGalleryService1 | galleryList1 · gallerySearchList1 | 없음 · keyword | galTitle, galWebImageUrl, galPhotographyLocation | 확인만 · 코드 미사용 |
 
@@ -51,6 +52,12 @@
 - 성지 여부·K배지는 SOURCE_SPOTS.md 태그로만 판정. 공사 스팟은 SOURCE 표에 없으면 local · badge false,
   venue와 같은 곳이면 그 venue 태그를 물려받는다(spotPool.js).
 - 이미지: tong.visitkorea.or.kr http 주소는 풀 응답에서만 https로 바꿔 내린다(원문은 그대로 · https GET 206 확인).
+- [V5-5] 목록 보강: areaCode 기반 areaBasedList2는 구 areaCode·sigunguCode가 공란인 항목을 주지 않는다(남이섬 실응답 2026-09-12:
+  areacode "" · cat1 "" · 법정동 51/110 · contentid 128019 ko · 264244 en · contenttypeid 12/76). searchKeyword2로 "제목 완전일치 +
+  법정동이 춘천"인 항목만 더해 적재하고, raw에는 원문(list)과 형제 키 extra:true 만 둔다(원문 무가공 유지 · 분류 필터 예외).
+- [V5-6] K-가이드 지식 = `spot_chunks`(overview · intro · odii · related · source) · `node server/scripts/build-knowledge.js` · 기존 채택 오퍼레이션만 쓴다.
+  2026-09-12 적재: 풀 206곳 · 공사 호출 607회(detailCommon2·Intro2·Image2 ko 134 · en 13 · searchKeyword1 162 · areaBasedList1 1 · 집중률 2) ·
+  odii는 그날 일일 한도 초과(HTTP 429 LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS)로 건너뜀 → 한도가 풀리면 같은 스크립트를 다시 돌린다(다른 소스 행은 그대로 갈아 끼움).
 
 ## docs/kto/ 배치 목록 (README로도 안내)
 위 6개 서비스의 '오픈API 활용가이드' 문서를 docs/kto/ 에 넣는다. 파일명에 서비스명 포함. 들어오면 이 표와 대조한다.

@@ -82,6 +82,12 @@ async function verify() {
     await need(svc, 'detailIntro2', { contentId, contentTypeId });
     await need(svc, 'detailImage2', { contentId });
   }
+  // [V5-5] 지역 목록에 없는 법정동 춘천 스팟(남이섬)을 키워드로 확보 — searchKeyword2 채택 근거
+  for (const [svc, kw] of [['KorService2', '남이섬'], ['EngService2', 'Nami Island']]) {
+    const r = await need(svc, 'searchKeyword2', { keyword: kw, numOfRows: 10, pageNo: 1 });
+    const exact = r.items.filter((i) => String(i.title).replace(/\s*\([^()]*\)\s*$/, '').trim() === kw);
+    console.log(`   "${kw}" 제목 완전일치 → ${exact.map((i) => `${i.contentid} 법정동=${i.lDongRegnCd}/${i.lDongSignguCd} cat1="${i.cat1}" areacode="${i.areacode}"`).join(' | ') || '0건'}`);
+  }
   await need('KorService2', 'categoryCode2', { numOfRows: 20 });
   await need('KorService2', 'categoryCode2', { cat1: 'A05', cat2: 'A0502', numOfRows: 30 });
   const areaCd = byName(await need('KorService2', 'ldongCode2', { numOfRows: 50 }), '강원');

@@ -33,6 +33,22 @@ const latestBaseYm = (ldong) =>
     throw new Error('연관관광지 최근 6개월 데이터 없음');
   });
 
+// [V5-5] 기준 관광지 이름 목록(areaBasedList1 tAtsNm · 춘천 39곳) · 연관 목록을 가진 곳만 확산 기준지가 될 수 있다
+async function getBaseNames() {
+  const { ldong } = await ensureKtoIds();
+  const baseYm = await latestBaseYm(ldong);
+  return cached(`bases:${baseYm}`, async () => {
+    const names = new Set();
+    for (let pageNo = 1; ; pageNo += 1) {
+      const body = await ktoGet(BASE, 'areaBasedList1', { ...COMMON, ...ldong, baseYm, numOfRows: 1000, pageNo });
+      const got = asItems(body);
+      got.forEach((r) => names.add(r.tAtsNm));
+      if (!got.length || pageNo * 1000 >= Number(body?.totalCount ?? 0)) break;
+    }
+    return [...names];
+  });
+}
+
 // 관광지 이름(ko) → { baseYm, items: 연관 관광지 원문(rlteRank 순) }
 async function getRelated(name) {
   const { ldong } = await ensureKtoIds();
@@ -43,4 +59,4 @@ async function getRelated(name) {
   return { baseYm, items: [...items].sort((a, b) => Number(a.rlteRank) - Number(b.rlteRank)) };
 }
 
-module.exports = { getRelated };
+module.exports = { getRelated, getBaseNames };

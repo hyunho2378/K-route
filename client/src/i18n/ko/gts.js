@@ -108,6 +108,12 @@ export default {
         half: "정확히 3곳을 고르면 넘어갈 수 있어요", // [V5-3]
         day: "정확히 4곳을 고르면 넘어갈 수 있어요", // [V5-3]
       },
+      // [V5-5] 내륙 확산 · 담은 곳에서 이어 가는 공사 연관 관광지(장소명은 TriText 노드로 옆에 붙는다 · vars 없음)
+      spread: {
+        title: "방문객이 이어서 가는 곳",
+        basis: "공사 연관 관광지 기준",
+        basisNearby: "춘천 안 연관 데이터가 없어 가까운 기준 관광지로 보여드려요",
+      },
     },
     route: {
       title: "나의 동선",
@@ -120,6 +126,20 @@ export default {
       go: "첫 장소로 출발",
       repick: "다시 고르기",
       vehicle: "차량으로 이동",
+      // [V5-5] 리듬 코스 · 순서 근거와 정량 지표(서버 routePlanner 산출 · {n}·{m}·{time}·{date}는 LangSwap vars)
+      plan: {
+        title: "이 순서인 이유",
+        related: "연관 관광지로 이어 붙인 구간 {n}개",
+        wait: "무작위 순서보다 이동·대기 약 {n}분 절감",
+        lastBusOk: "막차({time}) 안에 코스를 마칠 수 있어요",
+        lastBusWarn: "{n}번째 구간이 막차({time}) 이후라 그 구간은 택시가 필요해요",
+        crowd: "선택한 날 혼잡 {n}곳, 가장 한가한 날({date})은 {m}곳",
+        assumed: "배차와 막차는 공개 시간표가 아니라 가정값이에요.",
+        legWait: "대기 {n}분",
+        legRide: "이동 {n}분",
+        legLate: "막차 이후",
+        unknown: "장소가 확정되기 전이라 거리를 계산하지 않았어요",
+      },
     },
     // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
     spot: {
@@ -157,7 +177,22 @@ export default {
     // [V5-3] K-가이드 봇 FAB 자리(챗은 P3)
     guide: {
       fab: "K-가이드",
-      soon: "K-가이드 챗은 곧 열려요",
+    },
+    // [V5-6] NFC 성지 스탬프(IA §11.10 개정)
+    stamp: {
+      title: "스탬프 투어",
+      eyebrow: "K-Route 스탬프",
+      added: "스탬프를 찍었어요",
+      already: "이미 찍은 스탬프예요",
+      bad: "이 태그를 확인하지 못했어요. 현장 스티커를 다시 스캔해 주세요.",
+      progress: "스탬프",
+      badges: "배지",
+      complete: "투어 완주",
+      certificate: "인증서 저장",
+      certTitle: "춘천 K-콘텐츠 스탬프 투어",
+      certBody: "춘천 스탬프 투어를 완주했습니다",
+      next: "아래 장소에서 이어서 모아 보세요",
+      toRoute: "내 동선으로",
     },
     checkout: {
       title: "확인 및 결제",

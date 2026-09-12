@@ -30,6 +30,7 @@ const initial = {
   quizAnswers: { q1: [] }, // [V5-3] IA §11.3 · q1 배열(복수) · q2~q5 단일 값(recommendService.ANSWERS)
   recommended: [], // [V5-3] 추천 스팟(서버 풀 항목 + score·reasonKey·reason · toSpot)
   goOrigin: null, // [V5-3] go 출발점 { kind: 'current' | 'station', coord: [lng, lat] }
+  plan: null, // [V5-5] 동선 설계 결과 { order, stops, legs, metrics, assumed } · 담은 목록이 바뀌면 무효
 };
 
 // [V5-3] q4 → 담기 정원(IA §11.3 반나절 3곳 · 하루 4곳)
@@ -129,9 +130,10 @@ export function GtsProvider({ children }) {
     (id) => {
       const accepted = state.picks.includes(id) || state.picks.length < capOf(state.quizAnswers);
       setState((s) => {
-        if (s.picks.includes(id)) return { ...s, picks: s.picks.filter((p) => p !== id) };
+        // [V5-5] 담은 목록이 바뀌면 설계 결과는 무효(옛 순서가 새 코스에 남지 않게)
+        if (s.picks.includes(id)) return { ...s, picks: s.picks.filter((p) => p !== id), plan: null };
         if (s.picks.length >= capOf(s.quizAnswers)) return s;
-        return { ...s, picks: [...s.picks, id] };
+        return { ...s, picks: [...s.picks, id], plan: null };
       });
       return accepted;
     },
@@ -139,6 +141,18 @@ export function GtsProvider({ children }) {
   );
 
   const setGoOrigin = useCallback((goOrigin) => setState((s) => ({ ...s, goOrigin })), []); // [V5-3]
+  // [V5-5] 동선 설계 결과(서버 routePlanner) · 담기 변경 시 selectSpot이 무효화한다
+  const setPlan = useCallback((plan) => setState((s) => ({ ...s, plan })), []);
+  // [V5-5] 내륙 확산 추천을 후보 풀 앞에 더한다 · 담긴 스팟은 recommended에서 해석되므로(course) 여기에 있어야 한다
+  const addSpots = useCallback(
+    (spots) =>
+      setState((s) => {
+        const have = new Set(s.recommended.map((x) => x.id));
+        const add = spots.filter((x) => !have.has(x.id)).map(toSpot);
+        return add.length ? { ...s, recommended: [...add, ...s.recommended] } : s;
+      }),
+    [],
+  );
 
   // [V3] Travel Log 템플릿 적용 · 로그의 식사 플랜·선택·동선을 그대로 프리필하고
   //   routeVisited까지 마킹(로그 동선 = 확정 동선 → setup 인원 선택 후 체크아웃 직행 가드 성립).
@@ -167,17 +181,21 @@ export function GtsProvider({ children }) {
   );
 
   // [V5-3] 담기 정원 + 코스(방문 순서 스팟) 파생
+  //   [V5-5] 설계 결과(plan.order)가 같은 구성을 담고 있으면 그 순서가 방문 순서다(route·go·checkout·ticket 공통).
   const cap = capOf(state.quizAnswers);
-  const course = useMemo(
-    () =>
-      itineraryVenues({
-        mealPlan: state.mealPlan,
-        meals: state.meals,
-        picks: state.picks,
-        recommended: state.recommended,
-      }),
-    [state.mealPlan, state.meals, state.picks, state.recommended],
-  );
+  const course = useMemo(() => {
+    const base = itineraryVenues({
+      mealPlan: state.mealPlan,
+      meals: state.meals,
+      picks: state.picks,
+      recommended: state.recommended,
+    });
+    const order = state.plan?.order;
+    if (!order || order.length !== base.length) return base;
+    const byId = new Map(base.map((s) => [s.id, s]));
+    const ordered = order.map((id) => byId.get(id)).filter(Boolean);
+    return ordered.length === base.length ? ordered : base;
+  }, [state.mealPlan, state.meals, state.picks, state.recommended, state.plan]);
 
   const value = useMemo(
     () => ({
@@ -197,8 +215,10 @@ export function GtsProvider({ children }) {
       submitQuiz,
       selectSpot,
       setGoOrigin,
+      setPlan,
+      addSpots,
     }),
-    [state, vehicle, cap, course, setParty, setLuggage, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep, setQuizAnswer, submitQuiz, selectSpot, setGoOrigin],
+    [state, vehicle, cap, course, setParty, setLuggage, setDropoffText, markRouteVisited, setTravelDate, applyLogTemplate, reset, trackStep, setQuizAnswer, submitQuiz, selectSpot, setGoOrigin, setPlan, addSpots],
   );
 
   return <GtsContext.Provider value={value}>{children}</GtsContext.Provider>;

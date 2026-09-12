@@ -28,6 +28,26 @@ export const recommend = (answers, lang, sessionId) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ answers, lang, sessionId }),
   });
-export const sendChat = async () => ({ source: 'fallback' }); // POST /api/chat · P3
+// [V5-6] K-가이드 챗 · ndjson 스트림이라 call() 을 쓰지 않고 Response 를 그대로 돌려준다(읽기는 components/chat/useGuideChat) · 네트워크 오류 = null
+export const openChat = (body) =>
+  fetch(`${API_BASE}/api/chat`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }).catch(() => null);
+// [V5-6] NFC 성지 스탬프 · { stamps:[{spotId,kType,at}], kinds, badges, complete } · 실패 = { source:'fallback' }
+export const getStamps = () => call('/api/stamps');
+export const postStamp = (spotId, t) =>
+  call('/api/stamps', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ spotId, t }) });
 // [V5-3] 현위치 → 코스 장소 · { source, reason, to, km, estimates:[{mode:'walk'|'taxi', min}] } · live provider가 붙으면 legs[]
 export const getGo = (lat, lng, to) => call(`/api/go?lat=${lat}&lng=${lng}&to=${enc(to)}`);
+// [V5-5] 동선 설계 · ids = 담은 순서 · { source, order, stops, legs, metrics, assumed } · fallback이면 order 없음(담은 순서 유지)
+export const planRoute = (ids, date, startTime) =>
+  call('/api/route/plan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, date, startTime }),
+  });
+// [V5-5] 내륙 확산 · { source, of, base, viaNearby, items:[풀 항목 + reasonKey] }
+export const getSpread = (id) => call(`/api/route/spread/${enc(id)}`);

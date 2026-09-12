@@ -5,15 +5,18 @@
 // 페이지네이션([H2-11] 숫자 인디케이터)은 VenueGrid 소유.
 // 가드(§31 · IA §11.1): 추천 결과 필수 · 미충족 시 quiz로 replace.
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import StepStage from '../components/gts/StepStage';
+import TriText from '../components/gts/TriText';
 import VenueDetail from '../components/gts/VenueDetail';
 import VenueGrid from '../components/gts/VenueGrid';
 import CourseQueue from '../components/gts/CourseQueue';
+import GuideFab from '../components/gts/GuideFab';
 import Container from '../components/layout/Container';
 import { useGts, useGtsGuard } from '../context/GtsContext';
 import { venueCoord } from '../data/gts/mockCoords';
 import { courseKm, courseMinutes } from '../data/gts/distance';
+import { getSpread } from '../data/gts/ktoApi';
 import LangSwap from '../i18n/LangSwap';
 import { motion } from '../tokens';
 
@@ -32,13 +35,50 @@ function Counter({ n, max }) {
 export default function GtsBuild() {
   const ok = useGtsGuard('build');
   const navigate = useNavigate();
-  const { recommended, picks, cap, course, selectSpot, trackStep } = useGts();
+  const { recommended, picks, cap, course, selectSpot, trackStep, addSpots } = useGts();
   const [capNotice, setCapNotice] = useState(false);
   // [V2] 장소 상세 오버레이 · { spot, rect(FLIP 시작점), instant(키보드 개시) }
   const [detail, setDetail] = useState(null);
+  const [spread, setSpread] = useState(null); // [V5-5] 내륙 확산 { of, base, viaNearby, items }
   const toastRef = useRef(0); // [V22] 초과 안내 토스트 3초 자동 해제 타이머
+  const spreadCache = useRef(new Map()); // 스팟당 1회 조회
 
   useEffect(() => () => clearTimeout(toastRef.current), []);
+
+  // [V5-5] 내륙 확산 · 마지막으로 담은 장소에서 이어 가는 공사 연관 관광지를 후보 풀 앞에 더한다.
+  //   남이섬처럼 춘천 안 연관이 0건이면 서버가 가까운 기준 관광지를 경유한다(viaNearby) · 결과 없으면 섹션 비노출.
+  const lastPick = picks[picks.length - 1];
+  useEffect(() => {
+    if (!lastPick) {
+      setSpread(null);
+      return undefined;
+    }
+    let alive = true;
+    const p = spreadCache.current.get(lastPick) ?? getSpread(lastPick);
+    spreadCache.current.set(lastPick, p);
+    p.then((r) => {
+      if (!alive) return;
+      if (r.items?.length) {
+        addSpots(r.items);
+        setSpread(r);
+      } else setSpread(null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [lastPick, addSpots]);
+
+  // [V5-6] K-가이드 출처 칩(route·go 에서도 온다) → 이 화면 장소 상세 · 키보드 개시와 같은 instant 로 열고 state 는 비운다(뒤로가기 재오픈 방지)
+  //   VenueDetail 은 FLIP 원점 rect 가 필요하다 → 도킹 카드 크기의 화면 중앙 rect(scale 1)
+  const location = useLocation();
+  useEffect(() => {
+    const spot = location.state?.spot;
+    if (!spot) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    setDetail({ spot, rect: new DOMRect(vw * 0.33, vh * 0.1, vw * 0.34, vh * 0.8), instant: true });
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
 
   if (!ok) return null;
 
@@ -110,6 +150,22 @@ export default function GtsBuild() {
             />
             <Counter n={picks.length} max={cap} />
           </div>
+          {/* [V5-5] 확산 고지 · 어떤 장소 기준인지와 근거(직접 연관 / 인접 기준지 경유)를 밝힌다 */}
+          {spread && (
+            <div className="flex flex-col gap-4 rounded-lg bg-surface p-12">
+              <span className="flex flex-wrap items-baseline gap-8">
+                <LangSwap k="gts.build.spread.title" className="text-small font-semibold" />
+                <TriText text={spread.of.name} className="text-small font-semibold text-primary" />
+              </span>
+              <span className="flex flex-wrap items-baseline gap-8">
+                <LangSwap
+                  k={spread.viaNearby ? 'gts.build.spread.basisNearby' : 'gts.build.spread.basis'}
+                  className="text-caption font-medium text-inkSec"
+                />
+                <TriText text={spread.base.name} className="text-caption font-semibold text-inkSec" />
+              </span>
+            </div>
+          )}
           <VenueGrid
             pool={recommended}
             selected={picks}
@@ -123,6 +179,9 @@ export default function GtsBuild() {
           <CourseQueue items={course} onRemove={selectSpot} km={courseKmVal} minutes={courseMin} />
         </section>
       </StepStage>
+
+      {/* [V5-6] K-가이드 FAB · StepStage 다음에 붙어 그 위에 온다 · 하단 버튼 줄 위로 */}
+      <GuideFab lift />
 
       {/* [V2] 장소 상세 확장 카드 · StepStage 형제(포털은 body — 늦은 마운트라 StepStage 위) */}
       {detail && (
