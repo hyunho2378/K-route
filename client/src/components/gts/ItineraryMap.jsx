@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { venueCoord } from '../../data/gts/mockCoords';
+import { LINE_FACE, NO_LINE_FACE } from '../../data/gts/lineSystem';
 import { colors, map as M } from '../../tokens';
 import { useLang } from '../../i18n/LangContext';
 import Skeleton from '../ui/Skeleton';
@@ -61,6 +62,7 @@ const toStop = (venue) => ({
 export default function ItineraryMap({
   venues,
   pinLabels,
+  pinLines,
   drawMs = DRAW_MS,
   labelKey = 'gts.route.mapLabel',
 }) {
@@ -141,10 +143,13 @@ export default function ItineraryMap({
         const label = pinLabels ? pinLabels[i] : String(i + 1);
         const el = document.createElement('button');
         el.type = 'button';
+        // [V5-9] 역이 속한 K-콘텐츠 라인의 색 면(LINE_FACE = 대비 규칙 포함) · 라인 없는 역은 중립 면(NO_LINE_FACE).
+        //   pinLines 자체를 넘기지 않는 기존 호출부(checkout·ticket·go)는 종전 primary 그대로 둔다(회귀 방지).
+        const face = pinLines ? LINE_FACE[pinLines[i]] ?? NO_LINE_FACE : 'bg-primary text-white';
         el.className =
           label === null
             ? 'gts-pin bg-white shadow-sm ring-4 ring-inset ring-primary' // [V5-3] 출발 핀 · 순번 대신 링 표기
-            : 'gts-pin bg-primary font-display text-small font-bold text-white shadow-sm';
+            : `gts-pin ${face} font-display text-small font-bold shadow-sm`;
         el.textContent = label ?? '';
         el.setAttribute('aria-label', label === null ? venue.name.en : `${label} ${venue.name.en}`);
         el.addEventListener('click', (e) => {

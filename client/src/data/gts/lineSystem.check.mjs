@@ -6,7 +6,9 @@ import {
   AXIS_MAX,
   LINES,
   LINE_BG,
+  LINE_FACE,
   LINE_RING,
+  NO_LINE_FACE,
   levelOf,
   lineOf,
   lineOfKType,
@@ -19,7 +21,15 @@ assert.deepEqual([...LINES.map((l) => l.colorToken)].sort(), Object.keys(lineCol
 assert.equal(LINES.length, 3);
 // 클래스 매핑은 세 라인 전부 존재(동적 클래스명 금지라 표가 비면 색이 사라진다)
 for (const { id } of LINES) {
-  assert.ok(LINE_BG[id] && LINE_RING[id], `클래스 매핑 누락: ${id}`);
+  assert.ok(LINE_BG[id] && LINE_RING[id] && LINE_FACE[id], `클래스 매핑 누락: ${id}`);
+}
+// 라인 색 면 위 글자색 · yellow 면에 흰 글자를 얹으면 AA 미달(DESIGN §2) → ink여야 한다
+for (const [id, face] of Object.entries(LINE_FACE)) {
+  assert.ok(face.includes(face.includes('bg-yellow') ? 'text-ink' : 'text-white'), `대비 규칙 위반: ${id} ${face}`);
+}
+// 연계 로컬 면은 어떤 라인 면과도 같으면 안 된다(같으면 지도·타임라인에서 두 층이 구분되지 않는다)
+for (const [id, face] of Object.entries(LINE_FACE)) {
+  assert.notEqual(NO_LINE_FACE, face, `연계 로컬 면이 ${id} 라인 면과 같다`);
 }
 
 // kType → 라인 · K-팝은 앵커 장소가 없어 라인을 만들지 않는다(SOURCE_SPOTS §3)

@@ -22,6 +22,17 @@ export const lineMeta = (id) => LINES.find((l) => l.id === id) ?? null;
 //   (yellow 텍스트 금지 · spice 텍스트는 흰 면에서 3.4:1로 AA 미달 · DESIGN §16.1 + P2 실측).
 export const LINE_BG = { drama: 'bg-primary', food: 'bg-spice', anime: 'bg-yellow' };
 export const LINE_RING = { drama: 'ring-primary', food: 'ring-spice', anime: 'ring-yellow' };
+// 라인 색 면 위에 글자를 얹을 때(지도 번호 핀 · 타임라인 노드)는 대비 규칙을 따른다:
+//   yellow 면 위 흰 글자는 AA 미달이라 ink만 허용(DESIGN §2) · SuccessStamp.FACE와 같은 규칙의 단일 출처.
+export const LINE_FACE = {
+  drama: 'bg-primary text-white',
+  food: 'bg-spice text-white',
+  anime: 'bg-yellow text-ink',
+};
+// 라인에 속하지 않는 곳(연계 로컬)의 면. 라인 색을 쓰면 안 된다:
+//   drama = lake = primary 라서 "기본 primary"를 폴백으로 두면 드라마 역과 연계 로컬이 같은 색이 된다(실측 2026-09-13).
+//   색 없음으로 표현해 라인 역이 주인공으로 남게 한다.
+export const NO_LINE_FACE = 'bg-surface text-ink';
 
 // kType → 라인 · kpop은 라인을 만들지 않는다(venues·공사 풀에 K-팝 앵커 장소가 없다 · SOURCE_SPOTS §3 초상권 보류).
 export const lineOfKType = (kType) => LINES.find((l) => l.kType === kType)?.id ?? null;

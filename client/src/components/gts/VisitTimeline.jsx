@@ -6,6 +6,7 @@
 // [V5-5] item.leg = 다음 장소까지의 구간 표기(이동·대기·막차) · 순서가 바뀌면 FLIP 리플로우(transform·opacity만 · MOTION.md).
 import { useLayoutEffect, useRef } from 'react';
 import TriText from './TriText';
+import { LINE_FACE, NO_LINE_FACE } from '../../data/gts/lineSystem';
 import { motion } from '../../tokens';
 
 const REORDER_MS = 420; // [V9] VenueGrid 재정렬과 같은 지속(오류처럼 안 보이게)
@@ -48,7 +49,11 @@ export default function VisitTimeline({ items }) {
           >
             <span aria-hidden="true" className="flex flex-col items-center">
               <span
-                className="flex shrink-0 items-center justify-center rounded-pill bg-primary font-display text-caption font-bold text-white shadow-sm"
+                // [V5-9] item.lineId = 그 역이 속한 K-콘텐츠 라인 · 라인 색 면(대비 규칙은 LINE_FACE가 담당) ·
+                //   null = 라인 없는 연계 로컬(중립 면) · 키 자체가 없는 기존 호출부(Ticket 등)는 종전 primary 그대로.
+                className={`flex shrink-0 items-center justify-center rounded-pill font-display text-caption font-bold shadow-sm ${
+                  item.lineId === undefined ? 'bg-primary text-white' : LINE_FACE[item.lineId] ?? NO_LINE_FACE
+                }`}
                 style={{ width: 28, height: 28 }} // §10.5 명세값 · 순번 원 28px
               >
                 {i + 1}

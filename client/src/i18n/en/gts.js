@@ -120,6 +120,9 @@ export default {
       listTitle: "Visit order",
       mockNotice: "Exact locations will appear once these places are confirmed.",
       mapLabel: "Itinerary map",
+      // [V5-9] 노선 여권 · 담은 코스가 어느 K-콘텐츠 라인의 역으로 이루어졌는지(배지 통과분만 역이 된다)
+      lineTitle: "Lines in this course",
+      lineLocal: "Linked local",
       proceed: "Continue with this route",
       rebuild: "Rebuild my day",
       // [V5-3] IA §11.6 CTA 3종(주 go · 보조 build · 텍스트링크 setup)

@@ -17,6 +17,7 @@ import VisitTimeline from '../components/gts/VisitTimeline';
 import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import { useGts, useGtsGuard } from '../context/GtsContext';
+import { LINE_BG, LINE_IDS, lineOfSpot } from '../data/gts/lineSystem';
 import LangSwap from '../i18n/LangSwap';
 
 // [V5-5] 추천 날짜 표기 · 20260916 → 09.16(언어 무관 숫자)
@@ -50,6 +51,11 @@ export default function GtsRoute() {
   }, [ok, plan, ids]);
 
   if (!ok) return null;
+
+  // [V5-9] 노선 여권 · 역이 속한 K-콘텐츠 라인(배지 통과분만 역이 된다 · 나머지는 연계 로컬)
+  const lines = course.map(lineOfSpot);
+  const lineCount = lines.reduce((acc, id) => (id ? { ...acc, [id]: (acc[id] ?? 0) + 1 } : acc), {});
+  const localCount = lines.filter((id) => id == null).length;
 
   const m = plan?.metrics;
 
@@ -112,12 +118,35 @@ export default function GtsRoute() {
         <div className="flex flex-col gap-24 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-12">
           {/* 지도 · [V3] 목업 포함 상시 렌더(리스트 폴백 폐지 · mockCoords DEMO 좌표) */}
           <div className="relative aspect-square overflow-hidden rounded-xl shadow-sm md:aspect-video">
-            <ItineraryMap venues={course} />
+            {/* [V5-9] 번호 핀 = 그 역이 속한 라인 색(없으면 기존 primary) */}
+            <ItineraryMap venues={course} pinLines={lines} />
           </div>
 
           {/* 방문 순서 · §10.5 세로 타임라인(§28 문법) — 지도와 병렬 배치(lg 좌측) */}
           <section className="flex flex-col gap-12 rounded-xl bg-white p-24 shadow-sm lg:order-first">
             <LangSwap k="gts.route.listTitle" as="h2" className="text-h3 font-semibold" />
+            {/* [V5-9] 노선 여권 1층 · 이 코스가 어느 라인의 역으로 이루어졌는지 · 라인 없는 곳은 연계 로컬로 정직하게 센다 */}
+            {(localCount > 0 || LINE_IDS.some((id) => lineCount[id])) && (
+              <div className="flex flex-wrap items-center gap-8">
+                <LangSwap k="gts.route.lineTitle" className="text-small font-semibold" />
+                {LINE_IDS.filter((id) => lineCount[id]).map((id) => (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-8 rounded-pill bg-white px-12 py-4 text-caption font-semibold text-ink shadow-sm"
+                  >
+                    <span aria-hidden="true" className={`h-8 w-8 shrink-0 rounded-pill ${LINE_BG[id]}`} />
+                    <LangSwap k={`gts.line.${id}.name`} />
+                    <span className="font-display font-bold">{lineCount[id]}</span>
+                  </span>
+                ))}
+                {localCount > 0 && (
+                  <span className="inline-flex items-center gap-8 rounded-pill bg-surface px-12 py-4 text-caption font-medium text-inkSec">
+                    <LangSwap k="gts.route.lineLocal" />
+                    <span className="font-display font-bold">{localCount}</span>
+                  </span>
+                )}
+              </div>
+            )}
             {hasMock && (
               <LangSwap k="gts.route.mockNotice" as="p" className="text-small font-medium text-inkSec" />
             )}
@@ -126,6 +155,7 @@ export default function GtsRoute() {
                 const leg = plan?.legs?.[i]; // 이 장소 → 다음 장소 구간(마지막은 없음)
                 return {
                   id: spot.id,
+                  lineId: lines[i], // [V5-9] 순번 원을 그 역의 라인 색으로
                   name: spot.name,
                   oneLine: spot.oneLine?.en ? spot.oneLine : null, // 공사 단독 스팟은 한 줄 소개 없음
                   // [V5-3] K배지(SOURCE 근거 anchor·grade만) + 집중률 Chip(오늘 3구간)

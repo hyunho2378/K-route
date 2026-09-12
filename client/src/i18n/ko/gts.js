@@ -120,6 +120,9 @@ export default {
       listTitle: "방문 순서",
       mockNotice: "정확한 위치는 장소 확정 후 표시됩니다.",
       mapLabel: "동선 지도",
+      // [V5-9] 노선 여권 · 담은 코스가 어느 K-콘텐츠 라인의 역으로 이루어졌는지(배지 통과분만 역이 된다)
+      lineTitle: "이 코스의 노선",
+      lineLocal: "연계 로컬",
       proceed: "이 동선으로 진행",
       rebuild: "다시 조립",
       // [V5-3] IA §11.6 CTA 3종(주 go · 보조 build · 텍스트링크 setup)
