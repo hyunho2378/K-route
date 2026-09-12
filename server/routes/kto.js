@@ -6,6 +6,7 @@ const { getPool } = require('../services/spotPool');
 const { getSpot } = require('../services/ktoSpotService');
 const { getRelated } = require('../services/ktoRelatedService');
 const { getCongestion } = require('../services/ktoCongestionService');
+const { getFestivals } = require('../services/ktoFestivalService'); // [V5-10]
 const { getAudioGuide } = require('../services/ktoAudioService');
 
 const router = express.Router();
@@ -65,6 +66,16 @@ router.get('/kto/congestion/:id', async (req, res) => {
     const item = await findItem(req.params.id);
     if (!item) return res.status(404).json({ error: 'not_found' });
     res.json({ source: 'live', ...(await getCongestion(item.name.ko)) });
+  } catch (e) {
+    fallback(res, e);
+  }
+});
+
+// [V5-10] 축제 · searchFestival2 를 법정동 51/110 으로 거른다(지역코드로는 0건 · KTO_API.md) ·
+//   ?date=YYYYMMDD(없으면 KST 오늘)에 열려 있는 축제만 원문 그대로 · 라인 매핑은 클라 lineSystem 이 근거 있는 것만 붙인다
+router.get('/kto/festivals', async (req, res) => {
+  try {
+    res.json({ source: 'live', ...(await getFestivals(req.query.date)) });
   } catch (e) {
     fallback(res, e);
   }

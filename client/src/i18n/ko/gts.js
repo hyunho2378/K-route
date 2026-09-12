@@ -123,6 +123,8 @@ export default {
       // [V5-9] 노선 여권 · 담은 코스가 어느 K-콘텐츠 라인의 역으로 이루어졌는지(배지 통과분만 역이 된다)
       lineTitle: "이 코스의 노선",
       lineLocal: "연계 로컬",
+      // [V5-10] 공사 축제(searchFestival2) · 여행 날짜에 걸린 것만 · 기간 한정 배지(상시 역 아님)
+      festivalTitle: "여행 날짜에 열리는 축제",
       proceed: "이 동선으로 진행",
       rebuild: "다시 조립",
       // [V5-3] IA §11.6 CTA 3종(주 go · 보조 build · 텍스트링크 setup)

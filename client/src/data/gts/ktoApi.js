@@ -51,3 +51,5 @@ export const planRoute = (ids, date, startTime) =>
   });
 // [V5-5] 내륙 확산 · { source, of, base, viaNearby, items:[풀 항목 + reasonKey] }
 export const getSpread = (id) => call(`/api/route/spread/${enc(id)}`);
+// [V5-10] 공사 축제 · { source, date, dateTo, total, items:[searchFestival2 원문] } · date 생략 시 서버가 KST 오늘로 판정
+export const getFestivals = (date) => call(`/api/kto/festivals${date ? `?date=${enc(date)}` : ''}`);

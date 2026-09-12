@@ -41,6 +41,23 @@ export const lineOfKType = (kType) => LINES.find((l) => l.kType === kType)?.id ?
 //   배지 없는 장소는 라인에 속하지 않고 연계 로컬로 남는다(근거 약한 성지 주장 금지 · SOURCE_SPOTS §8).
 export const lineOfSpot = (spot) => (spot?.badge ? lineOfKType(spot.kType) : null);
 
+// ---- 축제(기간 한정) ----
+// [V5-10] 공사 축제(searchFestival2) → 라인 매핑. 근거 있는 것만 붙이고 애매하면 붙이지 않는다.
+//   춘천막국수닭갈비축제 = SOURCE_SPOTS §1 이 K-푸드 앵커의 근거로 든 바로 그 축제("막국수닭갈비축제로 제도화") → food
+//   춘천애니토이페스티벌 = SOURCE_SPOTS §4 애니메이션박물관의 근거인 애니타운페스티벌 계열 → anime
+//   나머지 실측 6건(강원한우데이·춘천인형극제·술페스타 2종·썸머워터 페스티벌·춘천마임축제)은 K-콘텐츠 라인 근거가 없어 매핑하지 않는다.
+//   축제는 상시 역이 아니라 기간 한정 배지다. 성지 주장·K배지는 그대로 SOURCE_SPOTS 앵커에만 붙는다(grade 규율 불변).
+const FESTIVAL_LINES = [
+  { key: '막국수닭갈비축제', line: 'food' },
+  { key: '애니토이페스티벌', line: 'anime' },
+];
+const festKey = (s) => String(s ?? '').replace(/\s/g, '');
+// 공사 축제 제목(원문 ko) → 라인 · 공백 무시 포함 판정("제38회 …" 같은 회차 접두를 견딘다) · 근거 없으면 null
+export const lineOfFestival = (title) => {
+  const t = festKey(title);
+  return t ? FESTIVAL_LINES.find((f) => t.includes(f.key))?.line ?? null : null;
+};
+
 // ---- 스탯 축 ----
 // 라인 축 3개 = 라인을 판별한다 / 보조 축 4개 = q2 성향(축 이름 = q2 답 값) · 라인을 직접 고르지 않는다.
 export const LINE_AXES = ['drama', 'food', 'anime'];

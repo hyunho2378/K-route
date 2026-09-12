@@ -7,10 +7,12 @@ import {
   LINES,
   LINE_BG,
   LINE_FACE,
+  LINE_IDS,
   LINE_RING,
   NO_LINE_FACE,
   levelOf,
   lineOf,
+  lineOfFestival,
   lineOfKType,
   lineOfSpot,
   statsOf,
@@ -77,5 +79,27 @@ assert.equal(levelOf({}), 0);
 assert.equal(levelOf({ q1: [] }), 0);
 assert.equal(levelOf({ q1: ['kfood'] }), 1);
 assert.equal(levelOf({ q1: ['kfood'], q2: 'cafe', q3: 'solo', q4: 'half', q5: 'taxi' }), 5);
+
+// [V5-10] 축제 → 라인 · 근거 있는 둘만 붙고 나머지는 null(법정동 51/110 실측 8건 전부 대조)
+assert.equal(lineOfFestival('춘천막국수닭갈비축제'), 'food');
+assert.equal(lineOfFestival('춘천애니토이페스티벌'), 'anime');
+for (const t of [
+  '강원한우데이',
+  '제38회 춘천인형극제',
+  '춘천 미니 술페스타',
+  '춘천 술 페스타',
+  '춘천 썸머워터 페스티벌',
+  '춘천마임축제',
+]) {
+  assert.equal(lineOfFestival(t), null, `근거 없는 축제에 라인이 붙었다: ${t}`);
+}
+assert.equal(lineOfFestival(''), null);
+assert.equal(lineOfFestival(null), null);
+// 회차 접두·공백이 섞여도 같은 판정이어야 한다(공사 제목 표기가 해마다 흔들린다)
+assert.equal(lineOfFestival('제20회 춘천 막국수닭갈비 축제'), 'food');
+// 매핑 결과는 실재하는 라인이어야 한다(오타가 나면 도트가 조용히 사라진다)
+for (const t of ['춘천막국수닭갈비축제', '춘천애니토이페스티벌']) {
+  assert.ok(LINE_IDS.includes(lineOfFestival(t)), `없는 라인에 매핑: ${t}`);
+}
 
 console.log('lineSystem 셀프체크 PASS');

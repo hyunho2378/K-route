@@ -314,3 +314,16 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `pages/GtsStamp.jsx` | 로컬 `KIND` 표 폐기 → lineSystem 단일화(구 표는 kanime 을 lake·클래퍼보드로 둬 라인 체계와 어긋났다) · 갈래 배지 = 라인 색 면 · 완주 진행바(분모 = 서버 `kinds`) |
 | 제거(노출만) | `CongestionChip` 렌더 = VenueGrid·VenueDetail·GtsRoute 에서 제거(go `CrowdCard` 는 유지 · 컴포넌트 보존) · `GuideFab` 렌더 = build·route·go 에서 제거(챗 기능·컴포넌트는 보존 · 호출부 0) |
 | i18n | `gts.line.{drama,food,anime}.{name,body}` · `gts.route.lineTitle`·`lineLocal` · `quiz.gauge`·`quiz.level` · `quiz.result.eyebrow`·`quiz.step.result` 문구 교체 · 3언어 동형 1367키 |
+
+---
+
+## v5-10 축제 라인 연결 (2026-09-13 · searchFestival2 실사용) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `server/services/ktoFestivalService.js` | searchFestival2(KorService2) · 지역 필터 없이 받아 법정동으로 거른다(코드는 ensureKtoIds 캐시 · 하드코딩 0 · extraItems 선례) · 응답 원문 무가공 · 24h 메모리 캐시(kto_spots 미적재 = 목록 삭제 로직과 충돌 회피) · `getFestivals(from, to)` 기간 겹침 판정 · 셀프체크 `node services/ktoFestivalService.js` |
+| `server/routes/kto.js` | `GET /api/kto/festivals?date=YYYYMMDD`(없으면 KST 오늘) · 실패는 200 fallback(기존 계약) |
+| `src/data/gts/lineSystem.js` | `lineOfFestival(title)` · 근거 있는 둘만 매핑(춘천막국수닭갈비축제 → food · 춘천애니토이페스티벌 → anime) · 나머지 6건 null · 회차 접두·공백 무시 포함 판정 |
+| `src/data/gts/ktoApi.js` | `getFestivals(date)` |
+| `pages/GtsRoute.jsx` | 라인 요약 아래 기간 한정 배지 행 · 라인 근거 있는 축제만 라인 색 도트 · 날짜 밖이면 행 자체 비렌더 · 상시 역이 아니므로 방문 순서(VisitTimeline)에는 넣지 않는다 |
+| i18n | `gts.route.festivalTitle` · 3언어 동형 1368키 |

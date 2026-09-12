@@ -26,7 +26,7 @@
 | KorService2 · EngService2 | detailIntro2 | contentId, contentTypeId | 유형별(음식점 firstmenu·opentimefood / 문화시설 usetimeculture·usefee) | 상세 |
 | KorService2 · EngService2 | detailImage2 | contentId | originimgurl, smallimageurl, imgname, cpyrhtDivCd | 상세 |
 | KorService2 · EngService2 | searchKeyword2 | keyword, numOfRows, pageNo | areaBasedList2와 동일 필드(areacode·sigungucode·cat1은 공란일 수 있음) | [V5-5] 지역 목록 누락분 보강(ktoSpotService) |
-| KorService2 · EngService2 | searchFestival2 | eventStartDate(필수) · areaCode·sigunguCode(춘천 조회는 0건 · 아래 주) | contentid, title, eventstartdate, eventenddate, addr1, mapx, mapy, firstimage, lDongRegnCd, lDongSignguCd, progresstype, festivaltype | 확인만 · 코드 미사용([V5-9] probe) |
+| KorService2 | searchFestival2 | eventStartDate(필수) · 지역코드는 쓰지 않고 법정동으로 거른다(아래 주) | contentid, title, eventstartdate, eventenddate, addr1, mapx, mapy, firstimage, lDongRegnCd, lDongSignguCd, progresstype, festivaltype | [V5-10] 기간 한정 축제 배지(ktoFestivalService · GET /api/kto/festivals) |
 | KorService2 | categoryCode2 | 없음(cat1 7) · cat1 + cat2(cat3) | code, name | 분류 이름 근거(아래) |
 | TatsCnctrRateService | tatsCnctrRatedList | areaCd, signguCd(시도+시군구 5자리), tAtsNm(선택), numOfRows, pageNo | baseYmd, tAtsNm, cnctrRate | 집중률 |
 | TarRlteTarService1 | areaBasedList1 | areaCd, signguCd(5자리), baseYm(YYYYMM) | baseYm, tAtsNm, rlteTatsNm, rlteRank, rlteCtgryLclsNm·Mcls·Scls | 최신 baseYm 탐색 |
@@ -60,6 +60,10 @@
   춘천 축제 8건이 전부 areacode·sigungucode 공란이고 법정동 51/110 만 갖고 있기 때문이다(남이섬과 같은 구조). 채택하려면 지역 필터 없이 받아 법정동 51/110 으로 거른다.
   실측 8건: 강원한우데이 · 제38회 춘천인형극제 · 춘천 미니 술페스타 · 춘천 술 페스타 · 춘천 썸머워터 페스티벌 · 춘천마임축제 · 춘천막국수닭갈비축제(20261014~18) · 춘천애니토이페스티벌(20261003~05).
   `searchFestival1` 은 폐기(HTTP 400 · NO_OPENAPI_SERVICE_ERROR).
+- [V5-10] 채택: `ktoFestivalService` 가 지역 필터 없이 받아 법정동 51/110 으로 거른다(코드는 ensureKtoIds 캐시에서 읽는다 · 하드코딩 0 ·
+  ktoSpotService.extraItems 와 같은 계약). 응답 항목은 가공 없이 24h 메모리 캐시에 둔다(kto_spots 에 넣지 않는다: 목록 갱신이
+  "목록에 없는 행 삭제"라 매번 지워진다). `GET /api/kto/festivals?date=YYYYMMDD`(없으면 KST 오늘)가 그 날짜에 열려 있는 축제만 원문으로 내린다.
+  실측 2026-09-13: 오늘 1건(제38회 춘천인형극제 0910~0916) · 10-16 1건(춘천막국수닭갈비축제 1014~1018) · 10-13 0건 · 10-04 1건(춘천애니토이페스티벌 1003~1005).
 - [V5-6] K-가이드 지식 = `spot_chunks`(overview · intro · odii · related · source) · `node server/scripts/build-knowledge.js` · 기존 채택 오퍼레이션만 쓴다.
   2026-09-12 적재: 풀 206곳 · 공사 호출 607회(detailCommon2·Intro2·Image2 ko 134 · en 13 · searchKeyword1 162 · areaBasedList1 1 · 집중률 2) ·
   odii는 그날 일일 한도 초과(HTTP 429 LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS)로 건너뜀 → 한도가 풀리면 같은 스크립트를 다시 돌린다(다른 소스 행은 그대로 갈아 끼움).

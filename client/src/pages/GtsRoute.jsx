@@ -6,16 +6,16 @@
 //   K-가이드 봇 FAB 자리(챗은 P3 · 비활성).
 // [V3] §32 리스트 폴백 폐지 · 어떤 조합에서도 지도 라인 상시 렌더(mockCoords 결정적 DEMO 좌표 · 좌표 없는 장소 포함 시 mockNotice 고지).
 // 가드(§31 · [V5-3]): 추천 결과 + 정원(q4)만큼 담음 · 미충족 시 build(또는 quiz)로 replace. 통과 시 route 경유 마킹.
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { planRoute } from '../data/gts/ktoApi';
+import { getFestivals, planRoute } from '../data/gts/ktoApi';
 import ItineraryMap from '../components/gts/ItineraryMap';
 import KBadge from '../components/gts/KBadge';
 import VisitTimeline from '../components/gts/VisitTimeline';
 import Container from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import { useGts, useGtsGuard } from '../context/GtsContext';
-import { LINE_BG, LINE_IDS, lineOfSpot } from '../data/gts/lineSystem';
+import { LINE_BG, LINE_IDS, lineOfFestival, lineOfSpot } from '../data/gts/lineSystem';
 import LangSwap from '../i18n/LangSwap';
 
 // [V5-5] 추천 날짜 표기 · 20260916 → 09.16(언어 무관 숫자)
@@ -25,8 +25,10 @@ export default function GtsRoute() {
   const ok = useGtsGuard('route');
   // course = Context 파생(useMemo) · 참조 고정이라 ItineraryMap 재마운트 없음
   //   [V5-5] plan이 있으면 course는 설계 순서다(Context에서 적용) · plan 없으면 담은 순서
-  const { course, markRouteVisited, trackStep, plan, setPlan } = useGts();
+  const { course, markRouteVisited, trackStep, plan, setPlan, travelDate } = useGts();
   const navigate = useNavigate();
+  // [V5-10] 여행 날짜에 열리는 공사 축제 · setup 을 안 거치면 travelDate 가 없다(심사 경로) → 서버가 KST 오늘로 판정한다
+  const [festivals, setFestivals] = useState([]);
 
   useEffect(() => {
     if (ok) markRouteVisited();
@@ -47,6 +49,18 @@ export default function GtsRoute() {
     // course는 설계 적용 시 순서만 바뀐다 → 의존성은 id 목록(ids)으로 고정
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ok, plan, ids]);
+
+  // [V5-10] 축제는 기간 한정이라 날짜가 바뀌면 다시 받는다 · 실패·fallback이면 빈 배열(섹션 자체가 안 그려진다)
+  useEffect(() => {
+    if (!ok) return undefined;
+    let alive = true;
+    getFestivals(travelDate ? travelDate.replaceAll('-', '') : undefined).then((r) => {
+      if (alive) setFestivals(Array.isArray(r.items) ? r.items : []);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [ok, travelDate]);
 
   if (!ok) return null;
 
@@ -143,6 +157,28 @@ export default function GtsRoute() {
                     <span className="font-display font-bold">{localCount}</span>
                   </span>
                 )}
+              </div>
+            )}
+            {/* [V5-10] 기간 한정 배지 · 여행 날짜에 걸린 공사 축제만(날짜 밖이면 서버가 주지 않아 행 자체가 사라진다) ·
+                라인 근거가 있는 축제에만 라인 색 도트 · 상시 역이 아니므로 아래 방문 순서에는 넣지 않는다 */}
+            {festivals.length > 0 && (
+              <div className="flex flex-wrap items-center gap-8">
+                <LangSwap k="gts.route.festivalTitle" className="text-small font-semibold" />
+                {festivals.map((f) => {
+                  const line = lineOfFestival(f.title);
+                  return (
+                    <span
+                      key={f.contentid}
+                      className="inline-flex min-w-0 max-w-full items-center gap-8 rounded-pill bg-white px-12 py-4 text-caption font-semibold text-ink shadow-sm"
+                    >
+                      {line && <span aria-hidden="true" className={`h-8 w-8 shrink-0 rounded-pill ${LINE_BG[line]}`} />}
+                      <span className="min-w-0 truncate">{f.title}</span>
+                      <span className="shrink-0 font-display font-bold">
+                        {fmtDate(f.eventstartdate)}~{fmtDate(f.eventenddate)}
+                      </span>
+                    </span>
+                  );
+                })}
               </div>
             )}
             {hasMock && (
