@@ -16,6 +16,7 @@ export function routeKeyFromPath(pathname) {
   if (pathname === '/gts/checkout') return 'gtsCheckout';
   if (pathname === '/gts/quiz') return 'gtsQuiz'; // [V5-3]
   if (pathname === '/gts/go') return 'gtsGo'; // [V5-3]
+  if (pathname.startsWith('/stamp/')) return 'stamp'; // [V5-6]
   if (pathname === '/travel-log') return 'travelLog'; // [V3]
   if (pathname === '/hands-free' || pathname === '/gate/hands-free') return 'handsfree';
   if (pathname === '/loop') return 'loop';

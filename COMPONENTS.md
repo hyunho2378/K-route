@@ -254,7 +254,7 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `src/data/gts/quizQuestions.js` | IA §11.3 5문항(option id = server recommendService.ANSWERS) · Q1_EXCLUSIVE('아직 안 정함' 배타) · TRAVEL_TYPE_ICONS(q2 → lucide) |
 | `src/components/gts/KBadge.jsx` | props `spot`. badge(SOURCE anchor && 강함·중간) + K 4종(kfood·kdrama·kanime·kpop)만 · 흰 pill + BadgeCheck(primary) + ink 라벨 · 페이드 인 · 좁으면 말줄임 |
 | `src/components/gts/CongestionChip.jsx` | props `band`('relaxed'·'moderate'·'busy'), `labelKey`(스크린리더 맥락 · null이면 생략). 흰 pill + 원색 도트(green·yellow·spice) + ink 라벨 · 색 전환만 · 경계 32.15 / 61.16(서버 band) |
-| `src/components/gts/GuideFab.jsx` | K-가이드 봇 FAB 자리(비활성 · 우하단 fixed · z-dock · 챗 BottomSheet는 P3) |
+| `src/components/gts/GuideFab.jsx` | K-가이드 봇 FAB · [V5-6] 활성(아래 P3-C 표) |
 | GtsContext | 상태 quizAnswers·recommended·goOrigin · 액션 setQuizAnswer·submitQuiz(answers, lang)·selectSpot·setGoOrigin · 파생 cap(q4 반나절 3·하루 4)·course(방문 순서 스팟) · 가드 quiz → build → route → go(checkout = route 경유 유지) · v4 setMealPlan·toggleMeal·togglePick 제거 |
 | StepStage | 신규 prop `nextLabel`(다음 버튼 노드) · `exitKey`(나가기 카피 접두) · 진행 도트 색 전환 · 짧은 스텝 세로 중앙 · 겹친 모달 안 Escape 무시 · 사유 문구 ink |
 | SuccessStamp · LangSwap · VisitTimeline · StopPopup | `mark`(이니셜 대신 노드) · `vars`({이름} 치환) · items[].extra(부가 노드) · 체류 0이면 체류 칩 비렌더 |
@@ -266,3 +266,32 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | B 코스 담기 | pages/GtsBuild.jsx · components/gts/{VenueGrid,VenueDetail,CourseQueue}.jsx | 단일 풀 = 추천 결과 · 정원 q4 · 카드 = 공사 대표이미지 → webp → 텍스트 + K배지 + 사유 1줄 + 집중률 Chip · 상세 = 공사 detailCommon·Intro 원문 + odii([P3-A] 장소명 완전일치 테마만 · 없으면 블록 비렌더 · 테마명 병기 없음) · 리뷰 제거 |
 | C 출발 | pages/GtsGo.jsx · components/go/{LegTimeline,CrowdCard}.jsx · ItineraryMap 선택 prop(pinLabels·drawMs·labelKey) | §21 동의 → 현재 위치(거부 시 춘천역) → FieldSelect 도착 · /api/go 도보·택시 '예상' 레그 · 지도 폴리라인(거리 비례 draw-on) · 집중률 카드(3xl 이상 우측) · 다음 장소 |
 | 통합(오케스트레이터) | pages/GtsRoute.jsx · Ticket(공사 id 풀 해석) · GtsSetup(route 경유 체크아웃 직행) · GtsCheckout(course) | route CTA 3종 + K배지·집중률 + FAB |
+
+## v5-5 리듬 코스 증분 (2026-09-12 · 동선 설계) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `server/services/routePlanner.js` | 결정론 동선 엔진 · planRoute(spots, { date, startTime }, { relatedNames, congestionDays }) → { order, stops, legs, metrics, assumed } · 좌표 보유분 전 순열(≤6!) 완전탐색 · 비용 = 이동 + 대기 + 막차 이후 페널티 − 연관 인접 가산 · ASSUME(배차·막차·속도 PLACEHOLDER · TAGO 시내버스 승인 전) · 셀프체크 `node services/routePlanner.js` |
+| `server/routes/plan.js` | POST `/api/route/plan`(ids ≤ 8 · date · startTime) · GET `/api/route/spread/:id`(내륙 확산 · 연관 0건이면 가까운 기준 관광지 경유 viaNearby) · 실패 200 fallback |
+| `server/services/ktoRelatedService.js` | getBaseNames() 추가 = 연관 목록을 가진 기준 관광지 이름(areaBasedList1 tAtsNm · 24h 캐시) |
+| `server/services/ktoSpotService.js` | EXTRA_KEYWORDS(searchKeyword2) 목록 보강 · raw는 원문(list) + 형제 키 extra:true · 분류 필터 예외 |
+| GtsContext | 상태 `plan`(설계 결과 · 담기 변경 시 자동 무효) · 액션 `setPlan`·`addSpots`(확산 추천을 후보 풀 앞에 삽입) · `course` = plan.order가 같은 구성이면 그 순서 |
+| `VisitTimeline` | `items[].leg` = 다음 장소까지 구간 노드(이동·대기·막차 이후) · 순서 변경 시 FLIP 리플로우(transform만 · reduced-motion 정지) |
+| `pages/GtsRoute.jsx` | 순서 근거 카드(연관 쌍 · 이동대기 절감 · 막차 · 혼잡 날짜) + 타임라인 구간 표기 · 지도 라인 = 설계 순서 |
+| `pages/GtsBuild.jsx` | 마지막으로 담은 장소 기준 확산 섹션(기준지 이름 + 직접 연관/인접 경유 근거) · 확산 스팟은 후보 풀 앞 |
+| i18n | `gts.route.plan.*`(11키) · `gts.build.spread.*`(3키) · `quiz.reason.spread` · 3언어 동형 |
+
+---
+
+## v5 P3-C 증분 ([V5-6] K-가이드 RAG · NFC 스탬프 · 2026-09-12) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `src/components/gts/GuideFab.jsx` | props `lift`(bool · StepStage 하단 버튼 줄 위로). body 포털 · z-sheet(build StepStage 위 · route·go Dock 위) · 48px 원 · MessageCircle 24 · 탭 → ChatSheet |
+| `src/components/chat/ChatSheet.jsx` | props `open`, `onClose`. Modal(<lg BottomSheet §36 / lg+ Dialog) 안 대화 · 컨텍스트 = GtsContext picks · 말풍선 bh-rise-in · 대기 opacity 펄스 · 원문 모드·정보 없음·오류 문구는 chat 사전 · 출처 = Chip(MapPin) → 닫고 /gts/build 상세 |
+| `src/components/chat/AnswerText.jsx` | props `text`. 동해사이 AnswerText 이식(볼드·불릿·번호·문단) · 표·액션 바·문단별 칩 제외 · 텍스트 노드로만 |
+| `src/components/chat/useGuideChat.js` | 훅 `useGuideChat({ lang, selectedSpotIds })` → `{ messages, streaming, send }`. 동해사이 useSovereignChat ndjson 읽기 이식 + noinfo·mode 이벤트 · stripMarkdown·fixJosa·stripEmoji export · 메모리에만 |
+| `src/pages/GtsStamp.jsx` | `/stamp/:spotId/:t`. postStamp 1회 → SuccessStamp(갈래 아이콘 UtensilsCrossed·Clapperboard) · 갈래 배지 · 남은 갈래 장소 · 완주 시 인증서 PNG(§43 canvas 다운로드 · 사용자 언어) |
+| GtsBuild | `<GuideFab lift />` · `location.state.spot`(챗 출처 칩)으로 VenueDetail instant 오픈(도킹 크기 중앙 rect) 후 state 비움 |
+| `src/data/gts/ktoApi.js` | `openChat(body)` → Response(ndjson · 네트워크 오류 null) · `getStamps()` · `postStamp(spotId, t)` · sendChat 스텁 제거 |
+| 서버 | `services/rag.mjs`(동해사이 검색 로직 이식 · setKnowledge) · `services/byteFallback.mjs`(원본 바이트 동일) · `services/ragService.js`(spot_chunks 적재·검색 적재) · `services/llmService.js` chatRequest·translate(Ollama · Gemini) · `routes/chat.js` · `services/stampService.js` · `routes/stamps.js` · `scripts/{build-knowledge,stamp-tags}.js` |

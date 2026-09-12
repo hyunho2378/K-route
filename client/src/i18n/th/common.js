@@ -14,6 +14,7 @@ export default {
       gtsCheckout: "ยืนยันการจอง",
       gtsQuiz: "ค้นหาสไตล์ของคุณ", // [V5-3]
       gtsGo: "ออกเดินทาง", // [V5-3]
+      stamp: "สแตมป์ทัวร์", // [V5-6]
       travelLog: "บันทึกการเดินทาง",
       lineDetail: "สาย",
       booking: "จองที่นั่ง",
@@ -34,7 +35,7 @@ export default {
     gate: "วางแผนการเดินทาง",
     handsfree: "ส่งกระเป๋า",
     loop: "สายในเมือง",
-    gts: "สร้างคอร์สเที่ยว",
+    gts: "K-Route",
     travelLog: "บันทึกการเดินทาง",
     reviews: "รีวิว",
     profile: "โปรไฟล์",

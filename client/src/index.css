@@ -174,3 +174,15 @@
     opacity: 1;
   }
 }
+
+/* [V5-6] K-가이드 말풍선 등장(MOTION chat) · opacity + 위로 8px · transform·opacity만 · reduced-motion은 @layer base 전역 규칙이 즉시 표시로 축약 */
+@keyframes bh-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

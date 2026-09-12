@@ -18,6 +18,8 @@ const ktoRouter = require('./routes/kto'); // [V5-0] K-Route 스텁 4종(전부 
 const quizRouter = require('./routes/quiz');
 const chatRouter = require('./routes/chat');
 const goRouter = require('./routes/go');
+const planRouter = require('./routes/plan'); // [V5-5] 동선 설계·내륙 확산
+const stampsRouter = require('./routes/stamps'); // [V5-6] NFC 성지 스탬프
 
 const app = express();
 app.set('trust proxy', 1); // Render 등 프록시 뒤 secure 쿠키
@@ -83,8 +85,10 @@ app.use('/api', profileRouter); // [V10] 프로필 사진 업로드
 app.use('/api', ratesRouter); // [V12] 환율
 app.use('/api', ktoRouter); // [V5-0] 공사 OpenAPI 스텁
 app.use('/api', quizRouter); // [V5-0] 취향 설문 추천 스텁
-app.use('/api', chatRouter); // [V5-0] K-가이드 봇 스텁
+app.use('/api', chatRouter); // [V5-6] K-가이드 봇(공사 데이터 RAG)
 app.use('/api', goRouter); // [V5-0] 현위치 교통 스텁
+app.use('/api', planRouter); // [V5-5] 리듬 코스 동선 설계 · 내륙 확산
+app.use('/api', stampsRouter); // [V5-6] NFC 성지 스탬프
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {

@@ -152,3 +152,12 @@ CREATE TABLE IF NOT EXISTS chat_logs (
   sources    JSONB,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- [V5-6] NFC 성지 스탬프(URL 태그 최소 데모 · IA §11.10 개정) · 멱등(IF NOT EXISTS · DROP 없음)
+--   spot_id = SOURCE_SPOTS venue id(앵커 · grade 강함) · 같은 곳은 사용자당 한 번(PRIMARY KEY)
+CREATE TABLE IF NOT EXISTS stamps (
+  user_id    INTEGER NOT NULL,
+  spot_id    TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  PRIMARY KEY (user_id, spot_id)
+);

@@ -78,6 +78,9 @@
 | /gts/go | GtsGo | RequireAuth + useGtsGuard | 신설 · 현위치→첫 장소 교통 |
 | /gts/setup | GtsSetup | 기존 유지 | route에서 "차량으로 이동" 링크로만 진입(심사 경로 밖) |
 | /gts/checkout | 기존 유지 | 기존 | BM 근거로 남김 |
+| /stamp/:spotId/:t | GtsStamp | RequireAuth | [V5-6] NFC 성지 스탬프(스티커 URL · 토큰은 로그인 후에도 남게 경로에 둔다 · IA §11.12) |
+
+- [V5-6] `ResetToHomeOnLoad`([V20] 새로고침·직접 URL 진입 시 홈 리셋) 예외에 `/stamp/*` 를 넣었다. NFC 태그는 항상 새 탭 전체 로드라 예외가 없으면 스탬프를 찍을 수 없다(`/admin` 과 같은 사유).
 
 - useGtsGuard 스텝 순서 = quiz → build → route → go. setup·checkout은 별도 분기(가드 재설계는 IA §11 세션).
 - 나머지 라우트(/gate, /ticket, /travel-log, /reviews, /admin, /loop 등) 전부 불변.

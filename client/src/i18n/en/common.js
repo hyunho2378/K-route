@@ -15,6 +15,7 @@ export default {
       gtsCheckout: "Checkout",
       gtsQuiz: "Find your Chuncheon", // [V5-3]
       gtsGo: "Head to your stop", // [V5-3]
+      stamp: "Stamp tour", // [V5-6]
       travelLog: "Travel Log",
       lineDetail: "Line",
       booking: "Reserve seats",
@@ -35,7 +36,7 @@ export default {
     gate: "Trip Planner",
     handsfree: "Bag Delivery",
     loop: "City Lines",
-    gts: "Tour Builder",
+    gts: "K-Route",
     travelLog: "Travel Log",
     reviews: "Reviews",
     profile: "Profile",

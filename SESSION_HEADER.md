@@ -22,6 +22,7 @@
 - 레이아웃·반응형·4K → RESPONSIVE.md (루트 이식)
 - 백엔드·DB·API → server/lib/tago.js(계약 선례) + docs/kto/*(공사 활용가이드) + KTO_API.md
 - 공사 API 작업 → KTO_API.md (엔드포인트 근거는 docs/kto 문서에서만)
+- 제출물 작업 → docs/submission/*(기능설명서 · 공사 OpenAPI 사용처 · 시연 시나리오) + README.md
 
 규칙: 문서를 새로 만들거나 이름 바꾸면 이 파일을 즉시 갱신. 이 목록에 없는 문서를 근거로 삼지 않는다.
 비고: 레포 .claude/skills 에는 animation-vocabulary·apple-design·emil-design-eng·improve/review-animations

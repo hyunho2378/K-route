@@ -13,6 +13,7 @@ export default {
       gtsCheckout: "결제 확인",
       gtsQuiz: "취향 찾기", // [V5-3]
       gtsGo: "출발", // [V5-3]
+      stamp: "스탬프 투어", // [V5-6]
       travelLog: "트래블 로그",
       lineDetail: "라인",
       booking: "좌석 예약",
@@ -33,7 +34,7 @@ export default {
     gate: "길찾기",
     handsfree: "짐 보내기",
     loop: "시내 라인",
-    gts: "코스 만들기",
+    gts: "케이로드",
     travelLog: "트래블 로그",
     reviews: "후기",
     profile: "프로필",

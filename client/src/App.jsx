@@ -20,6 +20,7 @@ import GtsCheckout from './pages/GtsCheckout';
 import GtsGo from './pages/GtsGo'; // [V5-3]
 import GtsQuiz from './pages/GtsQuiz'; // [V5-3]
 import GtsRoute from './pages/GtsRoute';
+import GtsStamp from './pages/GtsStamp'; // [V5-6]
 import GtsSetup from './pages/GtsSetup';
 import Home from './pages/Home';
 import LegalPrivacy from './pages/LegalPrivacy';
@@ -43,8 +44,9 @@ function ResetToHomeOnLoad() {
     // [V25] /admin(대시보드 첫 진입)은 아바타·햄버거 메뉴의 Dashboard 링크가 새 탭(target=_blank)으로 여는
     //   전체 페이지 로드다 — 여기서 홈으로 리셋하면 관리자 진입 자체가 막힌다(회귀). 이 경로만 예외 처리.
     //   (/admin/users는 2차 인증 게이트 유지를 위해 예외 아님 — 대시보드 내 버튼 경유 SPA 이동만 허용.)
+    //   [V5-6] /stamp/* 도 예외다: NFC 스티커는 늘 새 탭 전체 로드로 열리므로 여기서 홈으로 돌리면 스탬프를 찍을 수 없다(기능 자체가 막힌다).
     const path = window.location.pathname;
-    if (path !== '/' && path !== '/admin') navigate('/', { replace: true });
+    if (path !== '/' && path !== '/admin' && !path.startsWith('/stamp/')) navigate('/', { replace: true });
   }, [navigate]);
   return null;
 }
@@ -72,6 +74,8 @@ export default function App() {
                     {/* [V5-3] K-Route 취향 찾기·출발(IA §11.3·§11.7) */}
                     <Route path="/gts/quiz" element={<RequireAuth><GtsQuiz /></RequireAuth>} />
                     <Route path="/gts/go" element={<RequireAuth><GtsGo /></RequireAuth>} />
+                    {/* [V5-6] NFC 성지 스탬프(IA §11.10 개정 · 스티커 URL · 토큰은 경로에 둬야 로그인 후에도 남는다) */}
+                    <Route path="/stamp/:spotId/:t" element={<RequireAuth><GtsStamp /></RequireAuth>} />
                     <Route path="/ticket/:bookingId" element={<Ticket />} />
                     <Route path="/travel-log" element={<TravelLog />} />
                     <Route path="/reviews" element={<Reviews />} />
