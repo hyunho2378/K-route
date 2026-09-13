@@ -65,3 +65,20 @@ export function ktoHref(html) {
   const url = /href=["']([^"']+)["']/i.exec(s)?.[1] ?? ktoText(s);
   return /^https?:\/\//i.test(url) ? url : null;
 }
+
+// [V5-17] 공사 이미지 표시용 주소 · 원문은 http 로 오는데 배포는 https 라 그대로 쓰면 mixed content 로 차단된다.
+//   원문(kto_spots.raw)은 그대로 두고 화면에 넣기 직전에만 바꾼다(서버 spotPool.httpsImage 와 같은 규칙 · KTO_API 규율).
+export const ktoImageUrl = (u) =>
+  u ? String(u).replace(/^http:\/\/tong\.visitkorea\.or\.kr\//, 'https://tong.visitkorea.or.kr/') : null;
+
+// [V5-17] 상세 사진 갤러리 · detailImage2 원문 배열(raw.images) → 표시용 { key, src, alt }.
+//   서버가 이미 저장해 둔 것만 쓴다(신규 API 호출 0) · 썸네일은 smallimageurl 우선, 없으면 원본.
+//   주소가 비었거나 http 변환 후에도 쓸 수 없는 항목은 떨군다(§9.4 빈 박스 금지).
+export const ktoGallery = (detail) =>
+  (detail?.images ?? [])
+    .map((img, n) => ({
+      key: String(img.serialnum ?? n),
+      src: ktoImageUrl(img.smallimageurl || img.originimgurl),
+      alt: ktoText(img.imgname),
+    }))
+    .filter((img) => img.src);

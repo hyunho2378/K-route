@@ -182,6 +182,7 @@ export default {
       menu: "Menu",
       parking: "Parking",
       homepage: "Website",
+      photos: "Photos", // [V5-17] detailImage2 갤러리
       audio: "Audio guide",
       audioBy: "Odii audio guide by Korea Tourism Organization",
       source: "Source: Korea Tourism Organization TourAPI",

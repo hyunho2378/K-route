@@ -24,7 +24,7 @@ import { X } from 'lucide-react';
 import { VENUE_DETAILS } from '../../data/gts/venueDetails';
 import { venues } from '../../data/gts/venues';
 import { getSpotDetail } from '../../data/gts/ktoApi';
-import { ktoHref, ktoText, spotImages } from '../../data/gts/spots';
+import { ktoGallery, ktoHref, ktoText, spotImages } from '../../data/gts/spots';
 import LangSwap from '../../i18n/LangSwap';
 import { useLang } from '../../i18n/LangContext';
 import Button from '../ui/Button';
@@ -116,6 +116,14 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
   const failImg = (at) => () => setImgAt((i) => (i === at ? i + 1 : i));
   // [V5-3] 상세 조회 결과 · null = 로딩 · item 없음 = 실패({ source:'fallback' })
   const [info, setInfo] = useState(null);
+  // [V5-17] 갤러리에서 실제로 못 불러온 사진은 떨군다(빈 박스 금지) · 장소·언어가 바뀌면 초기화
+  const [badPhotos, setBadPhotos] = useState(() => new Set());
+  const dropPhoto = (key) => setBadPhotos((s) => (s.has(key) ? s : new Set(s).add(key)));
+  // 표시할 사진 = 서버가 저장해 둔 detailImage2 원문을 표시용으로 거른 것(신규 호출 0) · 로드 실패분 제외
+  const photos = useMemo(
+    () => ktoGallery(info?.detail).filter((p) => !badPhotos.has(p.key)),
+    [info, badPhotos],
+  );
   const rootRef = useRef(null);
   const timers = useRef([]);
   const later = (fn, ms) => timers.current.push(setTimeout(fn, ms));
@@ -131,6 +139,7 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
   useEffect(() => {
     let alive = true;
     setInfo(null);
+    setBadPhotos(new Set()); // [V5-17] 장소·언어가 바뀌면 실패 기록도 새로
     getSpotDetail(venue.id, lang).then((r) => {
       if (alive) setInfo(r);
     });
@@ -242,8 +251,29 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
             <p className="whitespace-pre-line text-body">{about}</p>
           </Block>
         )}
-        {(rows.length > 0 || href) && (
+        {/* [V5-17] 관광사진 갤러리 · 서버가 이미 저장한 detailImage2 원문만 쓴다(신규 호출 0).
+            사진이 없는 장소는 블록 자체를 그리지 않는다(기존 플레이스홀더 유지 · §9.4 빈 박스 금지). */}
+        {photos.length > 0 && (
           <Block order={2} still={still} className="flex flex-col gap-12">
+            <LangSwap k="gts.detail.photos" as="h3" className="text-h3 font-semibold" />
+            <ul className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+              {photos.map((photo) => (
+                <li key={photo.key}>
+                  {/* 고정 비율 · lazy · alt(원문 imgname 없으면 장소명) = DESIGN §169 사진 규칙 */}
+                  <img
+                    src={photo.src}
+                    alt={photo.alt || venue.name.en}
+                    loading="lazy"
+                    onError={() => dropPhoto(photo.key)}
+                    className="aspect-video w-full rounded-md bg-surface object-cover"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
+        {(rows.length > 0 || href) && (
+          <Block order={3} still={still} className="flex flex-col gap-12">
             <LangSwap k="gts.detail.info" as="h3" className="text-h3 font-semibold" />
             {rows.map(([key, value]) => (
               <InfoRow key={key} labelKey={`gts.detail.${key}`}>
@@ -264,7 +294,7 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
             )}
           </Block>
         )}
-        <Block order={3} still={still}>
+        <Block order={4} still={still}>
           <LangSwap k="gts.detail.source" className="text-caption font-medium text-inkMeta" />
         </Block>
       </>
@@ -317,7 +347,7 @@ export default function VenueDetail({ venue, originRect, instant = false, isSele
   //   [P3-A] 서버가 장소명 완전일치 테마만 붙인다 → 없으면 블록 자체 비렌더(테마명 병기로 다른 장소 해설을 설명하지 않는다)
   const story = info?.audio?.stories?.[0];
   const audioBlock = story ? (
-    <Block order={4} still={still} className="flex flex-col gap-12">
+    <Block order={5} still={still} className="flex flex-col gap-12">
       <LangSwap k="gts.detail.audio" as="h3" className="text-h3 font-semibold" />
       <p className="text-body font-semibold">{story.audioTitle}</p>
       {story.audioUrl && (

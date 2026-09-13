@@ -181,6 +181,7 @@ export default {
       menu: "เมนูแนะนำ",
       parking: "ที่จอดรถ",
       homepage: "เว็บไซต์",
+      photos: "รูปภาพ", // [V5-17] detailImage2 갤러리
       audio: "ไกด์เสียง",
       audioBy: "ไกด์เสียง Odii โดยองค์การการท่องเที่ยวเกาหลี",
       source: "ที่มา: TourAPI องค์การการท่องเที่ยวเกาหลี",

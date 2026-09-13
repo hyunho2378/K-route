@@ -182,6 +182,7 @@ export default {
       menu: "대표 메뉴",
       parking: "주차",
       homepage: "홈페이지",
+      photos: "사진", // [V5-17] detailImage2 갤러리
       audio: "오디오 해설",
       audioBy: "한국관광공사 오디 오디오 가이드",
       source: "출처: 한국관광공사 TourAPI",

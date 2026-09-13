@@ -388,3 +388,19 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `components/gts/ItineraryMap.jsx` | **`network` prop = 1층 도시 전체 노선**(고정 배경 · draw-on 없음 · opacity 0.35): gradient 를 안 쓰므로 한 소스에 전 라인을 담고 `['get','color']` 로 칠한다 · 역 2곳 이상 = `gts-network-line`, **역이 1곳뿐인 라인 = `gts-network-dot`(점)** — 없는 역을 지어내지 않는다(SOURCE_SPOTS §8) · 라인 색은 `LINES`+`tokens.lineColors` 조합이 단일 출처(신규 색 0) · `network` 참조가 바뀌면 재렌더라 호출부가 `useMemo` 로 고정 · DEV 훅 `window.__bhItineraryMap`(LoopMap 선례 · 검증 스크립트가 레이어 색을 읽는다) |
 | `pages/GtsRoute.jsx` | `getSpots` 로 풀 전체를 받아 **K배지 통과 + 실좌표** 스팟만 라인별로 묶어 `network` 산출(좌표 없는 스팟 제외 = DEMO 좌표로 없는 역을 세우지 않는다) · 서에서 동으로 정렬해 노선도처럼 읽히게 · 혼잡도 `gts.route.plan.crowd` 렌더 **제거**([V5-9] 결정과 어긋나 있던 조건부 잔재 · 서버 metrics 산출과 i18n 키는 보존) · 지도 아래 `networkNote` 고지 |
 | i18n | `gts.route.networkNote` 1키 신설(언어당 +1) · 3언어 동형 1409키 |
+
+---
+
+## v5-17 관광사진 갤러리 (2026-09-13) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `data/gts/spots.js` | `ktoImageUrl(u)` = 표시용 http → https 변환(공사 원문은 http 로 오는데 배포는 https 라 그대로 쓰면 mixed content 로 차단된다) · 원문(`kto_spots.raw`)은 불변, 화면에 넣기 직전에만 바꾼다(서버 `spotPool.httpsImage` 와 같은 규칙 · KTO_API 규율) · `ktoGallery(detail)` = `detailImage2` 원문 배열(`raw.images`) → `{ key, src, alt }` · 썸네일은 `smallimageurl` 우선, 없으면 `originimgurl` · 주소 없는 항목은 제외 |
+| `components/gts/VenueDetail.jsx` | 공사 스팟 본문에 사진 갤러리 블록 추가(`order` 2 · 기존 이용안내 3 · 출처 4 · 오디오 5 로 한 칸씩 밀림) · 2열, sm 이상 3열 그리드 · `aspect-video` 고정비율 + `loading="lazy"` + alt(원문 `imgname`, 없으면 장소명) = DESIGN §169 · `onError` 는 **그 사진만** 떨군다(§9.4 빈 박스 금지) · 장소·언어가 바뀌면 실패 기록 초기화 · **사진이 없는 장소는 블록 자체를 렌더하지 않는다**(기존 플레이스홀더 유지) · 신규 API 호출 0(서버가 이미 저장한 원문만 사용) |
+| i18n | `gts.detail.photos` 1키 신설(언어당 +1) · 3언어 동형 1410키 |
+
+감사만 하고 코드를 바꾸지 않은 것(이 표에 스펙 없음):
+- **B 드라마·애니 콘텐츠 재확인 = 확인했으나 없음.** 적재된 춘천 164건에 드라마·영화·촬영·세트·애니·만화·캐릭터·토이·웹툰 0건,
+  `searchKeyword2` 로도 드라마·영화·촬영지·만화·캐릭터가 춘천 0건. "애니메이션" 춘천 1건은 이미 등재된 애니메이션박물관 그 시설이다. SOURCE_SPOTS 미수정.
+- **C 축제 배지 = 뷰포트 버그 아님.** 7개 폭(1440~320)에서 `visibility:visible`·조상 overflow 전부 `visible`·잘림 0.
+  실제 원인은 **날짜 조건부 렌더**다(그 날짜에 열리는 축제가 없으면 서버가 0건을 주고 섹션이 통째로 사라진다 · 의도된 [V5-10] 동작).
