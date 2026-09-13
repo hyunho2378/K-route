@@ -377,3 +377,14 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `App.jsx` | `/gts` → `GtsIntro`(구 `Navigate to="/gts/quiz"`) · `ResetToHomeOnLoad` 예외에 `OPEN_PATHS = ['/gts','/travel-log','/reviews']`(하위 경로 포함) 추가 = 직접 URL·새로고침이 말없이 홈으로 튕기던 유일한 조용한 실패 제거(사용자 승인) · 예외 밖 경로의 홈 리셋은 유지 |
 | `components/layout/PageLayout.jsx` | `/gts` → `meta.title.gtsIntro`(신설) · `/gts/setup` 은 `gtsSetup` 유지 |
 | i18n | `home.lines.*` 5키 · `home.evidence.solution` 1키 · `gtsIntro.*` 15키 · `meta.title.gtsIntro` 1키 신설 = 언어당 +22 · `home.services.builder` → `home.services.log` 이름 교체(키 수 불변) · 옛 용어 정리: `meta.title.gtsSetup` "Tour Builder" → 이동 준비 계열 · 3언어 동형 1408키 |
+
+---
+
+## v5-16 노선도 2층 구조 · 라인 색 (2026-09-13) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `components/gts/ItineraryMap.jsx` | **경로선 구간별 라인 색**: 구간 i(역 i → 역 i+1) 색 = 출발 역이 속한 라인, 라인 없는 구간은 중립(`colors.inkSec`). maplibre `line-gradient` 는 레이어 속성이라 feature 별 색을 줄 수 없다 → **색깔별로 소스·레이어를 나눈다**(`gts-route-<key>` + glow/casing/main) · draw-on 은 전 레이어에 같은 진행도(구간이 함께 자란다) · `pinLines` 를 넘기지 않는 호출부(checkout·ticket·go)는 종전 단색 primary 경로 그대로(회귀 방지) |
+| `components/gts/ItineraryMap.jsx` | **`network` prop = 1층 도시 전체 노선**(고정 배경 · draw-on 없음 · opacity 0.35): gradient 를 안 쓰므로 한 소스에 전 라인을 담고 `['get','color']` 로 칠한다 · 역 2곳 이상 = `gts-network-line`, **역이 1곳뿐인 라인 = `gts-network-dot`(점)** — 없는 역을 지어내지 않는다(SOURCE_SPOTS §8) · 라인 색은 `LINES`+`tokens.lineColors` 조합이 단일 출처(신규 색 0) · `network` 참조가 바뀌면 재렌더라 호출부가 `useMemo` 로 고정 · DEV 훅 `window.__bhItineraryMap`(LoopMap 선례 · 검증 스크립트가 레이어 색을 읽는다) |
+| `pages/GtsRoute.jsx` | `getSpots` 로 풀 전체를 받아 **K배지 통과 + 실좌표** 스팟만 라인별로 묶어 `network` 산출(좌표 없는 스팟 제외 = DEMO 좌표로 없는 역을 세우지 않는다) · 서에서 동으로 정렬해 노선도처럼 읽히게 · 혼잡도 `gts.route.plan.crowd` 렌더 **제거**([V5-9] 결정과 어긋나 있던 조건부 잔재 · 서버 metrics 산출과 i18n 키는 보존) · 지도 아래 `networkNote` 고지 |
+| i18n | `gts.route.networkNote` 1키 신설(언어당 +1) · 3언어 동형 1409키 |

@@ -6,9 +6,9 @@
 //   K-가이드 봇 FAB 자리(챗은 P3 · 비활성).
 // [V3] §32 리스트 폴백 폐지 · 어떤 조합에서도 지도 라인 상시 렌더(mockCoords 결정적 DEMO 좌표 · 좌표 없는 장소 포함 시 mockNotice 고지).
 // 가드(§31 · [V5-3]): 추천 결과 + 정원(q4)만큼 담음 · 미충족 시 build(또는 quiz)로 replace. 통과 시 route 경유 마킹.
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getFestivals, planRoute } from '../data/gts/ktoApi';
+import { getFestivals, getSpots, planRoute } from '../data/gts/ktoApi';
 import ItineraryMap from '../components/gts/ItineraryMap';
 import KBadge from '../components/gts/KBadge';
 import VisitTimeline from '../components/gts/VisitTimeline';
@@ -62,6 +62,36 @@ export default function GtsRoute() {
     };
   }, [ok, travelDate]);
 
+  // [V5-16] 1층 = 도시 전체 K-콘텐츠 노선(고정 배경) · 풀 전체에서 배지 통과 + 실좌표 스팟만 라인별로 묶는다.
+  //   좌표 없는 스팟은 넣지 않는다: mockCoords DEMO 좌표로 그리면 있지도 않은 역을 노선도에 세우는 셈이다(SOURCE_SPOTS §8).
+  //   실측 2026-09-13: 배지 15곳 중 실좌표 보유가 kfood 6 · kdrama 1 · kanime 1 → 드라마·애니는 선이 아니라 점으로 그려진다.
+  const [pool, setPool] = useState([]);
+  useEffect(() => {
+    if (!ok) return undefined;
+    let alive = true;
+    getSpots('en').then((r) => {
+      if (alive) setPool(Array.isArray(r.items) ? r.items : []);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [ok]);
+
+  // 라인별 역 좌표 · 서에서 동으로 정렬해 노선도처럼 읽히게 한다(역이 1곳뿐이면 ItineraryMap 이 점으로 그린다).
+  //   참조가 바뀌면 지도가 다시 그려지므로 useMemo 로 고정한다(ItineraryMap network prop 계약).
+  const network = useMemo(() => {
+    const by = {};
+    for (const spot of pool) {
+      const line = lineOfSpot(spot);
+      if (!line || !spot.coord) continue;
+      (by[line] ??= []).push(spot.coord);
+    }
+    return LINE_IDS.filter((id) => by[id]?.length).map((id) => ({
+      lineId: id,
+      coords: by[id].sort((a, b) => a[0] - b[0]),
+    }));
+  }, [pool]);
+
   if (!ok) return null;
 
   // [V5-9] 노선 여권 · 역이 속한 K-콘텐츠 라인(배지 통과분만 역이 된다 · 나머지는 연계 로컬)
@@ -111,15 +141,9 @@ export default function GtsRoute() {
                   className="text-small font-semibold text-ink"
                 />
               </li>
-              {m.busyOnDate != null && (
-                <li>
-                  <LangSwap
-                    k="gts.route.plan.crowd"
-                    vars={{ n: m.busyOnDate, m: m.busyOnBest, date: fmtDate(m.bestDate) }}
-                    className="text-small font-medium text-inkSec"
-                  />
-                </li>
-              )}
+              {/* [V5-16] 혼잡도("Busy spots: N on your date") 렌더 제거 · 혼잡 축은 go 화면 CrowdCard 만 유지한다는
+                  [V5-9] 결정과 어긋나 있었다(조건부라 busyOnDate 가 null 인 날에만 안 보였을 뿐 코드는 살아 있었다).
+                  서버 metrics 의 busyOnDate·bestDate 산출과 i18n 키(gts.route.plan.crowd)는 그대로 둔다(go·향후 재사용). */}
             </ul>
             {plan.assumed && (
               <LangSwap k="gts.route.plan.assumed" className="text-caption font-medium text-inkMeta" />
@@ -129,9 +153,16 @@ export default function GtsRoute() {
 
         <div className="flex flex-col gap-24 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-12">
           {/* 지도 · [V3] 목업 포함 상시 렌더(리스트 폴백 폐지 · mockCoords DEMO 좌표) */}
-          <div className="relative aspect-square overflow-hidden rounded-xl shadow-sm md:aspect-video">
-            {/* [V5-9] 번호 핀 = 그 역이 속한 라인 색(없으면 기존 primary) */}
-            <ItineraryMap venues={course} pinLines={lines} />
+          <div className="flex flex-col gap-8">
+            <div className="relative aspect-square overflow-hidden rounded-xl shadow-sm md:aspect-video">
+              {/* [V5-9] 번호 핀 = 그 역이 속한 라인 색(없으면 기존 primary)
+                  [V5-16] network = 1층 도시 전체 노선(고정 배경) · 경로선은 구간별로 그 역의 라인 색으로 그려진다 */}
+              <ItineraryMap venues={course} pinLines={lines} network={network} />
+            </div>
+            {/* 지도는 하나, 여정은 사람마다 다르다 · 옅은 배경선이 무엇인지 밝힌다 */}
+            {network.length > 0 && (
+              <LangSwap k="gts.route.networkNote" as="p" className="text-caption font-medium text-inkMeta" />
+            )}
           </div>
 
           {/* 방문 순서 · §10.5 세로 타임라인(§28 문법) — 지도와 병렬 배치(lg 좌측) */}

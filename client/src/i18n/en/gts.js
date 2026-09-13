@@ -123,6 +123,8 @@ export default {
       // [V5-9] 노선 여권 · 담은 코스가 어느 K-콘텐츠 라인의 역으로 이루어졌는지(배지 통과분만 역이 된다)
       lineTitle: "Lines in this course",
       lineLocal: "Linked local",
+      // [V5-16] 1층(도시 전체 노선) 고지 · 지도는 하나, 여정은 사람마다 다르다
+      networkNote: "Faint lines are every K-content line in the city. Your own route is drawn on top.",
       // [V5-10] 공사 축제(searchFestival2) · 여행 날짜에 걸린 것만 · 기간 한정 배지(상시 역 아님)
       festivalTitle: "Festivals on your date",
       proceed: "Continue with this route",
