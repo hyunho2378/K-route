@@ -351,3 +351,14 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `pages/GtsStamp.jsx` | 게스트 응답(`guest:true`)이면 방금 찍은 것만 이번 세션 화면에 합성(렌더 코드 불변 · 새로고침 시 사라짐) + 게스트 안내 |
 | `pages/GtsCheckout.jsx` | `onPay` 게스트 통과(LoginGate 제거) + 게스트 데모 표기 · 예약은 user_id 없이 저장되고 계정은 만들어지지 않는다(resolveUserId 는 DEMO_MODE 가 아니면 null) |
 | i18n | `gts.checkout.guestNotice` · `gts.stamp.guestNotice` · 3언어 동형 1386키 |
+
+---
+
+## v5-13 추천 카드 실데이터 · 라인 색 (2026-09-13 · 퀴즈 응답 반영 실측) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `server/services/ktoSpotService.js` | `ensureCatNames()` = categoryCode2 로 cat2 코드 → 이름(ko·en) 적재 · 캐시 `server/cache/kto-cats.json`(kto-ids.json 동형 · 기동 시 1회 8호출 · 실패해도 풀은 산다) · A05(음식)는 cat2 가 '음식점' 하나뿐이라 제외하고 기존 category 3버킷(CAFE_CAT3 카페 분리)이 이긴다 · `toItem` 이 `catName`(실분류 이름)과 `where`(addr1 에서 시도 접두만 덜어 낸 주소)를 붙인다(원문 raw 는 불변) |
+| `server/services/recommendService.js` | 대중교통 거리 페널티(-2)를 앵커에 걸지 않는다(기존 kfood 전용 면제를 고른 라인 전체로 일반화) · 실측: q1=kdrama 의 유일한 앵커 남이섬이 5-2=3 으로 무관한 공원·도서관과 동점이 되어 추천 12곳에서 통째로 빠졌다 → 고친 뒤 1위(score 5) · 셀프체크에 먼 앵커 케이스 추가 |
+| `components/gts/VenueGrid.jsx` | 카드 면 = 토큰(white · mock 은 surface) + shadow.sm + 보더 0 으로 복귀(DESIGN §116) · 사진은 전면 배경이 아니라 상단 `aspect-video` 밴드(§169 고정비율·lazy·alt) — 전면 배경 + ink 75/60/40 그라데이션은 사진이 실려도 카드가 통째로 검게 읽혔다 · 한 줄 = LLM 사유 → `oneLine`·`where` → reasonKey 폴백(버킷 5종이라 12장이 같은 문장이 되던 것) · 분류 칩 = `catName`(없으면 기존 3버킷 키) · 라인 색 도트 = `LINE_BG` + `lineOfSpot`(배지 통과분만 · CourseQueue 와 같은 규칙 · 라인 3색만) |
+| i18n | 신규 키 없음(분류 이름·주소는 공사 데이터라 TriText 로 렌더 · th 는 en 폴백) · 3언어 동형 1386키 유지 |

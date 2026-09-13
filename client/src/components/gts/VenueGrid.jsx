@@ -14,6 +14,7 @@ import { useLang } from '../../i18n/LangContext';
 import Pagination from '../ui/Pagination';
 import KBadge from './KBadge';
 import TriText from './TriText';
+import { LINE_BG, lineOfSpot } from '../../data/gts/lineSystem';
 import { venueCoord } from '../../data/gts/mockCoords';
 import { haversineKm } from '../../data/gts/distance';
 import { spotImages } from '../../data/gts/spots';
@@ -143,10 +144,15 @@ export default function VenueGrid({
           const orderIdx = selected.indexOf(venue.id);
           const isSelected = orderIdx !== -1;
           const leaving = leavingId === venue.id;
-          // [V5-3] 이미지 = 후보 체인의 현재 후보 · 있으면 사진+그라데이션+흰 텍스트, 없으면 라이트 폴백
+          // [V5-3] 이미지 = 후보 체인의 현재 후보 · 소진/없음이면 밴드를 렌더하지 않는다(§9.4 빈 박스 금지)
           const imgAt = imgIdx[venue.id] ?? 0;
           const src = spotImages(venue)[imgAt];
           const hasImage = !!src;
+          // [V5-13] 이 곳이 어느 K-콘텐츠 라인의 역인지 · 배지 없는 연계 로컬은 도트를 달지 않는다(CourseQueue 와 같은 규칙 · 라인 주장 금지)
+          const line = lineOfSpot(venue);
+          // [V5-13] place 마다 다른 한 줄 · 합류 venue 는 큐레이션 한 줄 소개, 공사 스팟은 실주소(where).
+          //   reason(LLM 문장)은 LLM 이 켜졌을 때만 오고, reasonKey 는 5버킷뿐이라 12장이 같은 문장이 된다(실측 2026-09-13).
+          const blurb = venue.oneLine?.en || venue.oneLine?.ko ? venue.oneLine : venue.where;
           return (
             <div
               key={venue.id}
@@ -158,8 +164,8 @@ export default function VenueGrid({
                 onClick={() => onCardClick(venue.id)}
                 aria-pressed={isSelected}
                 data-spot={venue.id}
-                className={`pressable relative flex h-full min-h-[124px] w-full flex-col items-start gap-4 overflow-hidden rounded-lg p-12 text-left shadow-sm ${
-                  hasImage ? 'bg-ink' : venue.mock ? 'bg-surface' : 'bg-white'
+                className={`pressable relative flex h-full min-h-[124px] w-full flex-col items-start overflow-hidden rounded-lg text-left shadow-sm ${
+                  venue.mock ? 'bg-surface' : 'bg-white'
                 } ${isSelected ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}
                 // [V13] 큐로 내려가는 마이크로인터랙션 420ms · 축소하며 아래(큐)로 이동하는 경로가 보이게
                 //   (opacity는 약간 늦게 페이드 → 이동 중에도 카드가 보임 = "사라짐 아닌 이동" 인지)
@@ -174,72 +180,63 @@ export default function VenueGrid({
                     : undefined
                 }
               >
-                {/* [V20] 앞면 배경 사진 + 오버레이 · [V5-3] 흰 글자(제목·추천 사유)가 위쪽이라 위가 가장 어둡게(75 → 60 → 40):
-                    흰 사진 최악 기준에서도 흰 글자 4.5:1(ink 57% 이상) · 아래 배지·칩은 자체 흰 면이라 옅어도 된다 */}
+                {/* [V5-13] 사진은 카드 배경이 아니라 상단 밴드다 · DESIGN §116 카드 = bg white + shadow.sm, 보더 0.
+                    전면 배경 + ink 75/60/40 그라데이션은 사진이 실려도 카드가 통째로 검게 읽혔다(실측 2026-09-13) →
+                    고정 비율 밴드로 분리해 사진은 살리고 카드 면은 토큰(white·surface)으로 되돌린다(§169 aspect 고정·lazy·alt 유지). */}
                 {hasImage && (
-                  <>
-                    <img
-                      src={src}
-                      alt={venue.name.en}
-                      loading="lazy"
-                      onError={() => nextImg(venue.id, imgAt)}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/60 to-ink/40"
-                    />
-                  </>
+                  <img
+                    src={src}
+                    alt={venue.name.en}
+                    loading="lazy"
+                    onError={() => nextImg(venue.id, imgAt)}
+                    className="aspect-video w-full bg-surface object-cover"
+                  />
                 )}
                 {/* [V22] 선택 배지 = 우상단(queueMode false 전용 · 큐 모드는 선택 카드가 큐로 이동) */}
                 {isSelected && (
-                  <span className="absolute right-8 top-8 z-[1] inline-flex items-center rounded-pill bg-primary px-8 py-2 text-caption font-semibold text-white">
+                  <span className="absolute right-8 top-8 z-[1] inline-flex items-center rounded-pill bg-primary px-8 py-2 text-caption font-semibold text-white shadow-sm">
                     {orderIdx + 1}
                   </span>
                 )}
-                {/* [V22] 제목 말줄임 2줄 · 우패딩으로 선택 배지와 분리 */}
-                <TriText
-                  text={venue.name}
-                  className={`relative z-[1] break-words pr-12 text-body font-bold ${hasImage ? 'text-white' : ''}`}
-                  clampClass="line-clamp-2"
-                />
-                {/* [V5-3] 추천 사유 1줄 · LLM 문장(제출 언어) 우선 → 없으면 사전 폴백(quiz.reason.* · 겹침 렌더 각 언어 1줄) */}
-                {venue.reason ? (
-                  <span
-                    className={`relative z-[1] line-clamp-1 text-caption font-medium ${hasImage ? 'text-white' : 'text-inkSec'}`}
-                  >
-                    {venue.reason}
+                {/* [V5-13] 본문 = 밴드 아래 · 패딩이 버튼에서 이리로 내려와 사진이 카드 가장자리까지 간다 */}
+                <span className="flex w-full flex-1 flex-col items-start gap-4 p-12">
+                  {/* [V22] 제목 말줄임 2줄 · 우패딩으로 선택 배지와 분리 */}
+                  <TriText text={venue.name} className="break-words pr-12 text-body font-bold" clampClass="line-clamp-2" />
+                  {/* [V5-13] 한 줄 = LLM 사유 → place 고유 텍스트(한 줄 소개·실주소) → 그것도 없을 때만 버킷 폴백 */}
+                  {venue.reason ? (
+                    <span className="line-clamp-1 text-caption font-medium text-inkSec">{venue.reason}</span>
+                  ) : blurb ? (
+                    <TriText text={blurb} className="text-caption font-medium text-inkSec" clampClass="line-clamp-1" />
+                  ) : (
+                    venue.reasonKey && (
+                      <LangSwap k={venue.reasonKey} className="text-caption font-medium text-inkSec [&>span]:line-clamp-1" />
+                    )
+                  )}
+                  {/* [V5-3] 배지 행 = 좌하단 · 라인 도트 → K배지 → 분류 칩 순(좁으면 줄바꿈 · 배지·칩 우선).
+                      끝 스페이서 = 돋보기(우하단 absolute) 자리 예약: 마지막 줄 칩과 겹치지 않고, 자리가 없으면 다음 줄로 */}
+                  <span className="mt-auto flex w-full flex-wrap items-center gap-4">
+                    {/* [V5-13] 라인 색 도트 · tokens.lineColors 3색만(LINE_BG) · 옆 K배지가 라벨을 말하므로 도트는 색 표시만 */}
+                    {line && <span aria-hidden="true" className={`h-8 w-8 shrink-0 rounded-pill ${LINE_BG[line]}`} />}
+                    {/* [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면 CrowdCard 만 유지) · 컴포넌트는 보존 */}
+                    <KBadge spot={venue} />
+                    {/* [V5-9] 320px 2열에서 긴 라벨이 카드 밖으로 3px 넘쳤다(실측) · 좁으면 말줄임한다
+                        [V5-13] 라벨 = 공사 실분류 이름(catName · categoryCode2) · 없으면 기존 3버킷 사전 키 */}
+                    <span
+                      className={`inline-flex min-w-0 max-w-full items-center rounded-pill px-8 py-2 text-caption font-medium text-inkSec ${
+                        venue.mock ? 'bg-white' : 'bg-surface'
+                      }`}
+                    >
+                      {!venue.mock && venue.catName ? (
+                        <TriText text={venue.catName} className="min-w-0 grid-cols-1" clampClass="truncate" />
+                      ) : (
+                        <LangSwap
+                          k={venue.mock ? 'gts.build.comingSoon' : `gts.build.cat.${venue.category}`}
+                          className="min-w-0 grid-cols-1 [&>span]:truncate"
+                        />
+                      )}
+                    </span>
+                    {onDetail && <span aria-hidden="true" className="h-32 w-32 shrink-0" />}
                   </span>
-                ) : (
-                  venue.reasonKey && (
-                    <LangSwap
-                      k={venue.reasonKey}
-                      className={`relative z-[1] text-caption font-medium [&>span]:line-clamp-1 ${hasImage ? 'text-white' : 'text-inkSec'}`}
-                    />
-                  )
-                )}
-                {/* [V5-3] 배지 행 = 좌하단 · K배지 → 집중률 Chip → 카테고리 칩 순(좁으면 줄바꿈 · 배지·칩 우선).
-                    끝 스페이서 = 돋보기(우하단 absolute) 자리 예약: 마지막 줄 칩과 겹치지 않고, 자리가 없으면 다음 줄로 */}
-                <span className="relative z-[1] mt-auto flex w-full flex-wrap items-center gap-4">
-                  {/* [V5-9] 집중률 Chip 노출 제거(혼잡 축은 go 화면 CrowdCard 만 유지) · 컴포넌트는 보존 */}
-                  <KBadge spot={venue} />
-                  {/* [V5-9] 320px 2열에서 긴 라벨("Food space")이 카드 밖으로 3px 넘쳤다(실측) ·
-                      KBadge 와 같은 처리로 좁으면 말줄임한다(shrink-0 + 말줄임 없음이 원인이었다) */}
-                  <span
-                    className={`inline-flex min-w-0 max-w-full items-center rounded-pill px-8 py-2 text-caption font-medium ${
-                      hasImage
-                        ? 'bg-white/25 text-white'
-                        : venue.mock
-                          ? 'bg-white text-inkSec'
-                          : 'bg-surface text-inkSec'
-                    }`}
-                  >
-                    <LangSwap
-                      k={venue.mock ? 'gts.build.comingSoon' : `gts.build.cat.${venue.category}`}
-                      className="min-w-0 grid-cols-1 [&>span]:truncate"
-                    />
-                  </span>
-                  {onDetail && <span aria-hidden="true" className="h-32 w-32 shrink-0" />}
                 </span>
               </button>
               {onDetail && (

@@ -53,8 +53,9 @@ function recommend(pool, answers) {
     .map((s, order) => {
       let score = 0;
       let why = 'default';
-      const kfoodFirst = picked.has('kfood') && s.badge && s.kType === 'kfood' && s.grade === '강함';
-      if (s.badge && picked.has(s.kType)) {
+      const anchor = s.badge && picked.has(s.kType); // [V5-13] 고른 콘텐츠의 성지 = 방문 이유 그 자체
+      const kfoodFirst = picked.has('kfood') && anchor && s.kType === 'kfood' && s.grade === '강함';
+      if (anchor) {
         score += 5 + (kfoodFirst ? KFOOD_BOOST : 0);
         why = 'anchor';
       } else if (s.kType === 'local' && s.coord && anchorCoords.some((c) => km(c, s.coord) <= LINK_KM)) {
@@ -69,7 +70,11 @@ function recommend(pool, answers) {
         score += 1;
         if (why === 'default') why = 'company';
       }
-      if (!kfoodFirst && answers.q5 === 'transit' && s.coord && km(CENTER, s.coord) > CITY_KM) score -= 2;
+      // [V5-13] 대중교통 거리 페널티는 앵커에 걸지 않는다(기존 kfood 전용 면제를 고른 라인 전체로 넓힘).
+      //   실측 2026-09-13: q1=kdrama 에서 유일한 드라마 앵커(남이섬)가 5-2=3 이 되어 무관한 공원·도서관과 동점이 되고
+      //   동점 정렬(집중률 → 풀 순서)에 밀려 추천 12곳에서 통째로 빠졌다 = "드라마를 골랐는데 드라마 장소가 없다".
+      //   성지는 멀어도 방문 이유라 거리로 강등하지 않는다(먼 곳이라는 사실은 동선 화면이 거리·시간으로 말한다).
+      if (!anchor && answers.q5 === 'transit' && s.coord && km(CENTER, s.coord) > CITY_KM) score -= 2;
       return { s, score, why, order };
     })
     .sort((a, b) => b.score - a.score || (a.s.congestion ?? Infinity) - (b.s.congestion ?? Infinity) || a.order - b.order)
@@ -120,6 +125,15 @@ if (require.main === module) {
     kf.map((x) => [x.id, x.score]),
     [['far-dak', 7], ['near-dak', 7], ['photo-local', 6], ['mid-dak', 5]],
   );
+  // [V5-13] 고른 라인의 앵커는 멀어도 페널티가 없다(kfood 전용 면제의 일반화) · 유일한 드라마 앵커가 무관한 장소에 밀리지 않는다
+  const kd = recommend(
+    [
+      { id: 'far-anchor', kind: 'kto', category: 'activity', coord: [127.52, 37.79], kType: 'kdrama', badge: true, grade: '중간' },
+      { id: 'photo-local', kind: 'kto', category: 'activity', coord: near, kType: 'local', badge: false, cat1: 'A02' },
+    ],
+    { q1: ['kdrama'], q2: 'photo', q3: 'solo', q4: 'half', q5: 'transit' },
+  );
+  assert.deepStrictEqual(kd.map((x) => [x.id, x.score]), [['far-anchor', 5], ['photo-local', 3]]);
   assert.strictEqual(validAnswers({ q1: ['kfood'], q2: 'x', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
   assert.strictEqual(validAnswers({ q1: [], q2: 'cafe', q3: 'solo', q4: 'half', q5: 'taxi' }), null);
   console.log('recommend 셀프체크 PASS');

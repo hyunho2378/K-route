@@ -27,7 +27,7 @@
 | KorService2 · EngService2 | detailImage2 | contentId | originimgurl, smallimageurl, imgname, cpyrhtDivCd | 상세 |
 | KorService2 · EngService2 | searchKeyword2 | keyword, numOfRows, pageNo | areaBasedList2와 동일 필드(areacode·sigungucode·cat1은 공란일 수 있음) | [V5-5] 지역 목록 누락분 보강(ktoSpotService) |
 | KorService2 | searchFestival2 | eventStartDate(필수) · 지역코드는 쓰지 않고 법정동으로 거른다(아래 주) | contentid, title, eventstartdate, eventenddate, addr1, mapx, mapy, firstimage, lDongRegnCd, lDongSignguCd, progresstype, festivaltype | [V5-10] 기간 한정 축제 배지(ktoFestivalService · GET /api/kto/festivals) |
-| KorService2 | categoryCode2 | 없음(cat1 7) · cat1 + cat2(cat3) | code, name | 분류 이름 근거(아래) |
+| KorService2 · EngService2 | categoryCode2 | 없음(cat1 7) · cat1(그 아래 cat2 목록) · cat1 + cat2(cat3) | code, name | 분류 이름 근거(아래) · [V5-13] 카드 분류 칩 실사용(ktoSpotService.ensureCatNames · ko·en) |
 | TatsCnctrRateService | tatsCnctrRatedList | areaCd, signguCd(시도+시군구 5자리), tAtsNm(선택), numOfRows, pageNo | baseYmd, tAtsNm, cnctrRate | 집중률 |
 | TarRlteTarService1 | areaBasedList1 | areaCd, signguCd(5자리), baseYm(YYYYMM) | baseYm, tAtsNm, rlteTatsNm, rlteRank, rlteCtgryLclsNm·Mcls·Scls | 최신 baseYm 탐색 |
 | TarRlteTarService1 | searchKeyword1 | areaCd, signguCd, baseYm, keyword | areaBasedList1과 동일 | 연관 |
@@ -47,6 +47,10 @@
 ## 적재 · 캐시 · 무결성
 - kto_spots(contentid, lang).raw = API 원문 JSON 그대로: `{ list }`(areaBasedList2 항목) + 상세 요청 시 `{ common, intro, images }`.
 - 적재: 서버 기동 시 1회 + TTL 24h lazy(풀 요청 시) · 목록에서 빠진 행은 삭제 · 상세는 목록 갱신 때 비워져 24h마다 재조회.
+- [V5-13] 분류 이름 캐시 `server/cache/kto-cats.json` = categoryCode2(cat1 A01~A04 × ko·en = 8호출)를 기동 시 1회 · cat2 코드 → 이름.
+  A05(음식)는 cat2 가 '음식점' 하나뿐이라 받지 않는다(카페까지 음식점으로 뭉개진다) · 기존 category 3버킷이 CAFE_CAT3 로 카페/식당을 이미 더 정확히 가른다.
+  실패해도 카드 칩이 3버킷으로 돌아갈 뿐 풀은 그대로 나간다. 2026-09-13 적재: ko 16종 · en 16종(A0201 역사관광지 = Historical Sites 등).
+  실측 효과: q1=kdrama 추천 12곳의 칩이 전부 "Activity" 하나였던 것 → 6종(건축/조형물·문화시설·휴양관광지·역사관광지·체험관광지 등)으로 갈렸다.
 - 2026-09-11 적재: ko 167행(이미지 145) · en 17행(이미지 13).
 - 풀 편입: cat1 A01~A05(숙박 B02·추천코스 C01 제외) · category = A05 음식(카페/전통찻집 → foodspace, 그 외 meal) · 나머지 activity.
 - en 항목은 제목 끝 괄호의 한글 원명이 ko 제목과 같으면 ko 항목의 영문명으로 붙이고(5건) 아니면 별도 항목(11건).

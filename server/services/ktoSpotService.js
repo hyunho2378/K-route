@@ -15,10 +15,14 @@ const SVC = { ko: `${HOST}/KorService2`, en: `${HOST}/EngService2` };
 const COMMON = { MobileOS: 'ETC', MobileApp: 'KRoute' };
 const REGION = { ko: ['강원', '춘천'], en: ['Gangwon', 'Chuncheon'] }; // 이름 매칭 검색어(코드 아님)
 const CACHE_FILE = path.join(__dirname, '..', 'cache', 'kto-ids.json');
+const CATS_FILE = path.join(__dirname, '..', 'cache', 'kto-cats.json'); // [V5-13] 분류 이름 캐시(kto-ids.json 동형)
 const TTL_MS = 24 * 60 * 60 * 1000;
 // 풀 대상 분류 · categoryCode2 이름: A01 자연 · A02 인문(문화/예술/역사) · A03 레포츠 · A04 쇼핑 · A05 음식 (B02 숙박·C01 추천코스 제외)
 const POOL_CAT1 = new Set(['A01', 'A02', 'A03', 'A04', 'A05']);
 const CAFE_CAT3 = 'A05020900'; // categoryCode2(cat1=A05, cat2=A0502): 카페/전통찻집
+// [V5-13] 카드 태그로 쓸 실분류(cat2) 이름을 받아 올 cat1 · A05(음식)는 제외한다:
+//   A05의 cat2는 '음식점' 하나뿐이라 카페까지 음식점으로 뭉개진다 · 기존 category 3버킷이 CAFE_CAT3로 이미 더 정확히 가른다.
+const NAMED_CAT1 = ['A01', 'A02', 'A03', 'A04'];
 // [V5-5] 지역 목록 보강 키워드 · 근거 probe-kto verify(searchKeyword2 '0000' · KTO_API.md 표)
 //   남이섬은 구 areaCode·sigunguCode·cat1이 전부 공란이라 areaCode 기반 areaBasedList2에 잡히지 않는다
 //   (실응답 2026-09-12: contentid 128019 ko · 264244 en · 주소 춘천시 남산면 · 법정동 51/110 · contenttypeid 12/76).
@@ -70,6 +74,43 @@ async function loadIds() {
   fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
   fs.writeFileSync(CACHE_FILE, JSON.stringify(out, null, 2));
   return ids;
+}
+
+// [V5-13] 분류 이름(cat2 코드 → 이름) · ko·en 각각 · 코드 값은 두 서비스가 같고 이름만 언어별로 온다.
+//   근거: probe-kto categoryCode2 실호출(KTO_API.md 표 · 응답 code·name) · 2026-09-13 확인: cat1을 주면 그 아래 cat2 목록을 준다
+//   (KorService2 A02 → A0201 역사관광지 … A0206 문화시설 8건 / EngService2 A02 → Historical Sites … Cultural Facilities 8건).
+//   목적: 카드 태그가 category 3버킷으로 뭉개져 추천 12장이 전부 "Activity"로 보이던 것을 실분류로 되돌린다.
+//   호출은 기동 시 1회(cat1 4종 × 2언어 = 8회)뿐이고 결과는 파일 캐시에 남는다 · 실패해도 태그는 기존 3버킷으로 살아 있다.
+let cats = null;
+let catsP = null;
+const ensureCatNames = () =>
+  (catsP ??= loadCatNames().catch((e) => {
+    catsP = null;
+    throw e;
+  }));
+async function loadCatNames() {
+  if (cats) return cats;
+  try {
+    cats = JSON.parse(fs.readFileSync(CATS_FILE, 'utf8'));
+    console.log('[kto] 분류 이름 캐시 파일 재사용:', CATS_FILE);
+    return cats;
+  } catch {
+    /* 캐시 없음 · 신규 조회 */
+  }
+  const out = {};
+  for (const lang of Object.keys(SVC)) {
+    out[lang] = {};
+    for (const cat1 of NAMED_CAT1) {
+      const items = asItems(await call(lang, 'categoryCode2', { cat1, numOfRows: 50, pageNo: 1 }));
+      for (const i of items) out[lang][String(i.code)] = String(i.name);
+    }
+  }
+  if (!Object.keys(out.ko ?? {}).length) throw new Error('분류 이름 0건');
+  cats = out;
+  fs.mkdirSync(path.dirname(CATS_FILE), { recursive: true });
+  fs.writeFileSync(CATS_FILE, JSON.stringify(out, null, 2));
+  console.log(`[kto] 분류 이름 적재 · ko ${Object.keys(out.ko).length}종 · en ${Object.keys(out.en).length}종`);
+  return cats;
 }
 
 // [V5-5] 키워드 보강 항목(제목 완전일치 + 법정동 춘천 + 목록에 없는 것만) · 실패해도 목록 적재는 계속
@@ -154,9 +195,21 @@ async function ensureFresh(lang) {
 }
 
 // 기동 시 코드 매칭 + 목록 적재(24h 내 적재분이 있으면 재사용)
-const warm = () => Promise.all(Object.keys(SVC).map(ensureFresh));
+const warm = () =>
+  Promise.all([
+    ...Object.keys(SVC).map(ensureFresh),
+    // [V5-13] 분류 이름은 카드 태그 표시용이라 실패해도 목록 적재를 실패로 만들지 않는다
+    ensureCatNames().catch((e) => console.warn('[kto] 분류 이름 적재 실패(태그는 기존 분류로):', e.message)),
+  ]);
 
-const toItem = (i, srcLang, name) => ({
+// [V5-13] 주소 한 줄 · 원문 addr1에서 시도 접두만 덜어 낸다("강원특별자치도 춘천시 서면 신매리" → "춘천시 서면 신매리").
+//   원문은 kto_spots.raw 에 그대로 남는다(표시용 가공만 · httpsImage 선례).
+const trimAddr = (a) => {
+  const parts = String(a ?? '').trim().split(/\s+/);
+  return parts.length >= 3 ? parts.slice(1).join(' ') : parts.join(' ');
+};
+
+const toItem = (i, srcLang, name, extra) => ({
   id: String(i.contentid),
   contentid: String(i.contentid),
   srcLang,
@@ -167,10 +220,30 @@ const toItem = (i, srcLang, name) => ({
   cat1: i.cat1,
   coord: i.mapx && i.mapy ? [Number(i.mapx), Number(i.mapy)] : null,
   image: i.firstimage || null,
+  // [V5-13] catName(실분류 이름) · where(주소 한 줄) · 근거가 없으면 필드 자체를 만들지 않는다(화면이 기존 폴백을 쓴다)
+  ...extra,
 });
 
 // 하이브리드 풀용 공사 스팟 · ko 목록이 기준, en 목록은 괄호 한글 원명이 ko 제목과 같으면 영문명으로 붙이고 아니면 별도 항목
 async function poolItems() {
+  // [V5-13] 분류 이름은 표시용이라 실패해도 풀은 그대로 나간다(태그가 기존 3버킷으로 돌아갈 뿐)
+  const catNames = await ensureCatNames().catch((e) => {
+    console.warn('[kto] 분류 이름 없음(태그는 기존 분류로):', e.message);
+    return { ko: {}, en: {} };
+  });
+  // 같은 cat2 코드의 이름을 언어별로 붙인다(코드는 두 서비스 공통) · 한쪽만 있으면 그쪽 이름을 쓴다
+  const catOf = (i) => {
+    const code = String(i.cat2 ?? '');
+    const ko = catNames.ko?.[code];
+    const en = catNames.en?.[code];
+    return ko || en ? { catName: { ko: ko ?? en, en: en ?? ko, th: en ?? ko } } : null;
+  };
+  // 주소는 ko 목록·en 목록 각각의 원문에서 · 한쪽만 있으면 그 값을 양쪽에 쓴다(TriText 의 th → en 폴백과 같은 규칙)
+  const whereOf = (k, e) => {
+    const ko = trimAddr(k?.addr1);
+    const en = trimAddr(e?.addr1) || ko;
+    return ko || en ? { where: { ko: ko || en, en, th: en } } : null;
+  };
   await Promise.all(
     Object.keys(SVC).map((l) => ensureFresh(l).catch((e) => console.warn(`[kto] ${l} 목록 갱신 실패(캐시 사용):`, e.message))),
   );
@@ -190,9 +263,14 @@ async function poolItems() {
     ...ko.map((i) => {
       const e = enOf.get(i.contentid);
       const en = e?.title ?? i.title;
-      return { ...toItem(i, 'ko', { ko: i.title, en, th: en }), ...(e && { enId: String(e.contentid) }) };
+      return {
+        ...toItem(i, 'ko', { ko: i.title, en, th: en }, { ...catOf(i), ...whereOf(i, e) }),
+        ...(e && { enId: String(e.contentid) }),
+      };
     }),
-    ...enOnly.map((e) => toItem(e, 'en', { ko: koNameOf(e.title) ?? e.title, en: e.title, th: e.title })),
+    ...enOnly.map((e) =>
+      toItem(e, 'en', { ko: koNameOf(e.title) ?? e.title, en: e.title, th: e.title }, { ...catOf(e), ...whereOf(e, e) }),
+    ),
   ];
   if (!items.length) throw new Error('kto_spots 비어 있음');
   return items;
