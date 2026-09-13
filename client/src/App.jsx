@@ -18,6 +18,7 @@ import Gate from './pages/Gate';
 import GtsBuild from './pages/GtsBuild';
 import GtsCheckout from './pages/GtsCheckout';
 import GtsGo from './pages/GtsGo'; // [V5-3]
+import GtsIntro from './pages/GtsIntro'; // [V5-15] /gts 인트로(노선도 2층 구조)
 import GtsQuiz from './pages/GtsQuiz'; // [V5-3]
 import GtsRoute from './pages/GtsRoute';
 import GtsStamp from './pages/GtsStamp'; // [V5-6]
@@ -35,6 +36,9 @@ import Ticket from './pages/Ticket';
 // [V20] 새로고침·직접 URL 진입 시 홈으로 리셋(사용자 요청) — 앱 최초 마운트(=전체 페이지 로드) 1회만 동작.
 //   SPA 내부 네비게이션은 App이 재마운트되지 않아 영향 없음(정상 이동). 트레이드오프: OAuth 복귀·
 //   /ticket 딥링크도 홈으로 이동함(필요 시 예외 경로 화이트리스트 가능 — 보고에 명시).
+// [V5-15] 직접 URL·새로고침으로 들어와도 살려 두는 경로(하위 경로 포함) · 심사 동선과 공개 열람 화면
+const OPEN_PATHS = ['/gts', '/travel-log', '/reviews'];
+
 function ResetToHomeOnLoad() {
   const navigate = useNavigate();
   const ran = useRef(false);
@@ -45,8 +49,15 @@ function ResetToHomeOnLoad() {
     //   전체 페이지 로드다 — 여기서 홈으로 리셋하면 관리자 진입 자체가 막힌다(회귀). 이 경로만 예외 처리.
     //   (/admin/users는 2차 인증 게이트 유지를 위해 예외 아님 — 대시보드 내 버튼 경유 SPA 이동만 허용.)
     //   [V5-6] /stamp/* 도 예외다: NFC 스티커는 늘 새 탭 전체 로드로 열리므로 여기서 홈으로 돌리면 스탬프를 찍을 수 없다(기능 자체가 막힌다).
+    //   [V5-15] 케이로드·Travel Log·Reviews 도 예외다(사용자 승인): 심사위원이 경로를 공유받아 열거나
+    //   새로고침하면 아무 안내 없이 홈으로 튕기던 유일한 "조용한 실패" 지점이었다. 나머지 경로의 홈 리셋은 유지한다.
     const path = window.location.pathname;
-    if (path !== '/' && path !== '/admin' && !path.startsWith('/stamp/')) navigate('/', { replace: true });
+    const keep =
+      path === '/' ||
+      path === '/admin' ||
+      path.startsWith('/stamp/') ||
+      OPEN_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+    if (!keep) navigate('/', { replace: true });
   }, [navigate]);
   return null;
 }
@@ -65,8 +76,10 @@ export default function App() {
                   <Route element={<PageLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/gate" element={<Gate />} />
-                    {/* [V5-3] /gts = 취향 찾기(IA §11.2 진입점 setup→quiz · ROUTES v5) · /gts/setup은 route '차량으로 이동' 보조 진입 */}
-                    <Route path="/gts" element={<Navigate to="/gts/quiz" replace />} />
+                    {/* [V5-15] /gts = 인트로(노선도 2층 구조 한 화면) → 시작하기로 /gts/quiz.
+                        IA §11.2 의 quiz 직행을 인트로 경유로 바꾼 것(사용자 지시) · 이미 본 사용자는 인트로가 스스로 퀴즈로 넘긴다.
+                        /gts/setup 은 route '차량으로 이동' 보조 진입으로 그대로 둔다. */}
+                    <Route path="/gts" element={<GtsIntro />} />
                     {/* [V5-12] 케이로드 전 구간 공개 · 심사위원은 로그인하지 않는다(로그인 벽이 있으면 데모 자체가 열리지 않는다).
                         서버도 추천·동선·확산·축제·집중률·챗은 이미 비로그인으로 동작하고, 스탬프는 게스트 폴백을 넣었다.
                         로그인이 실제로 필요한 곳(/profile·관리자)만 가드를 유지한다. */}

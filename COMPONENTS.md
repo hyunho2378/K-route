@@ -362,3 +362,18 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | `server/services/recommendService.js` | 대중교통 거리 페널티(-2)를 앵커에 걸지 않는다(기존 kfood 전용 면제를 고른 라인 전체로 일반화) · 실측: q1=kdrama 의 유일한 앵커 남이섬이 5-2=3 으로 무관한 공원·도서관과 동점이 되어 추천 12곳에서 통째로 빠졌다 → 고친 뒤 1위(score 5) · 셀프체크에 먼 앵커 케이스 추가 |
 | `components/gts/VenueGrid.jsx` | 카드 면 = 토큰(white · mock 은 surface) + shadow.sm + 보더 0 으로 복귀(DESIGN §116) · 사진은 전면 배경이 아니라 상단 `aspect-video` 밴드(§169 고정비율·lazy·alt) — 전면 배경 + ink 75/60/40 그라데이션은 사진이 실려도 카드가 통째로 검게 읽혔다 · 한 줄 = LLM 사유 → `oneLine`·`where` → reasonKey 폴백(버킷 5종이라 12장이 같은 문장이 되던 것) · 분류 칩 = `catName`(없으면 기존 3버킷 키) · 라인 색 도트 = `LINE_BG` + `lineOfSpot`(배지 통과분만 · CourseQueue 와 같은 규칙 · 라인 3색만) |
 | i18n | 신규 키 없음(분류 이름·주소는 공사 데이터라 TriText 로 렌더 · th 는 en 폴백) · 3언어 동형 1386키 유지 |
+
+---
+
+## v5-15 홈 정체성 K-Route 재작성 · /gts 인트로 (2026-09-13) · 충돌 시 이 표가 이긴다
+
+| 파일 | 스펙 |
+|---|---|
+| `pages/GtsIntro.jsx` (신설) | `/gts` = 노선도 2층 구조 한 화면(위층 K-콘텐츠 노선 3종 · 아래층 공사 데이터 실제 이동) + 흐름 3단계(퀴즈 → 노선 여권 → NFC 스탬프) + "시작하기" → `/gts/quiz` · 라인 정의·색은 `lineSystem` 재사용(신규 색 0) · 건너뛰기 = 모듈 인메모리 플래그(웹스토리지 금지 · MobileMenu.hintShown 선례) 로 같은 앱 로드에서 재진입 시 퀴즈 직행 |
+| `components/home/KRouteLines.jsx` (신설) | 홈 주 피치 = 라인 3종 카드(`LINES`·`LINE_FACE`·`LINE_ICONS` 재사용 · 이름·한 줄은 `gts.line.*` 재사용) + 케이로드 CTA + Trip Planner 보조 텍스트 링크 |
+| `pages/Home.jsx` | 섹션 순서 = Hero → **lines** → evidence(Why K-Route + 해법 한 줄) → how-it-works → services(보조 도구) → reviews → proof · 구 "두 서비스" 주 피치 폐지 |
+| `components/home/HeroCarousel.jsx` | CTA 페어 순서 교체: 주 = 케이로드(`/gts`, primary) · 보조 = Trip Planner(`/gate`, onPhoto) · 치수·정렬 규칙(§16.8) 불변 |
+| `components/home/ServiceCards.jsx` | 보조 도구 2장으로 재배치: Trip Planner(`/gate`) · Travel Log(`/travel-log`, lucide `Footprints`) · 구 Tour Builder 카드 폐지(케이로드 진입은 히어로·라인 섹션이 소유 · 중복 호출 금지) |
+| `App.jsx` | `/gts` → `GtsIntro`(구 `Navigate to="/gts/quiz"`) · `ResetToHomeOnLoad` 예외에 `OPEN_PATHS = ['/gts','/travel-log','/reviews']`(하위 경로 포함) 추가 = 직접 URL·새로고침이 말없이 홈으로 튕기던 유일한 조용한 실패 제거(사용자 승인) · 예외 밖 경로의 홈 리셋은 유지 |
+| `components/layout/PageLayout.jsx` | `/gts` → `meta.title.gtsIntro`(신설) · `/gts/setup` 은 `gtsSetup` 유지 |
+| i18n | `home.lines.*` 5키 · `home.evidence.solution` 1키 · `gtsIntro.*` 15키 · `meta.title.gtsIntro` 1키 신설 = 언어당 +22 · `home.services.builder` → `home.services.log` 이름 교체(키 수 불변) · 옛 용어 정리: `meta.title.gtsSetup` "Tour Builder" → 이동 준비 계열 · 3언어 동형 1408키 |

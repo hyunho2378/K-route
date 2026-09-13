@@ -275,4 +275,24 @@ export default {
       saveCta: "Save image",
     },
   },
+  // [V5-15] /gts 인트로 · 노선도 2층 구조를 한 화면으로 설명한다(퀴즈 직행 앞에 선다).
+  //   근거 규율: 역은 근거가 확인된 곳만이라는 점을 카피에서도 지킨다(성지 주장 과장 금지 · SOURCE_SPOTS §8).
+  gtsIntro: {
+    eyebrow: "K-Route",
+    title: "Chuncheon, drawn as two layers",
+    sub: "A route map you can read in one screen: the K-content lines on top, and the real way to move between them underneath.",
+    layer: {
+      topLabel: "Upper layer: K-content lines",
+      topBody: "Three lines carry Chuncheon's K-content. Only places with checked sources become stations, so a line never claims more than the records do.",
+      bottomLabel: "Lower layer: the real move",
+      bottomBody: "Korea Tourism Organization data plans what runs between the stations: the visiting order, the distance, and the time your day actually takes.",
+    },
+    flow: {
+      s1: { title: "Find your line", body: "Five questions, about 40 seconds." },
+      s2: { title: "Ride your route", body: "Pick your stations and see the order drawn on the map." },
+      s3: { title: "Stamp and finish", body: "Tap the NFC sticker at a station to stamp your passport." },
+    },
+    start: "Start",
+    skip: "Skip, I have done this before",
+  },
 };

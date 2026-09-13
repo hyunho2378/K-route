@@ -9,10 +9,11 @@ export default {
       gate: "Trip Planner",
       handsfree: "Bag Delivery",
       loop: "City Lines",
-      gtsSetup: "Tour Builder",
+      gtsSetup: "Ride setup",
       gtsBuild: "Build your day",
       gtsRoute: "Your route",
       gtsCheckout: "Checkout",
+      gtsIntro: "K-Route", // [V5-15] /gts 인트로
       gtsQuiz: "Find your Chuncheon", // [V5-3]
       gtsGo: "Head to your stop", // [V5-3]
       stamp: "Stamp tour", // [V5-6]

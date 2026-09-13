@@ -64,12 +64,14 @@ export default function HeroCarousel() {
                트레이드오프: 언어 전환 시 버튼 폭이 라벨 길이에 따라 변함 — 여백 제거를 우선.)
               래퍼가 배치 소유(gap-12) · 개별 버튼 margin·width 0. flex-wrap: 좁은 폭에서 세로 접힘.
               primary=블루 면+white / onPhoto=흰 면+블루(사진 위 가독 · 치수는 primary와 동일). */}
+          {/* [V5-15] 주 CTA 를 K-Route 로 바꾼다(홈의 주 피치가 케이로드다) · Trip Planner 는 보조로 내려간다.
+              치수·정렬은 그대로(primary 와 onPhoto 는 padding·height·radius·font 가 동일 · §16.8 페어 규칙). */}
           <div className="mt-32 flex flex-wrap items-center gap-12">
-            <Button as={Link} to="/gate" variant="primary" size="lg">
-              {t('home.hero.ctaGate')}
-            </Button>
-            <Button as={Link} to="/gts" variant="onPhoto" size="lg">
+            <Button as={Link} to="/gts" variant="primary" size="lg">
               {t('home.hero.ctaBuild')}
+            </Button>
+            <Button as={Link} to="/gate" variant="onPhoto" size="lg">
+              {t('home.hero.ctaGate')}
             </Button>
           </div>
         </div>

@@ -7,10 +7,10 @@
 export default {
   home: {
     hero: {
-      title: "Chuncheon, on your terms.",
-      sub: "Your trip, zero missing links. Choose your ride and create your own adventure.",
+      title: "Chuncheon has no subway.",
+      sub: "So we drew the lines. Pick a K-content line, and read the city like a transit map.",
       ctaGate: "Plan my route",
-      ctaBuild: "Build my day",
+      ctaBuild: "Start K-Route",
       slides: {
         alt1: "A calm blue lake winding between forested mountains",
         alt2: "Morning mist over green ridges and a winding road",
@@ -22,11 +22,21 @@ export default {
         d3: "Show photo 3",
       },
     },
+    // [V5-15] 홈 주 피치 = K-콘텐츠 노선 3종 · 라인 이름·한 줄은 gts.line.* 를 재사용한다(여기에 사본을 두지 않는다).
+    lines: {
+      eyebrow: "Three lines",
+      title: "K-content, drawn as a route map",
+      lead: "Chuncheon's K-content sits scattered as dots on a map. K-Route ties the checked ones into three lines you can actually ride, then plans the real bus and walking legs between them.",
+      cta: "Start K-Route",
+      planner: "Getting to Chuncheon first",
+    },
     // [V5-11] 문제 근거 스트립 · 검증 확정 수치만(값은 data/evidence.js) · 각 수치에 출처를 병기한다.
     //   설문 기반(외래관광객조사)과 통신 기반(한국관광 데이터랩)은 정의가 다르므로 출처에 그 구분을 남긴다.
+    //   [V5-15] solution = 이 문제를 케이로드가 어떻게 푸는지 한 줄(수치 위에 붙는다).
     evidence: {
-      eyebrow: "Why Chuncheon",
+      eyebrow: "Why K-Route",
       title: "The problem in numbers",
+      solution: "Chuncheon has the K-content but not the route map. K-Route draws one: a 40 second quiz picks your line, checked spots become its stations, and Korea Tourism Organization data plans the legs between them.",
       items: {
         stage: "Share of performance ticket sales in the capital area",
         transit: "Public transport share gap (Seoul 37% vs Gangwon 5.3%)",
@@ -46,32 +56,34 @@ export default {
         daytrip: "Korea Tourism Data Lab 2022 (mobile network based)",
       },
     },
+    // [V5-15] 보조 도구 · 구 "Tour Builder" 카드는 케이로드가 주 피치를 가져가며 내려갔다(Travel Log 로 교체).
     services: {
-      eyebrow: "Start here",
-      title: "Two services, one trip",
+      eyebrow: "Also here",
+      title: "Before and after your line",
       planner: {
         title: "Trip Planner",
         desc: "Compare curated rail and bus routes between your city and Chuncheon.",
       },
-      builder: {
-        title: "Tour Builder",
-        desc: "Pick meals, places and activities, and meet a day that runs with a ride.",
+      log: {
+        title: "Travel Log",
+        desc: "See the routes other travelers finished, and start your day from one of them.",
       },
     },
+    // [V5-15] 흐름 = 퀴즈 → 노선 여권 → NFC 스탬프(케이로드 실제 동선) · 구 선주문 3스텝을 대체한다.
     how: {
-      eyebrow: "Why it works",
-      title: "How it works",
+      eyebrow: "How it runs",
+      title: "Quiz, passport, stamps",
       step1: {
-        title: "Plan your arrival",
-        body: "Wherever you start, plan the ride into Chuncheon along curated rail and bus routes.",
+        title: "Answer five questions",
+        body: "About 40 seconds. Your answers decide which K-content line fits you.",
       },
       step2: {
-        title: "Build your day",
-        body: "Assemble your own course from meals, local places and activities, all in one flow.",
+        title: "Get your route passport",
+        body: "Your line comes back as a personal route: the stations, the order to ride them, and the legs in between.",
       },
       step3: {
-        title: "Meet a day that is ready",
-        body: "This is the difference: we pre-order ahead, so you arrive with your ride and everything starts without a wait.",
+        title: "Stamp each station",
+        body: "Tap the NFC sticker at a station to stamp it, and finish the line.",
       },
     },
     reviews: {

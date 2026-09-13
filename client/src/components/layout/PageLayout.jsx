@@ -10,7 +10,8 @@ import Header from '../nav/Header';
 export function routeKeyFromPath(pathname) {
   if (pathname === '/') return 'home';
   if (pathname === '/gate') return 'gate';
-  if (pathname === '/gts' || pathname === '/gts/setup') return 'gtsSetup';
+  if (pathname === '/gts') return 'gtsIntro'; // [V5-15] 인트로(구 setup 리다이렉트 자리)
+  if (pathname === '/gts/setup') return 'gtsSetup';
   if (pathname === '/gts/build') return 'gtsBuild';
   if (pathname === '/gts/route') return 'gtsRoute';
   if (pathname === '/gts/checkout') return 'gtsCheckout';

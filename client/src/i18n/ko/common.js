@@ -7,10 +7,11 @@ export default {
       gate: "길찾기",
       handsfree: "짐 보내기",
       loop: "시내 라인",
-      gtsSetup: "코스 만들기",
+      gtsSetup: "이동 준비",
       gtsBuild: "하루 조립",
       gtsRoute: "동선 확인",
       gtsCheckout: "결제 확인",
+      gtsIntro: "케이로드", // [V5-15] /gts 인트로
       gtsQuiz: "취향 찾기", // [V5-3]
       gtsGo: "출발", // [V5-3]
       stamp: "스탬프 투어", // [V5-6]

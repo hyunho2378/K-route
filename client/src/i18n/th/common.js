@@ -8,10 +8,11 @@ export default {
       gate: "วางแผนการเดินทาง",
       handsfree: "ส่งกระเป๋า",
       loop: "สายในเมือง",
-      gtsSetup: "สร้างคอร์สเที่ยว",
+      gtsSetup: "เตรียมการเดินทาง",
       gtsBuild: "จัดวันของคุณ",
       gtsRoute: "ดูเส้นทาง",
       gtsCheckout: "ยืนยันการจอง",
+      gtsIntro: "K-Route", // [V5-15] /gts 인트로
       gtsQuiz: "ค้นหาสไตล์ของคุณ", // [V5-3]
       gtsGo: "ออกเดินทาง", // [V5-3]
       stamp: "สแตมป์ทัวร์", // [V5-6]
