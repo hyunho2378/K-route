@@ -23,7 +23,7 @@ export default function BrandHero() {
             style={{ minHeight: 'clamp(560px, 72vh, 960px)' }}
           >
             <p className="font-display text-h3 font-bold tracking-display text-white">
-              Global Tourism System
+              {t('common.brandName')}
             </p>
             <div className="flex flex-col gap-16">
               <LangSwap

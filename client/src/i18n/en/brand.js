@@ -5,7 +5,7 @@ export default {
   brand: {
     hero: {
       title: "One app. Every preference. Explore Chuncheon.",
-      sub: "Sightseeing on your terms for those seeking convenience and new experiences. GTS simplifies your trip to Chuncheon with a customized itinerary.",
+      sub: "Sightseeing on your terms for those seeking convenience and new experiences. K-Route simplifies your trip to Chuncheon with a customized itinerary.",
     },
     before: {
       title: "Before you even get here",
@@ -148,7 +148,7 @@ export default {
         title1: "One app. Every preference.",
         title2: "Explore Chuncheon.",
         sub: "Sightseeing on your terms.",
-        cta: "Support GTS",
+        cta: "Support K-Route",
       },
       problem: {
         title: "If you've traveled Korea without a car, you know this.",
@@ -188,7 +188,7 @@ export default {
         },
       },
       day: {
-        title: "Here's what a GTS day actually looks like.",
+        title: "Here's what a K-Route day actually looks like.",
         sub: "You pick the stops. We run the clock.",
         items: {
           i1: {
@@ -264,7 +264,7 @@ export default {
             r3: "No flexibility",
           },
           gts: {
-            name: "GTS",
+            name: "K-Route",
             price: "₩35,000",
             r1: "12-seat van, your route",
             r2: "Pre-ordered, zero queue",
@@ -282,7 +282,7 @@ export default {
           a: "Lakes, food, culture, hard to reach without a car",
         },
         q2: {
-          q: "Who is GTS for?",
+          q: "Who is K-Route for?",
           a: "Anyone visiting without a car",
         },
         q3: {
@@ -366,19 +366,19 @@ export default {
       ctaBand: {
         title: "Help us redefine travel in Chuncheon.",
         sub: "Every arrival becomes a journey.",
-        primary: "Support GTS today",
+        primary: "Support K-Route today",
         secondary: "Try the live platform",
       },
       sticky: {
         label: "Back the first line",
         of: "of",
-        cta: "Support GTS",
+        cta: "Support K-Route",
       },
     },
     cta: {
       title: "Help Us Redefine Travel in Chuncheon and the World",
-      sub: "Travel should be about discovering new places, not worrying about transportation. GTS will make Chuncheon easier and more welcoming for visitors from around the world. Together, we can transform every arrival into an unforgettable journey. Join us in building the future of tourism mobility.",
-      button: "Support GTS today",
+      sub: "Travel should be about discovering new places, not worrying about transportation. K-Route will make Chuncheon easier and more welcoming for visitors from around the world. Together, we can transform every arrival into an unforgettable journey. Join us in building the future of tourism mobility.",
+      button: "Support K-Route today",
     },
   },
 };

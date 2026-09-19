@@ -51,6 +51,7 @@ export default {
     closed: "เต็มแล้ว",
   },
   common: {
+    brandName: "K-Route",
     close: "ปิด",
     back: "ย้อนกลับ",
     next: "ถัดไป",
@@ -111,11 +112,11 @@ export default {
       tagline: "การท่องเที่ยวในแบบของคุณ สำหรับผู้ที่มองหาความสะดวกและประสบการณ์ใหม่",
       explore: "สำรวจ",
       contact: "ติดต่อ",
-      copyright: "© 2026 Team Bomnae Helper. All rights reserved.",
-      // [V10] ลิงก์ "Team Bomnae Helper" ไป /team · pre/post คือข้อความก่อน/หลังลิงก์
+      copyright: "© 2026 Team K-Route. All rights reserved.",
+      // [V10] ลิงก์ "Team K-Route" ไป /team · pre/post คือข้อความก่อน/หลังลิงก์
       copyrightPre: "© 2026 ",
       copyrightPost: ". All rights reserved.",
-      teamName: "Team Bomnae Helper",
+      teamName: "Team K-Route",
       privacy: "นโยบายความเป็นส่วนตัว",
       terms: "ข้อกำหนดการใช้งาน",
     },

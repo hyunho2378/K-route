@@ -270,7 +270,7 @@ export default {
       q1: "When do my bags arrive?",
       a1: "Bags checked in the morning usually reach your stay by evening. The counter confirms the exact window when you drop off.",
       q2: "Who actually carries my bags?",
-      a2: "An established luggage-delivery partner runs the transport. Global Tourism System handles the booking and the Chuncheon side, and your drop-off code works across both.",
+      a2: "An established luggage-delivery partner runs the transport. K-Route handles the booking and the Chuncheon side, and your drop-off code works across both.",
       q3: "Can my bags go somewhere outside Chuncheon?",
       a3: "Not yet. The service covers accommodation addresses inside Chuncheon, and that focus is what keeps it reliable.",
     },

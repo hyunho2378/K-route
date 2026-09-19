@@ -66,7 +66,7 @@ export default function Header() {
           className="-ml-8 flex min-h-44 items-center rounded-md pl-8 pr-8"
         >
           <span className="whitespace-nowrap font-display text-logo font-semibold tracking-display text-primary">
-            K-Route
+            {t('common.brandName')}
           </span>
         </Link>
         {/* [V17] 데스크탑 전용 인라인 메뉴(lg+) · 모바일 내비는 우측 햄버거(MobileMenu)가 소유 */}

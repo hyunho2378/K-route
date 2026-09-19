@@ -24,7 +24,7 @@ export default function Footer() {
           {/* [V18] 모바일: 슬로건 아래 여백 확대(mb-16)로 Explore 섹션과 명확히 분리 · lg는 gap-40 유지 */}
           {/* [V5-18-1] 이미지 로고(G 심볼) 폐지 → 텍스트 워드마크 "K-Route" 단독(Header 와 동일 결정) */}
           <div className="mb-16 flex flex-col gap-8 lg:mb-0">
-            <span className="font-display text-logo font-semibold">K-Route</span>
+            <span className="font-display text-logo font-semibold">{t('common.brandName')}</span>
             <LangSwap k="common.footer.tagline" as="p" className="text-small font-medium" />
           </div>
           <div className="flex flex-col gap-8">

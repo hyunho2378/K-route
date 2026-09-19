@@ -58,7 +58,7 @@ function drawTicketPng(line, booking) {
   ctx.fillRect(0, 0, 1200, 24); // 라인 컬러 스트라이프
   ctx.fillStyle = colors.bg; // 어두운 면 위 흰 텍스트(토큰 bg=순백)
   ctx.font = `600 40px ${fonts.display}`;
-  ctx.fillText('GLOBAL TOURISM SYSTEM', 80, 140);
+  ctx.fillText('K-ROUTE', 80, 140);
   ctx.font = `500 44px ${fonts.display}`;
   ctx.fillText(line.name_en, 80, 220);
   ctx.font = `700 180px ${fonts.display}`;
@@ -78,7 +78,7 @@ function drawGtsTicketPng(gts, entries) {
   ctx.fillRect(0, 0, 1200, 630);
   ctx.fillStyle = colors.bg;
   ctx.font = `600 40px ${fonts.display}`;
-  ctx.fillText('GLOBAL TOURISM SYSTEM', 80, 120);
+  ctx.fillText('K-ROUTE', 80, 120);
   ctx.font = `700 180px ${fonts.display}`;
   ctx.fillText(gts.code, 80, 320); // 코드 Kanit Bold(§43)
   // [V3] 여행 날짜 관통 표기
@@ -163,7 +163,7 @@ function GtsTicket({ gts }) {
 
   const save = async () => {
     const blob = await drawGtsTicketPng(gts, entries);
-    downloadBlob(blob, `gts-ticket-${gts.code}.png`); // §43 파일명 계약
+    downloadBlob(blob, `k-route-ticket-${gts.code}.png`); // §43 파일명 계약
   };
 
   return (
@@ -545,7 +545,7 @@ export default function Ticket() {
         <Button
           onClick={async () => {
             const blob = await drawTicketPng(line, booking);
-            downloadBlob(blob, 'bomnae-ticket.png');
+            downloadBlob(blob, `k-route-ticket-${booking.code}.png`);
           }}
         >
           <LangSwap k="gts.ticket.saveCta" />

@@ -50,6 +50,7 @@ export default {
     closed: "마감",
   },
   common: {
+    brandName: "K-Route",
     close: "닫기",
     back: "뒤로",
     next: "다음",
@@ -110,11 +111,11 @@ export default {
       tagline: "편리함과 새로운 경험을 찾는 이들을 위한, 당신의 방식대로의 여행.",
       explore: "둘러보기",
       contact: "문의",
-      copyright: "© 2026 Team Bomnae Helper. All rights reserved.",
-      // [V10] "Team Bomnae Helper"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
+      copyright: "© 2026 Team K-Route. All rights reserved.",
+      // [V10] "Team K-Route"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
       copyrightPre: "© 2026 ",
       copyrightPost: ". All rights reserved.",
-      teamName: "Team Bomnae Helper",
+      teamName: "Team K-Route",
       privacy: "개인정보처리방침",
       terms: "이용약관",
     },
