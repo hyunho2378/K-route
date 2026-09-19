@@ -10,6 +10,7 @@ import QuizResult from '../components/quiz/QuizResult';
 import Container from '../components/layout/Container';
 import { useGts } from '../context/GtsContext';
 import { quizQuestions } from '../data/gts/quizQuestions';
+import { LINE_BG, lineOf } from '../data/gts/lineSystem'; // [V5-18-2] 진행 마커 색(노선 위를 달리는 점)
 import { useLang } from '../i18n/LangContext';
 import LangSwap from '../i18n/LangSwap';
 import { motion } from '../tokens';
@@ -68,6 +69,9 @@ export default function GtsQuiz() {
   let disabled = status !== 'ok';
   if (question) disabled = question.multi ? !answer.length : answer == null;
 
+  // [V5-18-2] 진행 마커 색 = 현재 리드 중인 K-콘텐츠 라인(아직 없으면 null → StepStage 기본 primary)
+  const lead = lineOf(quizAnswers);
+
   return (
     <>
       {/* 오버레이 아래 바닥 페이지(GtsBuild 동형) · 실콘텐츠는 StepStage 소유 */}
@@ -88,6 +92,7 @@ export default function GtsQuiz() {
         reasonKey={key === 'q1' ? 'quiz.needOne' : null}
         onExit={() => navigate('/gate')}
         exitKey="quiz"
+        progressColor={lead ? LINE_BG[lead] : null}
         nextLabel={
           key === 'result' && status === 'ok' ? (
             <LangSwap k="quiz.result.cta" vars={{ n: recommended.length }} />

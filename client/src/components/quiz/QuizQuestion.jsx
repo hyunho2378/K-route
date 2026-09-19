@@ -31,10 +31,21 @@ function LineGauge({ answers }) {
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-4">
         <span className="flex flex-wrap items-baseline gap-8">
-          <LangSwap k="quiz.level" vars={{ n: levelOf(answers) }} className="text-caption font-semibold" />
+          {/* [V5-18-2] 레벨업 순간 · key={레벨} 로 답이 오를 때마다 배지를 리마운트해 pulse 를 1회만 재생한다
+              (반복 재생 없음 · scale 은 안 쓴다 · opacity 만 0→1→0.7 로 살짝 튀는 느낌 · MOTION.md "transform·opacity만"). */}
+          <span
+            key={levelOf(answers)}
+            className="rounded-pill bg-surface px-8 py-2"
+            style={{ animation: `bh-level-pulse 420ms ${motion.easeOut} both` }}
+          >
+            <LangSwap k="quiz.level" vars={{ n: levelOf(answers) }} className="text-caption font-semibold" />
+          </span>
           {lead && <LangSwap k={`gts.line.${lead}.name`} className="text-caption font-semibold text-inkSec" />}
         </span>
-        {/* 막대 3개 = 라인 축(색이 곧 라인) · 수치는 위 텍스트가 말하므로 막대는 장식 */}
+        {/* 막대 3개 = 라인 축(색이 곧 라인) · 수치는 위 텍스트가 말하므로 막대는 장식
+            [V5-18-2] durSheet(360ms) · MOTION.md 상 스프링(오버슈트)은 모멘텀 표면 전용이라 게이지(일반 UI)에는
+            못 쓴다(tokens.js 주석) → 오버슈트 없이 tokens 안에서 가장 탄력 있는 easeOut 유지 + 지속시간만 늘려
+            "차오르는" 체감을 보강했다(대체 토큰을 새로 만들지 않음). */}
         <span aria-hidden="true" className="flex gap-4">
           {LINE_AXES.map((axis) => (
             <span key={axis} className="h-8 flex-1 overflow-hidden rounded-pill bg-line">
@@ -42,7 +53,7 @@ function LineGauge({ answers }) {
                 className={`block h-full w-full origin-left rounded-pill ${LINE_BG[axis]}`}
                 style={{
                   transform: `scaleX(${stats[axis] / AXIS_MAX[axis]})`,
-                  transition: `transform ${motion.dur} ${motion.easeOut}`,
+                  transition: `transform ${motion.durSheet} ${motion.easeOut}`,
                 }}
               />
             </span>

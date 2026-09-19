@@ -50,6 +50,9 @@ export default function StepStage({
   toast = null, // [V22] 상단중앙 오버레이 토스트(레이아웃 높이 미점유 · 초과 안내용)
   nextLabel = null, // [V5-3] 다음 버튼 라벨 노드(기본 common.next · quiz 결과 "추천 N곳 보기")
   exitKey = 'gts.build', // [V5-3] 나가기 확인 카피 접두(exitTitle·exitBody·exitStay·exitLeave)
+  // [V5-18-2] 진행 마커 색(Tailwind bg-* 클래스) · 생략 시 기존 bg-primary(build·checkout 등 무변화) ·
+  //   quiz만 lineOf(answers) 기반 라인 색을 넘긴다(노선 위를 달리는 점 모티프).
+  progressColor = null,
   children,
 }) {
   const { t } = useLang();
@@ -151,16 +154,29 @@ export default function StepStage({
             </span>
             <LangSwap k={titleKey} className="text-caption font-semibold" />
           </p>
-          <div aria-hidden="true" className="flex items-center gap-8">
+          {/* [V5-18-2] "노선 위를 달리는 점" · 기존 도트 열(색 채움 전환)은 그대로 두고, 그 위에
+              실제로 이동하는 마커 1개를 얹는다 · translateX 만 사용(scale 은 hover/press(0.97) 전용이라
+              DESIGN 화이트리스트 밖 · MOTION.md "transform·opacity만" 원칙 안에서 이동만으로 표현) ·
+              간격 16px = 도트 폭 8 + gap-8(고정값이라 반응형과 무관 · 아래 구조가 바뀌면 같이 맞출 것). */}
+          <div aria-hidden="true" className="relative flex items-center gap-8">
             {Array.from({ length: stepCount }, (_, i) => (
               // 정적 도트 열 · 개수 고정이라 인덱스 키 허용
               // eslint-disable-next-line react/no-array-index-key
               // [V5-3] MOTION quiz 절: 진행 도트 = 색 채움 전환(width 등 레이아웃 속성 미사용)
               <span
                 key={i}
-                className={`h-8 w-8 rounded-pill transition-colors duration-fast ${i <= stepIndex ? 'bg-primary' : 'bg-line'}`}
+                className={`h-8 w-8 rounded-pill transition-colors duration-fast ${i <= stepIndex ? (progressColor ?? 'bg-primary') : 'bg-line'}`}
               />
             ))}
+            <span
+              // ring-2 ring-white = 트랙 도트와 마커를 구분하는 흰 테두리(커스텀 그림자 아님 · 선택 카드의
+              // ring-2 ring-primary 와 같은 Tailwind 링 유틸리티 · MOTION.md "그림자는 tokens.shadow만" 은 그대로 지킨다)
+              className={`pointer-events-none absolute left-0 top-0 h-8 w-8 rounded-pill ring-2 ring-white ${progressColor ?? 'bg-primary'}`}
+              style={{
+                transform: `translateX(${stepIndex * 16}px)`,
+                transition: `transform ${motion.dur} ${motion.easeInOut}`,
+              }}
+            />
           </div>
         </div>
 

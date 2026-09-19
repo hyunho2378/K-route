@@ -16,7 +16,7 @@ export default {
       q5: 'Getting around',
       result: 'Your line', // [V5-9] 결과 스텝이 라인 판독으로 바뀌어 스텝 이름도 맞춘다
     },
-    multiHint: 'Pick all that apply.',
+    multiHint: 'Pick as many as you like.', // [V5-18-2] 톤 조정 · 데이터 로직 불변(여전히 복수선택)
     needOne: 'Pick at least one to continue',
     q1: {
       title: 'What draws you to Chuncheon?',

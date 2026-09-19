@@ -186,3 +186,14 @@
     transform: none;
   }
 }
+
+/* [V5-18-2] 퀴즈 레벨업 순간(quiz.gauge 배지) · opacity 만(scale 은 hover/press 전용이라 미사용) ·
+   key={level} 리마운트로 1회만 재생 · reduced-motion은 @layer base 전역 규칙이 즉시 표시로 축약 */
+@keyframes bh-level-pulse {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}

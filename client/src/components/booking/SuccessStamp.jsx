@@ -51,10 +51,12 @@ export default function SuccessStamp({ line = { id: 'lake' }, mark = null, child
           reduced
             ? undefined
             : {
-                // 착지 시점에 텍스트 페이드 인(PATTERNS §9)
+                // [V5-18-2] 착지 시점에 텍스트 fade + 아래→위 슬라이드(라인 이름·설명 리빌 · transform·opacity 만 · scale 없음)
                 opacity: landed ? 1 : 0,
-                // 진입 페이드 = easeOut(§17.2) · 딜레이는 스탬프 착지(360ms)와 동기
-                transition: `opacity ${motion.fast} ${motion.easeOut} ${motion.durSheet}`,
+                transform: landed ? 'translateY(0)' : 'translateY(8px)',
+                // 진입 = easeOut(§17.2) · durSheet 360ms(지시된 0.3~0.4초 구간 안의 유일한 기존 토큰 · 새 값 생성 금지)
+                //   딜레이도 durSheet 로 스탬프 착지(원 확대) 지속시간과 동기
+                transition: `opacity ${motion.durSheet} ${motion.easeOut} ${motion.durSheet}, transform ${motion.durSheet} ${motion.easeOut} ${motion.durSheet}`,
               }
         }
       >
