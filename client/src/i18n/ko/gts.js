@@ -40,7 +40,7 @@ export default {
       overtime: "기본 이용 시간 초과 시 시간당 10,000원이 추가됩니다.",
     },
     setup: {
-      title: "나만의 GTS 하루 만들기",
+      title: "나만의 K-Route 하루 만들기",
       sub: "함께 가는 인원을 알려 주세요. 차량은 저희가 맞춰 드립니다.",
       dateLabel: "여행 날짜",
       datePlaceholder: "날짜를 선택하세요",

@@ -30,6 +30,7 @@
 - [x] P9 홈 정체성 K-Route 재작성 + /gts 인트로(노선도 2층 구조) + 직접 URL 조용한 튕김 제거 (2026-09-13 · [V5-15])
 - [x] P10 지도 2층 구조(1층 도시 전체 노선 + 2층 내 노선) · 경로선 구간별 라인 색 · route 혼잡도 잔재 제거 (2026-09-13 · [V5-16])
 - [x] P11 관광사진 갤러리(detailImage2 활성화) + 드라마·애니 콘텐츠 재확인 + 축제 배지 원인 규명 (2026-09-13 · [V5-17])
+- [x] P12-1 GTS 로고·잔재 전수 소탕(제출 전 최종 정리 1/5) (2026-09-20 · [V5-18-1])
 
 ### 리스크
 - 공사 키 승인 지연 → 스텁 폴백으로 화면 먼저, 키 오면 실데이터 스왑.
@@ -474,6 +475,48 @@ C 원인 확정(날짜 조건):
 - **`춘천인형극장&인형극박물관`(130487)은 공사 데이터에 실재하는데 SOURCE_SPOTS 에 없다.** 인형극을 애니메이션으로 등치할 근거를 만들 수 없어 추가하지 않았다(§8 규율).
   애니 라인의 역을 늘리려면 이 시설을 어떤 근거·등급으로 넣을지 사용자 판단이 필요하다(승인 사안).
 - 사진 없는 표본으로 찍은 통나무집 닭갈비는 `kind: 'venue'` 라 애초에 공사 상세 경로가 아니다. 공사 스팟 중 `images` 0장인 사례는 `강촌레일파크경강레일바이크/2774559` 로 확인했다.
+
+### P12-1 GTS 로고·잔재 전수 소탕 (2026-09-20 · 단독 · [V5-18-1] · 제출 전 최종 정리 1/5)
+
+문제: 헤더·푸터·탭 제목·티켓·법적 문서 등 전반에 구 브랜드("Global Tourism System" · "GTS" · gts.ac.kr)가 남아 있었다.
+새 로고 디자인은 만들지 않고, 텍스트 워드마크와 기존 아이콘 라이브러리(lucide)만으로 교체했다(지시 원칙).
+
+감사(먼저 실제 파일 특정):
+- 이미지 로고 실체 4곳 확인: `assets/logo-mark.svg`(React `?react` 컴포넌트) · `public/logo.svg`(코드 어디서도 미참조 · dead asset) ·
+  `public/favicon.svg`(index.html 탭 아이콘 · 실사용) · `public/images/brand/logo-mark.svg`(LoadingLogo 가 `<img>` 로 직접 로드 · 실사용).
+  전부 같은 "G" 이니셜 벡터의 변형(631×631 / 407×407, 색만 다름).
+- `GlassDock.jsx` 는 [V17] 에 이미 폐지된 dead code(실제 import 0건 · 파일 자체 주석에 "어디서도 import 금지"). 안전하게 무시.
+- `BrandHero.jsx`·`StickyBackBar.jsx`·`brand.js`(About) 와 `HandsFree.jsx`·`gate.js handsfree.*` 는 각각 `/about`·`/hands-free` 가
+  전부 리다이렉트/404 위장이라 **실제로 렌더되지 않는 dead code**다(사용자에게 노출 안 됨) → 스킵.
+- `.claude/settings.local.json` 안의 "Global Tourism System" 은 과거 허용된 perl 명령 이력일 뿐 실행 코드가 아니다(사용자 지시로 이 파일은 건드리지 않는다) → 스킵.
+- `docs/LEGAL_COPY.md`(legal.js 원본 소스 · "전문 이식(임의 축약·창작 금지)" 규율)는 실제로는 "Bomnae Helper" 기준이고 i18n 은 "Global Tourism System" 기준이라 서로 어긋나 있었다
+  → 소스부터 K-Route 로 갱신하고 3언어 legal.js 를 그 소스에 맞춰 다시 이식(재이식 시 옛 이름으로 되돌아가지 않게).
+- 리뷰 목업(mock 리뷰가 아니라 **DB `reviews` 테이블에 실제로 저장된 행**) 1건 본문에 "GTS knows all the best places" 자유 텍스트가 있었다 —
+  소스코드 grep 으로는 안 잡히는 종류라 브라우저 검증 중 실측으로 발견 · `UPDATE reviews SET body = replace(...)` 로 그 1건만 교정(스키마 변경 없음).
+
+| 항목 | 결과 |
+|---|---|
+| 이미지 로고 폐지 | 4개 SVG 자산을 lucide `Route` 아이콘 벡터(circle-path-circle)로 통일 교체 · Header·Footer 는 아이콘 자체를 없애고 텍스트 워드마크 "K-Route" 단독(primary 색 · 기존 폰트 클래스 그대로) |
+| 발견 가능성 | "Global Tourism System"(22자)은 375px 초과라 모바일에서 숨겼었지만 "K-Route"(7자)는 폭 문제가 없어 `hidden lg:inline` 을 없애고 전 폭 상시 노출 |
+| 탭 제목 | `PageLayout.jsx` `document.title` 템플릿 "Global Tourism System · …" → "K-Route · …" |
+| 티켓 | `Ticket.jsx` 브랜드 라벨 2곳(GTS 모드 카드 · 구 라인 티켓 카드) + 스탬프 이니셜 어댑터(`name_en: 'GTS'` → `'K-Route'`) |
+| i18n 텍스트 | `gts.js` setup.title · `gate.js` proof.alt · `legal.js` 전문(운영주체·서비스설명·책임·지식재산·문의) 3언어 전부 |
+| 이메일 | `official@gts.ac.kr` → `official@k-route.app`(config.js `OFFICIAL_EMAIL` 단일 출처 + Footer·MobileMenu 하드코딩 mailto + legal.js 3언어 + `docs/LEGAL_COPY.md` 소스) |
+| favicon | lucide Route 벡터로 교체 완료(번거로우면 스킵 가능이었으나 SVG 라 교체 비용이 낮아 함께 처리) |
+| 회귀 | E2E PASS(홈→gate→gts 인트로→퀴즈→build→route→go→route 복귀) · 빌드 통과 · 콘솔 0 · i18n 3언어 동형 1410키(텍스트 값만 교체, 키 구조 불변) |
+
+명세 밖 결정(보고):
+- `demo@gts.ac.kr`(AuthContext.jsx demoUser · server/routes/auth.js 데모 유저 upsert · server/routes/admin.js 필터 조건)은 **바꾸지 않았다.**
+  이건 브랜드 표기가 아니라 DB 에 실제로 저장된 시스템 식별자라, 클라·서버가 다른 문자열을 쓰게 되면 관리자 필터·데모 계정 매칭이 깨진다.
+- 리뷰 DB 행 1건을 UPDATE 했다(코드 변경이 아니라 데이터 교정). 스키마는 건드리지 않았고 그 문구가 들어간 단일 행만 수정했다.
+- `docs/LEGAL_COPY.md` 도 함께 갱신했다(지시서에 명시되진 않았으나 "임의 축약·창작 금지" 원본 규율을 지키려면 소스와 이식본이 같은 이름을 써야 한다).
+
+검증 하네스 재구축: 이전 세션들의 스크래치패드(`kr.mjs`·`e2e-v5.mjs`·`i18n-parity.mjs`)가 임시 디렉토리 정리로 사라져 있었다(세션 갭 2026-09-13→09-20).
+`kr.mjs`·`i18n-parity.mjs` 를 동일 계약으로 재작성하고 `playwright-core` 를 스크래치패드에 재설치했다 · API·vite 개발 서버도 꺼져 있어 재기동했다.
+
+다음 세션 참고:
+- `/ticket/:code` 도 `ResetToHomeOnLoad` 예외([V5-15] `OPEN_PATHS`) 밖이다 — 직접 URL·새로고침으로 들어오면 홈으로 튕긴다(검증 중 실제로 이걸로 한 번 막혔다).
+  결제 완료 직후 이동은 SPA 네비게이션이라 문제없지만, 티켓 링크를 외부에 공유하는 시나리오가 생기면 예외 목록에 추가가 필요할 수 있다.
 
 ## 상태
 

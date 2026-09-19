@@ -14,7 +14,6 @@ import LangSwap from '../../i18n/LangSwap';
 import LangMenu from './LangMenu';
 import CurrencyMenu from './CurrencyMenu'; // [V12]
 import MobileMenu from './MobileMenu'; // [V17] 모바일 햄버거
-import LogoMark from '../../assets/logo-mark.svg?react';
 
 // [V10] 4항목: Trip Planner | Tour Builder | Travel Log | Reviews — About 비공개([3])로 내비에서 제거
 const MENU = [
@@ -58,18 +57,16 @@ export default function Header() {
     // §18.1: <lg 모바일 컴팩트 헤더 56(메뉴 없음 · Dock이 내비 소유) / lg+ 풀 헤더 80
     <header className="chrome fixed inset-x-0 top-0 z-header h-56 lg:h-80">
       <div className="mx-auto flex h-full w-full max-w-lg items-center justify-between px-16 md:px-24 lg:px-40 2xl:max-w-2xl 3xl:max-w-3xl">
-        {/* [V5-8] 히트 영역 44×44(§18.3 터치 타깃) · 심볼 24는 그대로 두고 링크 상자만 키운다.
-            좌측 여백은 -ml-8/pl-8 로 상쇄해 로고의 시각 정렬선(컨테이너 좌측)은 그대로 유지한다. */}
+        {/* [V5-18-1] 이미지 로고(G 심볼) 폐지 → 텍스트 워드마크 "K-Route" 단독(사용자 지시 · 새 로고 디자인 금지).
+            "Global Tourism System"(22자)은 375px 폭 초과라 모바일에서 숨겼었지만 "K-Route"(7자)는 폭 문제가 없어
+            hidden lg:inline 을 없애고 전 폭에서 상시 노출한다(발견 가능성 우선) · 히트 영역 44(§18.3)는 유지. */}
         <Link
           to="/"
           aria-label={t('nav.home')}
-          className="-ml-8 flex min-h-44 min-w-44 items-center gap-8 rounded-md pl-8 pr-8"
+          className="-ml-8 flex min-h-44 items-center rounded-md pl-8 pr-8"
         >
-          <LogoMark className="h-24 w-24 shrink-0 text-primary" aria-hidden="true" />
-          {/* 모바일은 심볼만 — 워드마크 22px가 375px 폭 초과(사용자 결정) */}
-          {/* 워드마크는 ink 단색 — 이니셜 색 분기 폐지(사용자 결정) */}
-          <span className="hidden whitespace-nowrap font-display text-logo font-semibold tracking-display text-ink lg:inline">
-            Global Tourism System
+          <span className="whitespace-nowrap font-display text-logo font-semibold tracking-display text-primary">
+            K-Route
           </span>
         </Link>
         {/* [V17] 데스크탑 전용 인라인 메뉴(lg+) · 모바일 내비는 우측 햄버거(MobileMenu)가 소유 */}

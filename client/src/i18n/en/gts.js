@@ -40,7 +40,7 @@ export default {
       overtime: "Beyond the included hours, 10,000 won is added per extra hour.",
     },
     setup: {
-      title: "Make your GTS day",
+      title: "Make your K-Route day",
       sub: "Tell us who is coming and we will match your ride.",
       dateLabel: "Travel date",
       datePlaceholder: "Select a date",

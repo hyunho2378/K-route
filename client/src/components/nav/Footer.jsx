@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import LangSwap from '../../i18n/LangSwap';
 import Container from '../layout/Container';
 import { useLang } from '../../i18n/LangContext';
-import LogoMark from '../../assets/logo-mark.svg?react';
 
 // [V10] Explore: About 제거([3]) · Travel Log를 Reviews 위에 추가([5]).
 const EXPLORE = [
@@ -23,11 +22,9 @@ export default function Footer() {
       <Container>
         <div className="flex flex-col gap-24 py-32 lg:flex-row lg:items-start lg:justify-between lg:gap-40">
           {/* [V18] 모바일: 슬로건 아래 여백 확대(mb-16)로 Explore 섹션과 명확히 분리 · lg는 gap-40 유지 */}
+          {/* [V5-18-1] 이미지 로고(G 심볼) 폐지 → 텍스트 워드마크 "K-Route" 단독(Header 와 동일 결정) */}
           <div className="mb-16 flex flex-col gap-8 lg:mb-0">
-            <span className="flex items-center gap-8">
-              <LogoMark className="h-24 w-24 shrink-0 text-white" aria-hidden="true" />
-              <span className="font-display text-logo font-semibold">Global Tourism System</span>
-            </span>
+            <span className="font-display text-logo font-semibold">K-Route</span>
             <LangSwap k="common.footer.tagline" as="p" className="text-small font-medium" />
           </div>
           <div className="flex flex-col gap-8">
@@ -53,10 +50,10 @@ export default function Footer() {
               className="text-caption font-semibold uppercase tracking-eyebrow"
             />
             <a
-              href="mailto:official@gts.ac.kr"
+              href="mailto:official@k-route.app"
               className="inline-flex min-h-44 items-center font-display text-small font-semibold"
             >
-              official@gts.ac.kr
+              official@k-route.app
             </a>
           </div>
         </div>

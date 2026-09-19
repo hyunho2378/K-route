@@ -260,7 +260,7 @@ function GtsTicket({ gts }) {
           <aside className="flex flex-col gap-16 lg:sticky lg:top-24">
             <article className="flex flex-col gap-24 overflow-hidden rounded-lg bg-primary p-24 shadow-md">
               <span className="font-display text-small font-semibold uppercase tracking-eyebrow text-white">
-                Global Tourism System
+                K-Route
               </span>
               <div className="flex flex-col gap-4">
                 <LangSwap
@@ -438,8 +438,8 @@ export default function Ticket() {
             onClick={() => setStampOn(false)}
             className="fixed inset-0 z-dialog grid w-full place-items-center bg-scrim"
           >
-            {/* GTS는 라인이 없어 lake(=primary 면) 어댑터 객체로 'G' 이니셜 표기(§33 선례) */}
-            <SuccessStamp line={{ id: 'lake', name_en: 'GTS' }} />
+            {/* GTS는 라인이 없어 lake(=primary 면) 어댑터 객체로 이니셜 표기(§33 선례) · [V5-18-1] 'K-Route' → 'K' */}
+            <SuccessStamp line={{ id: 'lake', name_en: 'K-Route' }} />
           </button>
         )}
       </>
@@ -473,7 +473,7 @@ export default function Ticket() {
           <div className="flex flex-col gap-24 p-24 lg:p-32">
             <div className="flex items-baseline justify-between gap-16">
               <span className="font-display text-small font-semibold uppercase tracking-eyebrow text-white">
-                Global Tourism System
+                K-Route
               </span>
               {/* 라인명 겹침(시프트 0) · 데이터 필드(th 없음)는 en 폴백: lang!=='ko'(v3.1 규칙) */}
               <span className="grid text-small font-medium text-white">

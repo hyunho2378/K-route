@@ -96,7 +96,7 @@ export default {
       title: "We already ran it.",
       body: "A real van, real riders, a real route.\nPhotographed on our first operating day in Chuncheon.",
       cta: "See the proof",
-      alt: "GTS van on a real Chuncheon pilot run", // [V10] van-hero 이미지 대체 텍스트
+      alt: "K-Route van on a real Chuncheon pilot run", // [V10] van-hero 이미지 대체 텍스트
     },
   },
   gate: {
