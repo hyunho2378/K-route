@@ -83,6 +83,10 @@ export default function GtsBuild() {
 
   const day = cap === 4; // [V5-3] q4 하루(4곳) · 아니면 반나절(3곳)
   const done = picks.length === cap;
+  // [V5-30] UT(페르소나 3인 · 드라마 라인) 발견: 앵커가 1곳뿐인 라인은 추천 12곳 대부분이 배지 없는
+  //   연계 로컬이라 "왜 무관한 곳이 나오나" 혼란이 있었다. 배지 있는 곳이 절반 미만이면 안내를 보여준다.
+  const badgedCount = recommended.filter((v) => v.badge).length;
+  const showMixNotice = recommended.length > 0 && badgedCount > 0 && badgedCount < recommended.length / 2;
 
   // [V9] 코스(고른 순서 스팟) 파생 · 마지막 좌표 = 남은 후보 재정렬 기준, 좌표열 = 큐 합계 거리·시간 배지.
   //   큐가 비면 sortCoord null(추천 순서 복귀).
@@ -149,6 +153,12 @@ export default function GtsBuild() {
             />
             <Counter n={picks.length} max={cap} />
           </div>
+          {/* [V5-30] 앵커 희소 라인 고지 · 배지 있는 곳이 절반 미만이면 왜 무관해 보이는 곳이 섞였는지 밝힌다 */}
+          {showMixNotice && (
+            <p className="rounded-lg bg-surface p-12 text-caption font-medium text-inkSec">
+              <LangSwap k="gts.build.mixNotice" />
+            </p>
+          )}
           {/* [V5-5] 확산 고지 · 어떤 장소 기준인지와 근거(직접 연관 / 인접 기준지 경유)를 밝힌다 */}
           {spread && (
             <div className="flex flex-col gap-4 rounded-lg bg-surface p-12">

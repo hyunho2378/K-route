@@ -114,6 +114,9 @@ export default {
         basis: "Based on KTO related attractions for",
         basisNearby: "No related attractions inside Chuncheon, so this follows the nearest one with data:",
       },
+      // [V5-30] 앵커(진짜 K-콘텐츠 성지)가 적은 라인(drama·anime)에서 추천 12곳 대부분이 배지 없는
+      //   연계 로컬로 채워질 때 안내 — UT에서 "드라마 라인인데 왜 무관한 곳이 나오나" 혼란 확인 후 추가.
+      mixNotice: "Only cards with a checkmark are confirmed K-content stops. The rest are nearby local picks that round out your day.",
     },
     route: {
       title: "Your route",
