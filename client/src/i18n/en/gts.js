@@ -40,7 +40,7 @@ export default {
       overtime: "Beyond the included hours, 10,000 won is added per extra hour.",
     },
     setup: {
-      title: "Make your K-Route day",
+      title: "Make your Cheongchun Line day",
       sub: "Tell us who is coming and we will match your ride.",
       dateLabel: "Travel date",
       datePlaceholder: "Select a date",
@@ -155,7 +155,7 @@ export default {
       food: { name: "K-Food Line", body: "A line that follows dakgalbi and makguksu." },
       anime: { name: "Animation Line", body: "A line around the Animation Museum exhibits and hands on programs." },
     },
-    // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
+    // [V5-3] Cheongchun Line 스팟 공용(K배지 · 집중률 Chip · build·route·go)
     spot: {
       kbadge: {
         kfood: "K-Food",
@@ -196,7 +196,7 @@ export default {
     // [V5-6] NFC 성지 스탬프(IA §11.10 개정)
     stamp: {
       title: "Stamp tour",
-      eyebrow: "K-Route stamp",
+      eyebrow: "Cheongchun Line stamp",
       added: "Stamp collected",
       already: "You already have this stamp",
       bad: "We could not read this tag. Scan the sticker at the place again.",
@@ -281,7 +281,7 @@ export default {
   // [V5-15] /gts 인트로 · 노선도 2층 구조를 한 화면으로 설명한다(퀴즈 직행 앞에 선다).
   //   근거 규율: 역은 근거가 확인된 곳만이라는 점을 카피에서도 지킨다(성지 주장 과장 금지 · SOURCE_SPOTS §8).
   gtsIntro: {
-    eyebrow: "K-Route",
+    eyebrow: "Cheongchun Line",
     title: "Chuncheon, drawn as two layers",
     sub: "A route map you can read in one screen: the K-content lines on top, and the real way to move between them underneath.",
     layer: {

@@ -3,7 +3,7 @@ export default {
   chat: {
     title: "K-Guide",
     open: "Open K-Guide chat",
-    greeting: "Ask me about Chuncheon. I answer only from Korea Tourism Organization data and facts K-Route has checked.",
+    greeting: "Ask me about Chuncheon. I answer only from Korea Tourism Organization data and facts Cheongchun Line has checked.",
     placeholder: "Ask about Chuncheon",
     send: "Send",
     thinking: "Looking through official data",

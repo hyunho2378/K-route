@@ -13,7 +13,7 @@ export default {
       gtsBuild: "Build your day",
       gtsRoute: "Your route",
       gtsCheckout: "Checkout",
-      gtsIntro: "K-Route", // [V5-15] /gts 인트로
+      gtsIntro: "Cheongchun Line", // [V5-15] /gts 인트로
       gtsQuiz: "Find your Chuncheon", // [V5-3]
       gtsGo: "Head to your stop", // [V5-3]
       stamp: "Stamp tour", // [V5-6]
@@ -37,7 +37,7 @@ export default {
     gate: "Trip Planner",
     handsfree: "Bag Delivery",
     loop: "City Lines",
-    gts: "K-Route",
+    gts: "Cheongchun Line",
     travelLog: "Travel Log",
     reviews: "Reviews",
     profile: "Profile",
@@ -52,7 +52,7 @@ export default {
     closed: "Closed",
   },
   common: {
-    brandName: "K-Route",
+    brandName: "Cheongchun Line",
     close: "Close",
     back: "Back",
     next: "Next",
@@ -113,11 +113,11 @@ export default {
       tagline: "Sightseeing on your terms for those seeking convenience and new experiences.",
       explore: "Explore",
       contact: "Contact",
-      copyright: "© 2026 Team K-Route. All rights reserved.",
-      // [V10] "Team K-Route"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
+      copyright: "© 2026 Team Cheongchun Line. All rights reserved.",
+      // [V10] "Team Cheongchun Line"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
       copyrightPre: "© 2026 ",
       copyrightPost: ". All rights reserved.",
-      teamName: "Team K-Route",
+      teamName: "Team Cheongchun Line",
       privacy: "Privacy Policy",
       terms: "Terms of Service",
     },

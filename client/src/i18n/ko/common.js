@@ -11,7 +11,7 @@ export default {
       gtsBuild: "하루 조립",
       gtsRoute: "동선 확인",
       gtsCheckout: "결제 확인",
-      gtsIntro: "케이로드", // [V5-15] /gts 인트로
+      gtsIntro: "Cheongchun Line", // [V5-15] /gts 인트로
       gtsQuiz: "취향 찾기", // [V5-3]
       gtsGo: "출발", // [V5-3]
       stamp: "스탬프 투어", // [V5-6]
@@ -35,7 +35,7 @@ export default {
     gate: "길찾기",
     handsfree: "짐 보내기",
     loop: "시내 라인",
-    gts: "케이로드",
+    gts: "Cheongchun Line",
     travelLog: "트래블 로그",
     reviews: "후기",
     profile: "프로필",
@@ -50,7 +50,7 @@ export default {
     closed: "마감",
   },
   common: {
-    brandName: "K-Route",
+    brandName: "Cheongchun Line",
     close: "닫기",
     back: "뒤로",
     next: "다음",
@@ -111,11 +111,11 @@ export default {
       tagline: "편리함과 새로운 경험을 찾는 이들을 위한, 당신의 방식대로의 여행.",
       explore: "둘러보기",
       contact: "문의",
-      copyright: "© 2026 Team K-Route. All rights reserved.",
-      // [V10] "Team K-Route"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
+      copyright: "© 2026 Team Cheongchun Line. All rights reserved.",
+      // [V10] "Team Cheongchun Line"를 /team 링크로 · pre/post는 링크 앞뒤 텍스트
       copyrightPre: "© 2026 ",
       copyrightPost: ". All rights reserved.",
-      teamName: "Team K-Route",
+      teamName: "Team Cheongchun Line",
       privacy: "개인정보처리방침",
       terms: "이용약관",
     },

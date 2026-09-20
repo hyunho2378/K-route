@@ -92,7 +92,7 @@ app.use('/api', stampsRouter); // [V5-6] NFC 성지 스탬프
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {
-  console.log(`K-Route server listening on port ${PORT}`);
+  console.log(`Cheongchun Line server listening on port ${PORT}`);
   // [V12] 환율 캐시 워밍(기동 시 1회 + 6시간 간격) · 실패해도 서버는 산다(환산만 숨김)
   require('./services/rates').startRatesCache();
   // [V5-2b] 공사 지역코드 매칭·캐시 + 춘천 목록 적재(24h 내 적재분 재사용) · 비차단 · 실패해도 서버는 산다(풀은 venues fallback)

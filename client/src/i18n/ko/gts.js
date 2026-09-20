@@ -40,7 +40,7 @@ export default {
       overtime: "기본 이용 시간 초과 시 시간당 10,000원이 추가됩니다.",
     },
     setup: {
-      title: "나만의 K-Route 하루 만들기",
+      title: "나만의 Cheongchun Line 하루 만들기",
       sub: "함께 가는 인원을 알려 주세요. 차량은 저희가 맞춰 드립니다.",
       dateLabel: "여행 날짜",
       datePlaceholder: "날짜를 선택하세요",
@@ -155,7 +155,7 @@ export default {
       food: { name: "K-푸드 라인", body: "닭갈비와 막국수를 따라가는 노선이에요." },
       anime: { name: "애니 라인", body: "애니메이션박물관의 전시와 체험을 도는 노선이에요." },
     },
-    // [V5-3] K-Route 스팟 공용(K배지 · 집중률 Chip · build·route·go)
+    // [V5-3] Cheongchun Line 스팟 공용(K배지 · 집중률 Chip · build·route·go)
     spot: {
       kbadge: {
         kfood: "K-푸드",
@@ -196,7 +196,7 @@ export default {
     // [V5-6] NFC 성지 스탬프(IA §11.10 개정)
     stamp: {
       title: "스탬프 투어",
-      eyebrow: "K-Route 스탬프",
+      eyebrow: "Cheongchun Line 스탬프",
       added: "스탬프를 찍었어요",
       already: "이미 찍은 스탬프예요",
       bad: "이 태그를 확인하지 못했어요. 현장 스티커를 다시 스캔해 주세요.",
@@ -281,7 +281,7 @@ export default {
   // [V5-15] /gts 인트로 · 노선도 2층 구조를 한 화면으로 설명한다(퀴즈 직행 앞에 선다).
   //   근거 규율: 역은 근거가 확인된 곳만이라는 점을 카피에서도 지킨다(성지 주장 과장 금지 · SOURCE_SPOTS §8).
   gtsIntro: {
-    eyebrow: "케이로드",
+    eyebrow: "Cheongchun Line",
     title: "춘천을 두 층으로 그린다",
     sub: "한 화면으로 읽는 노선도입니다. 위층은 K-콘텐츠 노선, 아래층은 그 사이를 실제로 오가는 방법입니다.",
     layer: {

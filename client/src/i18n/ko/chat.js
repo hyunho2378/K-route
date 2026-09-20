@@ -3,7 +3,7 @@ export default {
   chat: {
     title: "K-가이드",
     open: "K-가이드 채팅 열기",
-    greeting: "춘천 여행을 물어보세요. 한국관광공사 공식 데이터와 K-Route가 확인한 사실로만 답해요.",
+    greeting: "춘천 여행을 물어보세요. 한국관광공사 공식 데이터와 Cheongchun Line가 확인한 사실로만 답해요.",
     placeholder: "춘천 여행에 대해 물어보세요",
     send: "보내기",
     thinking: "공식 자료를 찾는 중",

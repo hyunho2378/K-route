@@ -40,9 +40,9 @@ export default function PageLayout() {
   // [V3] /travel-log = 풀블리드 지도(구 /loop 셸 재활용) — 보존해 둔 Footer 숨김 분기 재사용
   const hideFooter = pathname === '/travel-log';
 
-  // 페이지 title · "K-Route · {meta.title.*}" (ROUTES §4 · [V5-18-1] GTS 잔재 소탕)
+  // 페이지 title · "Cheongchun Line · {meta.title.*}" (ROUTES §4 · [V5-21] 브랜드명 K-Route → Cheongchun Line 전환)
   useEffect(() => {
-    document.title = `K-Route · ${t(`meta.title.${routeKey}`)}`;
+    document.title = `Cheongchun Line · ${t(`meta.title.${routeKey}`)}`;
   }, [routeKey, t]);
 
   // [H2-3] 라우트 변경 시 항상 최상단(결제→티켓 replace 포함) · 해시 앵커(#proof) 이동만 예외

@@ -12,7 +12,7 @@ export default {
       gtsBuild: "จัดวันของคุณ",
       gtsRoute: "ดูเส้นทาง",
       gtsCheckout: "ยืนยันการจอง",
-      gtsIntro: "K-Route", // [V5-15] /gts 인트로
+      gtsIntro: "Cheongchun Line", // [V5-15] /gts 인트로
       gtsQuiz: "ค้นหาสไตล์ของคุณ", // [V5-3]
       gtsGo: "ออกเดินทาง", // [V5-3]
       stamp: "สแตมป์ทัวร์", // [V5-6]
@@ -36,7 +36,7 @@ export default {
     gate: "วางแผนการเดินทาง",
     handsfree: "ส่งกระเป๋า",
     loop: "สายในเมือง",
-    gts: "K-Route",
+    gts: "Cheongchun Line",
     travelLog: "บันทึกการเดินทาง",
     reviews: "รีวิว",
     profile: "โปรไฟล์",
@@ -51,7 +51,7 @@ export default {
     closed: "เต็มแล้ว",
   },
   common: {
-    brandName: "K-Route",
+    brandName: "Cheongchun Line",
     close: "ปิด",
     back: "ย้อนกลับ",
     next: "ถัดไป",
@@ -112,11 +112,11 @@ export default {
       tagline: "การท่องเที่ยวในแบบของคุณ สำหรับผู้ที่มองหาความสะดวกและประสบการณ์ใหม่",
       explore: "สำรวจ",
       contact: "ติดต่อ",
-      copyright: "© 2026 Team K-Route. All rights reserved.",
-      // [V10] ลิงก์ "Team K-Route" ไป /team · pre/post คือข้อความก่อน/หลังลิงก์
+      copyright: "© 2026 Team Cheongchun Line. All rights reserved.",
+      // [V10] ลิงก์ "Team Cheongchun Line" ไป /team · pre/post คือข้อความก่อน/หลังลิงก์
       copyrightPre: "© 2026 ",
       copyrightPost: ". All rights reserved.",
-      teamName: "Team K-Route",
+      teamName: "Team Cheongchun Line",
       privacy: "นโยบายความเป็นส่วนตัว",
       terms: "ข้อกำหนดการใช้งาน",
     },
