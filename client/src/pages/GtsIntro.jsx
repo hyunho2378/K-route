@@ -13,6 +13,7 @@ import { LINES, LINE_BG, LINE_FACE } from '../data/gts/lineSystem';
 import { LINE_ICONS } from '../data/gts/quizQuestions';
 import LangSwap from '../i18n/LangSwap';
 import { useLang } from '../i18n/LangContext';
+import SubwayNetworkMap from '../components/gts/SubwayNetworkMap';
 
 // 앱 로드당 1회 · 인트로를 이미 지난 사용자는 다시 세우지 않는다(웹스토리지 없이)
 let seenIntro = false;
@@ -21,7 +22,7 @@ const FLOW = ['s1', 's2', 's3'];
 
 export default function GtsIntro() {
   const navigate = useNavigate();
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   // 이미 본 사용자는 인트로를 건너뛴다(뒤로가기로 되돌아오지 않게 replace)
   useEffect(() => {
@@ -72,6 +73,11 @@ export default function GtsIntro() {
                 );
               })}
             </ul>
+            {/* [V5-24] 옵토리니어 노선도 다이어그램(신귝 SubwayNetworkMap) · 데모 스케마틱 배치(SAMPLE_NETWORK,
+                역 이름은 검증된 라인 코스명 그대로 · 위치는 실좌표 아님을 note에 명시) · 위 리스트는 유지(접근성 폴백) */}
+            <div className="mt-8">
+              <SubwayNetworkMap lang={lang} showLegend={false} title="" />
+            </div>
           </div>
 
           {/* 아래층 = 실제 이동(공사 데이터) · 위층을 받치는 면이라 중립 면(surface)으로 둔다 */}
