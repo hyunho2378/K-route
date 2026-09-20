@@ -1,10 +1,11 @@
 // Home 근거 스트립 · [V5-11] 문제 지표를 검증 확정 수치로만 노출한다.
-//   숫자와 항목은 data/evidence.js 단일 출처(검증 안 된 수치가 화면으로 새지 않게) · 라벨·출처 문구는 i18n 3언어.
-//   각 수치에 출처를 캡션으로 병기하고 data-source 속성에도 남긴다(지시 규칙: 캡션 또는 data-source).
+//   숫자와 항목은 data/evidence.js 단일 출처(검증 안 된 수치가 화면으로 새지 않게).
 //   ProofSection 의 dl/dt/dd 문법을 그대로 따른다(값 = Kanit Bold 먼저 · 라벨 = small 뒤).
-// [V5-26] 지표당 lucide 아이콘 배지 추가(KRouteLines.jsx의 "색 배지 원 + 아이콘" 선례와 같은 문법,
-//   새 아이콘 라이브러리 없음). 순수 숫자·텍스트만 있던 카드에 시각 요소를 더해 화면이 밋밋해 보이지
-//   않게 한다(사용자 지시). 배지 색은 bg-surface(연한 중립면)로 둬 라인 색 배지와 시각적으로 구분한다.
+// [V5-26] 지표당 lucide 아이콘 배지 추가(KRouteLines.jsx 선례와 같은 문법, 새 아이콘 라이브러리 없음).
+// [V5-27] 기관명 인용("Ministry of Culture, Sports and Tourism, International Visitor Survey 2023"
+//   식)을 화면에서 삭제(사용자 지시 — 처음 보는 외국인 관광객이 보기엔 보고서처럼 읽힘 · 출처 검증
+//   자체는 기능설명서(PPTX)에 이미 있음). 수치의 검증 가능성은 잃지 않도록 data-source 속성에만
+//   남겨 DOM에서 grep 가능하게 하고, 화면에는 캡션을 띄우지 않는다.
 import { Music, Bus, Clock, MapPin, Backpack, Landmark, Sunset } from 'lucide-react';
 import { EVIDENCE } from '../../data/evidence';
 import { useLang } from '../../i18n/LangContext';
@@ -29,7 +30,7 @@ export default function EvidenceStrip() {
         return (
           <div
             key={e.id}
-            // 출처는 캡션으로도 보이고 속성으로도 남는다(검수 시 grep 가능)
+            // 출처는 화면에 안 띄우고 속성으로만 남긴다(검수 시 grep 가능 · 관광객 화면엔 기관명 인용 없음)
             data-source={t(`home.evidence.source.${e.id}`)}
             className="flex flex-col gap-8 rounded-lg bg-white p-24 shadow-sm"
           >
@@ -44,8 +45,6 @@ export default function EvidenceStrip() {
             {/* 값은 언어 무관 숫자 · 단위가 언어에 따라 달라지는 항목은 라벨이 말한다 */}
             <dd className="font-display text-h1 font-bold tracking-display text-primary">{e.value}</dd>
             <LangSwap k={`home.evidence.items.${e.id}`} as="dt" className="text-small font-semibold" />
-            {/* 출처 캡션 · inkMeta 는 12~13px 캡션 전용 하한선(DESIGN §16.1) */}
-            <p className="text-caption font-medium text-inkMeta">{t(`home.evidence.source.${e.id}`)}</p>
           </div>
         );
       })}
