@@ -163,7 +163,7 @@ function GtsTicket({ gts }) {
 
   const save = async () => {
     const blob = await drawGtsTicketPng(gts, entries);
-    downloadBlob(blob, `k-route-ticket-${gts.code}.png`); // §43 파일명 계약
+    downloadBlob(blob, `cheongchun-line-ticket-${gts.code}.png`); // §43 파일명 계약
   };
 
   return (
@@ -545,7 +545,7 @@ export default function Ticket() {
         <Button
           onClick={async () => {
             const blob = await drawTicketPng(line, booking);
-            downloadBlob(blob, `k-route-ticket-${booking.code}.png`);
+            downloadBlob(blob, `cheongchun-line-ticket-${booking.code}.png`);
           }}
         >
           <LangSwap k="gts.ticket.saveCta" />

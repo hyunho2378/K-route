@@ -291,10 +291,10 @@ export default function MobileMenu() {
                     <LangSwap k="common.footer.terms" />
                   </a>
                   <a
-                    href="mailto:official@k-route.app"
+                    href="mailto:official@cheongchun.app"
                     className="flex min-h-44 items-center px-16 font-display text-small font-medium text-primary"
                   >
-                    official@k-route.app
+                    official@cheongchun.app
                   </a>
                 </div>
               </div>

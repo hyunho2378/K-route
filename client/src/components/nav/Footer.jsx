@@ -50,10 +50,10 @@ export default function Footer() {
               className="text-caption font-semibold uppercase tracking-eyebrow"
             />
             <a
-              href="mailto:official@k-route.app"
+              href="mailto:official@cheongchun.app"
               className="inline-flex min-h-44 items-center font-display text-small font-semibold"
             >
-              official@k-route.app
+              official@cheongchun.app
             </a>
           </div>
         </div>
