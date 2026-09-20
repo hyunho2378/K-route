@@ -4,7 +4,7 @@
 
 ## 1. Brand hero
 - EN h1: "We move you to the story."
-- EN sub: "Bomnae Helper runs the missing links of a Chuncheon trip: from the airport gate to the last local stop, with your hands free."
+- EN sub: "Cheongchun Line runs the missing links of a Chuncheon trip: from the airport gate to the last local stop, with your hands free."
 - KR h1: "이야기가 있는 곳까지, 우리가 옮깁니다."
 - KR sub: "봄내 헬퍼는 춘천 여행에서 끊겨 있던 구간을 잇습니다. 공항 게이트부터 마지막 로컬 정류장까지, 두 손은 가볍게."
 

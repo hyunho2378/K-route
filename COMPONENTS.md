@@ -1,4 +1,4 @@
-# COMPONENTS.md — Bomnae Helper 컴포넌트 인벤토리 v3
+# COMPONENTS.md — Cheongchun Line 컴포넌트 인벤토리 v3
 
 전 컴포넌트 JSX(JavaScript). 여기 없는 컴포넌트는 만들지 않는다.
 props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 금지, 변경 필요 시 질문 후 대기.**
@@ -158,7 +158,7 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 | 웨이트 스윕 | Light 사용 0건, 화면당 400/600/700 공존 확인. 버튼·메뉴·라벨 600 통일 |
 | Header v3.2 | 높이 80/64, 메뉴 17px 600, 순서 About/Getting Here/Bag Delivery/City Lines, 모바일 상단 헤더(로고+Lang+로그인, 메뉴 없음) 신설 + 기존 모바일 메뉴 깨짐 제거 |
 | 명명 교체 | i18n 표시명 전면 교체(DESIGN §16.7). 라우트·파일명 불변 |
-| Footer 압축 | 2단 240px 이내, © 2026 Bomnae Helper. All rights reserved. + Team 5, 대회 풀네임 삭제 |
+| Footer 압축 | 2단 240px 이내, © 2026 Cheongchun Line. All rights reserved. + Team 5, 대회 풀네임 삭제 |
 | Button 페어 | Secondary 아웃라인 변형 추가(§16.8), 정렬 축 통일 |
 | `CalendarGrid.jsx` | §19 공용 캘린더 그리드(게이트 CalendarField + 상세 캘린더 공유) |
 
@@ -245,7 +245,7 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 
 ---
 
-## v5 K-Route 증분 ([V5-3] P2 화면 · 2026-09-11) · 충돌 시 이 표가 이긴다
+## v5 Cheongchun Line 증분 ([V5-3] P2 화면 · 2026-09-11) · 충돌 시 이 표가 이긴다
 
 ### 공용(오케스트레이터 단독 확정 · 병렬 에이전트 읽기 전용)
 | 파일 | 스펙 |
@@ -341,11 +341,11 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 
 ---
 
-## v5-12 게스트 공개 진입 (2026-09-13 · 로그인 없이 케이로드 전 구간) · 충돌 시 이 표가 이긴다
+## v5-12 게스트 공개 진입 (2026-09-13 · 로그인 없이 Cheongchun Line 전 구간) · 충돌 시 이 표가 이긴다
 
 | 파일 | 스펙 |
 |---|---|
-| `App.jsx` | RequireAuth 를 케이로드 전 구간에서 제거(quiz·build·route·go·setup·checkout·stamp) · 로그인이 실제로 필요한 `/profile` 만 유지(관리자 API 는 서버 requireAdmin 이 그대로 막는다) |
+| `App.jsx` | RequireAuth 를 Cheongchun Line 전 구간에서 제거(quiz·build·route·go·setup·checkout·stamp) · 로그인이 실제로 필요한 `/profile` 만 유지(관리자 API 는 서버 requireAdmin 이 그대로 막는다) |
 | `server/routes/stamps.js` | 게스트는 401 대신 `ensureAnonKey` 로 세션 키만 발급하고 빈 요약 반환 · 태그 유효성(없는 스팟 404 · 위조 토큰 403)은 게스트에게도 동일 · DB 저장 없음(stamps.user_id NOT NULL · 스키마 불변) |
 | `server/routes/track.js` | 게스트는 401 대신 200 + `skipped:'guest'` · 저장은 로그인 사용자만(journey_events 는 사용자 귀속이 전제) · 게스트 콘솔에 실패가 쌓이지 않는다 |
 | `pages/GtsStamp.jsx` | 게스트 응답(`guest:true`)이면 방금 찍은 것만 이번 세션 화면에 합성(렌더 코드 불변 · 새로고침 시 사라짐) + 게스트 안내 |
@@ -365,15 +365,15 @@ props 계약은 병렬 에이전트 간 인터페이스다 — **임의 변경 �
 
 ---
 
-## v5-15 홈 정체성 K-Route 재작성 · /gts 인트로 (2026-09-13) · 충돌 시 이 표가 이긴다
+## v5-15 홈 정체성 Cheongchun Line 재작성 · /gts 인트로 (2026-09-13) · 충돌 시 이 표가 이긴다
 
 | 파일 | 스펙 |
 |---|---|
 | `pages/GtsIntro.jsx` (신설) | `/gts` = 노선도 2층 구조 한 화면(위층 K-콘텐츠 노선 3종 · 아래층 공사 데이터 실제 이동) + 흐름 3단계(퀴즈 → 노선 여권 → NFC 스탬프) + "시작하기" → `/gts/quiz` · 라인 정의·색은 `lineSystem` 재사용(신규 색 0) · 건너뛰기 = 모듈 인메모리 플래그(웹스토리지 금지 · MobileMenu.hintShown 선례) 로 같은 앱 로드에서 재진입 시 퀴즈 직행 |
-| `components/home/KRouteLines.jsx` (신설) | 홈 주 피치 = 라인 3종 카드(`LINES`·`LINE_FACE`·`LINE_ICONS` 재사용 · 이름·한 줄은 `gts.line.*` 재사용) + 케이로드 CTA + Trip Planner 보조 텍스트 링크 |
-| `pages/Home.jsx` | 섹션 순서 = Hero → **lines** → evidence(Why K-Route + 해법 한 줄) → how-it-works → services(보조 도구) → reviews → proof · 구 "두 서비스" 주 피치 폐지 |
-| `components/home/HeroCarousel.jsx` | CTA 페어 순서 교체: 주 = 케이로드(`/gts`, primary) · 보조 = Trip Planner(`/gate`, onPhoto) · 치수·정렬 규칙(§16.8) 불변 |
-| `components/home/ServiceCards.jsx` | 보조 도구 2장으로 재배치: Trip Planner(`/gate`) · Travel Log(`/travel-log`, lucide `Footprints`) · 구 Tour Builder 카드 폐지(케이로드 진입은 히어로·라인 섹션이 소유 · 중복 호출 금지) |
+| `components/home/KRouteLines.jsx` (신설) | 홈 주 피치 = 라인 3종 카드(`LINES`·`LINE_FACE`·`LINE_ICONS` 재사용 · 이름·한 줄은 `gts.line.*` 재사용) + Cheongchun Line CTA + Trip Planner 보조 텍스트 링크 |
+| `pages/Home.jsx` | 섹션 순서 = Hero → **lines** → evidence(Why Cheongchun Line + 해법 한 줄) → how-it-works → services(보조 도구) → reviews → proof · 구 "두 서비스" 주 피치 폐지 |
+| `components/home/HeroCarousel.jsx` | CTA 페어 순서 교체: 주 = Cheongchun Line(`/gts`, primary) · 보조 = Trip Planner(`/gate`, onPhoto) · 치수·정렬 규칙(§16.8) 불변 |
+| `components/home/ServiceCards.jsx` | 보조 도구 2장으로 재배치: Trip Planner(`/gate`) · Travel Log(`/travel-log`, lucide `Footprints`) · 구 Tour Builder 카드 폐지(Cheongchun Line 진입은 히어로·라인 섹션이 소유 · 중복 호출 금지) |
 | `App.jsx` | `/gts` → `GtsIntro`(구 `Navigate to="/gts/quiz"`) · `ResetToHomeOnLoad` 예외에 `OPEN_PATHS = ['/gts','/travel-log','/reviews']`(하위 경로 포함) 추가 = 직접 URL·새로고침이 말없이 홈으로 튕기던 유일한 조용한 실패 제거(사용자 승인) · 예외 밖 경로의 홈 리셋은 유지 |
 | `components/layout/PageLayout.jsx` | `/gts` → `meta.title.gtsIntro`(신설) · `/gts/setup` 은 `gtsSetup` 유지 |
 | i18n | `home.lines.*` 5키 · `home.evidence.solution` 1키 · `gtsIntro.*` 15키 · `meta.title.gtsIntro` 1키 신설 = 언어당 +22 · `home.services.builder` → `home.services.log` 이름 교체(키 수 불변) · 옛 용어 정리: `meta.title.gtsSetup` "Tour Builder" → 이동 준비 계열 · 3언어 동형 1408키 |

@@ -7,8 +7,8 @@
 ## Privacy Policy / 개인정보처리방침
 
 ### 1. Who we are / 운영 주체
-EN: K-Route is a prototype service operated by Team 5 of the 2026 STATION C Glocal Solverthon in Chuncheon, Republic of Korea. Contact: official@k-route.app
-KR: K-Route는 2026 STATION C 글로컬 솔버톤(춘천) Team 5가 운영하는 프로토타입 서비스입니다. 문의: official@k-route.app
+EN: Cheongchun Line is a prototype service operated by Team 5 of the 2026 STATION C Glocal Solverthon in Chuncheon, Republic of Korea. Contact: official@cheongchun.app
+KR: Cheongchun Line는 2026 STATION C 글로컬 솔버톤(춘천) Team 5가 운영하는 프로토타입 서비스입니다. 문의: official@cheongchun.app
 
 #### [V1] 연구 기록 조항(Privacy §2·§3에 반영)
 EN §2 append: "When you are signed in, your selections inside this prototype (party size, chosen venues, visit order, payment method label) and the time spent on each step are also recorded."
@@ -37,8 +37,8 @@ EN: Booking records are kept for the duration of the Solverthon program and are 
 KR: 예약 기록은 솔버톤 프로그램 기간 동안 보관하며, 법령상 별도 의무가 없는 한 프로그램 종료 후 30일 이내에 파기합니다.
 
 ### 7. Your rights / 이용자의 권리
-EN: You may request access, correction or deletion of your data at any time by writing to official@k-route.app. We respond within 10 business days.
-KR: 이용자는 언제든지 official@k-route.app 로 자신의 정보에 대한 열람, 정정, 삭제를 요청할 수 있습니다. 요청에는 영업일 기준 10일 이내에 답변합니다.
+EN: You may request access, correction or deletion of your data at any time by writing to official@cheongchun.app. We respond within 10 business days.
+KR: 이용자는 언제든지 official@cheongchun.app 로 자신의 정보에 대한 열람, 정정, 삭제를 요청할 수 있습니다. 요청에는 영업일 기준 10일 이내에 답변합니다.
 
 ### 8. Changes / 방침 변경
 EN: If this policy changes, we will update this page and the date above.
@@ -49,8 +49,8 @@ KR: 방침이 변경되면 본 페이지와 상단의 갱신일을 함께 수정
 ## Terms of Service / 이용약관
 
 ### 1. The service / 서비스의 내용
-EN: K-Route is a reservation platform and travel product layer. Transport is operated by licensed chartered bus partners, and luggage delivery is fulfilled by licensed delivery partners. K-Route plans the routes, takes reservations and coordinates pre-orders with local shops.
-KR: K-Route는 예약 플랫폼이자 여행상품 기획 레이어입니다. 운송은 면허를 갖춘 전세버스 제휴사가, 수하물 배송은 허가된 딜리버리 제휴사가 수행합니다. K-Route는 노선 기획, 예약 접수, 로컬 상점 선주문 조율을 담당합니다.
+EN: Cheongchun Line is a reservation platform and travel product layer. Transport is operated by licensed chartered bus partners, and luggage delivery is fulfilled by licensed delivery partners. Cheongchun Line plans the routes, takes reservations and coordinates pre-orders with local shops.
+KR: Cheongchun Line는 예약 플랫폼이자 여행상품 기획 레이어입니다. 운송은 면허를 갖춘 전세버스 제휴사가, 수하물 배송은 허가된 딜리버리 제휴사가 수행합니다. Cheongchun Line는 노선 기획, 예약 접수, 로컬 상점 선주문 조율을 담당합니다.
 
 ### 2. Prototype notice / 프로토타입 고지
 EN: This site is a prototype built for the 2026 STATION C Glocal Solverthon. Schedules, prices and stops shown here are draft values and may change without notice. No real payment is processed on this site.
@@ -65,20 +65,20 @@ EN: Provide accurate arrival and contact details, arrive at the meeting point on
 KR: 정확한 도착·연락 정보를 제공하고, 미팅 포인트에 정시에 도착하며, 차내에서 호스트의 안전 안내를 따라 주십시오.
 
 ### 5. Liability / 책임의 한계
-EN: Transport and delivery are performed by licensed partners under their own terms and insurance. To the extent permitted by law, K-Route is not liable for delays or losses caused by weather, traffic or events beyond our reasonable control.
-KR: 운송과 배송은 각 면허 사업자의 약관과 보험 하에서 수행됩니다. 관련 법령이 허용하는 범위에서, K-Route는 기상, 교통 등 합리적 통제를 벗어난 사유로 인한 지연이나 손실에 책임을 지지 않습니다.
+EN: Transport and delivery are performed by licensed partners under their own terms and insurance. To the extent permitted by law, Cheongchun Line is not liable for delays or losses caused by weather, traffic or events beyond our reasonable control.
+KR: 운송과 배송은 각 면허 사업자의 약관과 보험 하에서 수행됩니다. 관련 법령이 허용하는 범위에서, Cheongchun Line는 기상, 교통 등 합리적 통제를 벗어난 사유로 인한 지연이나 손실에 책임을 지지 않습니다.
 
 ### 6. Intellectual property / 지식재산
-EN: The K-Route name, line characters and story clips belong to Team 5 and its partners. Please do not reuse them commercially without permission.
-KR: K-Route의 명칭, 라인 캐릭터, 스토리 클립은 Team 5와 그 파트너에게 귀속됩니다. 허락 없는 상업적 재사용을 금합니다.
+EN: The Cheongchun Line name, line characters and story clips belong to Team 5 and its partners. Please do not reuse them commercially without permission.
+KR: Cheongchun Line의 명칭, 라인 캐릭터, 스토리 클립은 Team 5와 그 파트너에게 귀속됩니다. 허락 없는 상업적 재사용을 금합니다.
 
 ### 7. Governing law / 준거법
 EN: These terms are governed by the laws of the Republic of Korea.
 KR: 본 약관은 대한민국 법령을 준거법으로 합니다.
 
 ### 8. Contact / 문의
-EN: official@k-route.app
-KR: official@k-route.app
+EN: official@cheongchun.app
+KR: official@cheongchun.app
 
 ---
 

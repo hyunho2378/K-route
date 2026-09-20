@@ -1,4 +1,4 @@
-# RUNBOOK — Bomnae Helper v3 실행 절차
+# RUNBOOK — Cheongchun Line v3 실행 절차
 
 > ⚠️ CC 프롬프트는 **반드시 한 세션에 하나씩** 붙인다. 여러 개를 한 번에 붙이면 에이전트가 범위를 섞는다(사고 이력).
 
@@ -7,7 +7,7 @@
 1. 새 레포 루트에 이 팩의 파일을 배치:
    - 루트: `DESIGN.md` `IA.md` `ROUTES.md` `COMPONENTS.md` `PATTERNS.md` `AGENTS.md` `PROGRESS.md` `tokens.js`
    - 기존 고정 `CLAUDE.md`를 루트에 복사 (이 팩에는 없다 — 훼손 금지 원칙)
-2. AGENTS.md는 v3로 교체본이다 — 이식 문서 §10("문서 팩 v3 신규 작성, AGENTS 포함") 근거. 고정본의 구조 원칙은 전부 계승했고 담당 범위만 Bomnae Helper로 재조준했다. 구 고정본을 유지하고 싶으면 구본의 PHASE 분배·CHECKLIST가 링크인바이오 프로젝트(LinkCard·EventsSection·680px 컨테이너) 기준이라 이 프로젝트를 검증할 수 없다는 점만 인지하고 결정해라.
+2. AGENTS.md는 v3로 교체본이다 — 이식 문서 §10("문서 팩 v3 신규 작성, AGENTS 포함") 근거. 고정본의 구조 원칙은 전부 계승했고 담당 범위만 Cheongchun Line로 재조준했다. 구 고정본을 유지하고 싶으면 구본의 PHASE 분배·CHECKLIST가 링크인바이오 프로젝트(LinkCard·EventsSection·680px 컨테이너) 기준이라 이 프로젝트를 검증할 수 없다는 점만 인지하고 결정해라.
 
 ## 1. 개발 순서 (한 프롬프트 = 한 세션)
 

@@ -1,12 +1,12 @@
-# PROGRESS.md — Bomnae Helper 진행 상태
+# PROGRESS.md — Cheongchun Line 진행 상태
 
 > 갱신 규칙: 각 프롬프트 완료 시 + 컨텍스트 85% 도달 시. 재시작 세션은 이 파일을 먼저 읽는다.
 
-## v5 K-Route (2026-09~) — 2026 관광데이터 활용 공모전 ②-2 지정과제 3
+## v5 Cheongchun Line (2026-09~) — 2026 관광데이터 활용 공모전 ②-2 지정과제 3
 
 > 세션마다 완료·진행중·다음을 갱신.
 
-서비스: 춘천 지역특화 K-콘텐츠 여행 플래너. 봄내헬퍼(솔버톤 GTS) 100% 재사용 + 확장.
+서비스: 춘천 지역특화 K-콘텐츠 여행 플래너. Cheongchun Line(솔버톤 GTS) 100% 재사용 + 확장.
 
 ### 확정 사실 (근거)
 - 교통 API = TAGO 시외버스(SuburbsBusInfo) + 철도(TrainInfo, ITX·일반열차). 외부 API로 유지.
@@ -25,9 +25,9 @@
 - [x] P4 게이미피케이션 이식: K-콘텐츠 노선 체계 · 스탯 게이지 · 라인 판독 · 노선 여권 · 스탬프 단일화 · 오염 정리 (2026-09-13 · [V5-9] bd82615~44e3d73)
 - [x] P5 축제 API 연결: searchFestival2 실사용(법정동 필터 · 기간 한정 배지 · 라인 매핑) (2026-09-13 · [V5-10])
 - [x] P6 문제 지표 수치 통일: 감사 후 검증 확정 수치만 Home 근거 스트립으로 노출(출처 병기) (2026-09-13 · [V5-11])
-- [x] P7 게스트 공개 진입: 케이로드 전 구간을 로그인 없이 체험 가능하게(심사 대응) (2026-09-13 · [V5-12])
+- [x] P7 게스트 공개 진입: Cheongchun Line 전 구간을 로그인 없이 체험 가능하게(심사 대응) (2026-09-13 · [V5-12])
 - [x] P8 추천 카드 실데이터·라인 색: 실분류 칩(categoryCode2) · place별 한 줄 · 앵커 거리 페널티 면제 · 카드 면 복구 (2026-09-13 · [V5-13])
-- [x] P9 홈 정체성 K-Route 재작성 + /gts 인트로(노선도 2층 구조) + 직접 URL 조용한 튕김 제거 (2026-09-13 · [V5-15])
+- [x] P9 홈 정체성 Cheongchun Line 재작성 + /gts 인트로(노선도 2층 구조) + 직접 URL 조용한 튕김 제거 (2026-09-13 · [V5-15])
 - [x] P10 지도 2층 구조(1층 도시 전체 노선 + 2층 내 노선) · 경로선 구간별 라인 색 · route 혼잡도 잔재 제거 (2026-09-13 · [V5-16])
 - [x] P11 관광사진 갤러리(detailImage2 활성화) + 드라마·애니 콘텐츠 재확인 + 축제 배지 원인 규명 (2026-09-13 · [V5-17])
 - [x] P12-1 GTS 로고·잔재 전수 소탕(제출 전 최종 정리 1/5) (2026-09-20 · [V5-18-1])
@@ -144,7 +144,7 @@
 - server/db/pool.js 'error' 리스너 추가(Neon 유휴 연결 종료로 동시 검증 중 API 서버 exit 1 재현).
 
 다음 세션 참고:
-- 내비 표시명 "Tour Builder" → IA §11.2 "K-Route"(케이로드) 교체 미실시.
+- 내비 표시명 "Tour Builder" → IA §11.2 "Cheongchun Line"(Cheongchun Line) 교체 미실시.
 - 춘천 시내 교통 provider(ODsay 등) 연결 시 /api/go legs[] 채우기(클라는 이미 legs 유무 분기 자리).
 - Neon 연결 끊김으로 /api/me 등 간헐 실패(재요청 시 회복) · pool idleTimeoutMillis 등 운영 설정 검토.
 - th 번역(quiz·go·detail) 네이티브 검수 · Travel Log는 공사 id 코스를 표시하지 않음(venues id만 해석 · 기존 규칙).
@@ -309,7 +309,7 @@
 
 ### P7 게스트 공개 진입 (2026-09-13 · 단독 · [V5-12])
 
-문제: 배포본에서 케이로드 전 구간이 RequireAuth 에 막혀 로그인해야만 열렸다. 공모전 심사위원은 로그인하지 않는다.
+문제: 배포본에서 Cheongchun Line 전 구간이 RequireAuth 에 막혀 로그인해야만 열렸다. 공모전 심사위원은 로그인하지 않는다.
 
 감사(지시 1항): RequireAuth 8곳 = `/gts/{setup,build,route,checkout,quiz,go}` · `/stamp/:spotId/:t` · `/profile`. `/gate` 는 이미 공개였다.
 서버는 추천·동선·확산·축제·집중률·챗이 **이미 비로그인으로 동작**했고(quiz.js 는 readUserId 가 없으면 저장만 건너뛴다),
@@ -317,7 +317,7 @@
 
 | 항목 | 결과 |
 |---|---|
-| 라우트 | 케이로드 전 구간 공개 · `/profile` 만 RequireAuth 유지 |
+| 라우트 | Cheongchun Line 전 구간 공개 · `/profile` 만 RequireAuth 유지 |
 | 스탬프 | 게스트는 세션 키만 발급(ensureAnonKey) + 빈 요약 · 태그 검증은 동일 · 화면이 이번 세션 메모리로 표시(사용자 결정 · stamps.user_id NOT NULL 이라 스키마 변경 없이 성립) |
 | 계측 | track 은 게스트에게 200 + skipped · 저장은 로그인 사용자만 · 이것이 게스트 "콘솔 에러 0" 을 만든 실제 수정이다 |
 | 결제 | onPay 게스트 통과 + 데모 표기 · resolveUserId 가 null 을 주어 예약은 user_id 없이 저장되고 계정 생성은 없다 · 실결제도 없다 |
@@ -332,7 +332,7 @@
 
 다음 세션 참고:
 - **직접 URL 진입은 여전히 홈으로 돌아간다.** ResetToHomeOnLoad([V20] 사용자 요청)가 `/`·`/admin`·`/stamp/*` 외 전 경로를 홈으로 replace 한다.
-  홈에서 클릭으로 들어오면 문제없지만, 배포 URL 뒤에 `/gts/quiz` 같은 경로를 붙여 공유하면 홈으로 간다. 심사 안내에 경로를 적을 계획이면 예외 목록에 케이로드 경로를 넣어야 한다.
+  홈에서 클릭으로 들어오면 문제없지만, 배포 URL 뒤에 `/gts/quiz` 같은 경로를 붙여 공유하면 홈으로 간다. 심사 안내에 경로를 적을 계획이면 예외 목록에 Cheongchun Line 경로를 넣어야 한다.
 - 배포 env 의 `DEMO_MODE` 는 false 여야 한다(true 면 게스트 예약이 데모 계정에 귀속된다).
 
 ### P8 추천 카드 실데이터 · 라인 색 (2026-09-13 · 단독 · [V5-13])
@@ -368,9 +368,9 @@
   `ORDER BY contentid` 한 줄이면 되지만 노출되는 장소 구성이 바뀌므로 지시 범위 밖으로 두고 보고만 한다.
 - K푸드 라인 카드 칩은 대부분 "Meal" 이다(A05 제외 결정의 당연한 결과). 식당을 더 잘게 나누려면 cat3 이름(카페/전통찻집 등)까지 받아야 한다.
 
-### P9 홈 정체성 K-Route 재작성 · /gts 인트로 (2026-09-13 · 단독 · [V5-15])
+### P9 홈 정체성 Cheongchun Line 재작성 · /gts 인트로 (2026-09-13 · 단독 · [V5-15])
 
-지시: 홈 메인 피치를 K-Route 로 교체(A) · 죽은 CTA 수정(B) · 조용한 실패 제거(C) · 옛 용어 정리(D).
+지시: 홈 메인 피치를 Cheongchun Line 로 교체(A) · 죽은 CTA 수정(B) · 조용한 실패 제거(C) · 옛 용어 정리(D).
 
 감사(먼저 실측 · 지시와 코드가 어긋난 부분):
 - **B5 "Build my day 가 onClick 때문에 안 움직인다" 는 재현되지 않았다.** 히어로 CTA 는 `Button as={Link} to="/gts"` 순수 링크이고
@@ -381,21 +381,21 @@
 - **실재하는 유일한 "조용한 튕김" 은 `ResetToHomeOnLoad`([V20] 사용자 요청)였다.** 새로고침·직접 URL 진입 시 예외 3곳을 뺀 전 경로를 말없이 홈으로 replace 한다.
 - 배포본은 확인하지 못했다(레포에 배포 URL 기록이 없고 `server/.env` 의 CLIENT_ORIGIN 은 localhost 였다 · 한때 배포를 본 줄 알았으나 로컬이었음을 확인하고 정정했다).
 
-사용자 결정(질문 후 진행): B5 는 코드를 건드리지 않고 A4 인트로로 흡수 · ResetToHomeOnLoad 는 케이로드·Travel Log 예외 추가.
+사용자 결정(질문 후 진행): B5 는 코드를 건드리지 않고 A4 인트로로 흡수 · ResetToHomeOnLoad 는 Cheongchun Line·Travel Log 예외 추가.
 
 | 항목 | 결과 |
 |---|---|
-| 히어로 | "Chuncheon has no subway." / "그래서 노선을 깔았다" 계열로 교체 · 주 CTA = 케이로드(primary), 보조 = Trip Planner(onPhoto) |
-| 섹션 순서 | Hero → **lines**(라인 3종) → evidence(Why K-Route + 해법 한 줄) → how-it-works(퀴즈 → 여권 → 스탬프) → services(보조 도구) → reviews → proof |
+| 히어로 | "Chuncheon has no subway." / "그래서 노선을 깔았다" 계열로 교체 · 주 CTA = Cheongchun Line(primary), 보조 = Trip Planner(onPhoto) |
+| 섹션 순서 | Hero → **lines**(라인 3종) → evidence(Why Cheongchun Line + 해법 한 줄) → how-it-works(퀴즈 → 여권 → 스탬프) → services(보조 도구) → reviews → proof |
 | Trip Planner | 주 피치에서 내려와 라인 섹션의 보조 텍스트 링크 + 보조 도구 카드로 재편입(Travel Log 와 한 쌍) |
 | /gts 인트로 | 노선도 2층 구조 한 화면(위층 K-콘텐츠 노선 3종 · 아래층 공사 데이터 실제 이동) + 흐름 3단계 + 시작하기 → 퀴즈 · 건너뛰기는 모듈 인메모리 플래그(웹스토리지 금지) |
 | 조용한 튕김 | `OPEN_PATHS = ['/gts','/travel-log','/reviews']` 하위 경로 포함 예외 · 실측: 세 경로 직접 진입 생존, 예외 밖(`/profile`)은 기존대로 홈 리셋 |
-| 정체성 자가 점검 | 첫 화면 텍스트에 K-Route 등장 · Hero 다음 첫 섹션이 라인 소개 · 구 "Two services" 잔재 0 |
+| 정체성 자가 점검 | 첫 화면 텍스트에 Cheongchun Line 등장 · Hero 다음 첫 섹션이 라인 소개 · 구 "Two services" 잔재 0 |
 | 회귀 | E2E PASS(티켓 5CS3AH · 인트로 한 칸 경유하도록 하네스 수정) · 빌드 통과 · 콘솔 에러 0 · **i18n 누락 키 0**(LangSwap 3언어 겹침 렌더 기준 실화면 검증) · 3언어 동형 1408키 · 320px 가로 넘침 0 |
 
 명세 밖 결정(보고):
 - **IA §11.2 를 개정했다.** `/gts` 는 quiz 직행이 아니라 인트로다(사용자 지시 A4). 심사 경로 §11.1 의 순서는 그대로고 앞에 한 칸이 붙는다.
-- `ServiceCards` 를 버리지 않고 보조 도구(Trip Planner · Travel Log)로 재배치했다. 케이로드 진입은 히어로·라인 섹션이 소유하므로 여기서 중복으로 부르지 않는다.
+- `ServiceCards` 를 버리지 않고 보조 도구(Trip Planner · Travel Log)로 재배치했다. Cheongchun Line 진입은 히어로·라인 섹션이 소유하므로 여기서 중복으로 부르지 않는다.
 - `meta.title.gtsSetup` 의 "Tour Builder" 를 이동 준비 계열로 바꿨다(D 옛 용어 정리 중 라우트 제목에 직접 노출되던 것만).
 
 다음 세션 참고:
@@ -493,19 +493,19 @@ C 원인 확정(날짜 조건):
 - `BrandHero.jsx`·`StickyBackBar.jsx`·`brand.js`(About) 와 `HandsFree.jsx`·`gate.js handsfree.*` 는 각각 `/about`·`/hands-free` 가
   전부 리다이렉트/404 위장이라 **실제로 렌더되지 않는 dead code**다(사용자에게 노출 안 됨) → 스킵.
 - `.claude/settings.local.json` 안의 "Global Tourism System" 은 과거 허용된 perl 명령 이력일 뿐 실행 코드가 아니다(사용자 지시로 이 파일은 건드리지 않는다) → 스킵.
-- `docs/LEGAL_COPY.md`(legal.js 원본 소스 · "전문 이식(임의 축약·창작 금지)" 규율)는 실제로는 "Bomnae Helper" 기준이고 i18n 은 "Global Tourism System" 기준이라 서로 어긋나 있었다
-  → 소스부터 K-Route 로 갱신하고 3언어 legal.js 를 그 소스에 맞춰 다시 이식(재이식 시 옛 이름으로 되돌아가지 않게).
+- `docs/LEGAL_COPY.md`(legal.js 원본 소스 · "전문 이식(임의 축약·창작 금지)" 규율)는 실제로는 "Cheongchun Line" 기준이고 i18n 은 "Global Tourism System" 기준이라 서로 어긋나 있었다
+  → 소스부터 Cheongchun Line 로 갱신하고 3언어 legal.js 를 그 소스에 맞춰 다시 이식(재이식 시 옛 이름으로 되돌아가지 않게).
 - 리뷰 목업(mock 리뷰가 아니라 **DB `reviews` 테이블에 실제로 저장된 행**) 1건 본문에 "GTS knows all the best places" 자유 텍스트가 있었다 —
   소스코드 grep 으로는 안 잡히는 종류라 브라우저 검증 중 실측으로 발견 · `UPDATE reviews SET body = replace(...)` 로 그 1건만 교정(스키마 변경 없음).
 
 | 항목 | 결과 |
 |---|---|
-| 이미지 로고 폐지 | 4개 SVG 자산을 lucide `Route` 아이콘 벡터(circle-path-circle)로 통일 교체 · Header·Footer 는 아이콘 자체를 없애고 텍스트 워드마크 "K-Route" 단독(primary 색 · 기존 폰트 클래스 그대로) |
-| 발견 가능성 | "Global Tourism System"(22자)은 375px 초과라 모바일에서 숨겼었지만 "K-Route"(7자)는 폭 문제가 없어 `hidden lg:inline` 을 없애고 전 폭 상시 노출 |
-| 탭 제목 | `PageLayout.jsx` `document.title` 템플릿 "Global Tourism System · …" → "K-Route · …" |
-| 티켓 | `Ticket.jsx` 브랜드 라벨 2곳(GTS 모드 카드 · 구 라인 티켓 카드) + 스탬프 이니셜 어댑터(`name_en: 'GTS'` → `'K-Route'`) |
+| 이미지 로고 폐지 | 4개 SVG 자산을 lucide `Route` 아이콘 벡터(circle-path-circle)로 통일 교체 · Header·Footer 는 아이콘 자체를 없애고 텍스트 워드마크 "Cheongchun Line" 단독(primary 색 · 기존 폰트 클래스 그대로) |
+| 발견 가능성 | "Global Tourism System"(22자)은 375px 초과라 모바일에서 숨겼었지만 "Cheongchun Line"(7자)는 폭 문제가 없어 `hidden lg:inline` 을 없애고 전 폭 상시 노출 |
+| 탭 제목 | `PageLayout.jsx` `document.title` 템플릿 "Global Tourism System · …" → "Cheongchun Line · …" |
+| 티켓 | `Ticket.jsx` 브랜드 라벨 2곳(GTS 모드 카드 · 구 라인 티켓 카드) + 스탬프 이니셜 어댑터(`name_en: 'GTS'` → `'Cheongchun Line'`) |
 | i18n 텍스트 | `gts.js` setup.title · `gate.js` proof.alt · `legal.js` 전문(운영주체·서비스설명·책임·지식재산·문의) 3언어 전부 |
-| 이메일 | `official@gts.ac.kr` → `official@k-route.app`(config.js `OFFICIAL_EMAIL` 단일 출처 + Footer·MobileMenu 하드코딩 mailto + legal.js 3언어 + `docs/LEGAL_COPY.md` 소스) |
+| 이메일 | `official@gts.ac.kr` → `official@cheongchun.app`(config.js `OFFICIAL_EMAIL` 단일 출처 + Footer·MobileMenu 하드코딩 mailto + legal.js 3언어 + `docs/LEGAL_COPY.md` 소스) |
 | favicon | lucide Route 벡터로 교체 완료(번거로우면 스킵 가능이었으나 SVG 라 교체 비용이 낮아 함께 처리) |
 | 회귀 | E2E PASS(홈→gate→gts 인트로→퀴즈→build→route→go→route 복귀) · 빌드 통과 · 콘솔 0 · i18n 3언어 동형 1410키(텍스트 값만 교체, 키 구조 불변) |
 
@@ -847,7 +847,7 @@ press(0.97)만 허용 · 그림자는 tokens.shadow 만")를 절대 위반하지
 - [ ] 파일럿 운행 촬영 — 차내 클립 시청 장면 / 도착 즉시 감자빵 (3~4일차)
 - [ ] 정류장 GPS 실좌표 수집 (3~4일차 현장에서 핀 찍기 → stops.js 교체)
 - [ ] 라인 가격·회차 확정 (5일차 BM 검토)
-- [ ] 서비스명 영문 표기 최종 확정 (Bomnae Helper 유지 여부)
+- [ ] 서비스명 영문 표기 최종 확정 (Cheongchun Line 유지 여부)
 - [ ] unDraw 일러스트 3종(login/404/빈결과) primary 단색 재컬러 SVG → `client/public/images/illustrations/` (현재 img 경로만 참조 중)
 - [ ] og-image.png (1200x630) 제작·배치 (`client/public/og-image.png` — index.html og:image가 이미 참조 중), 배치 후 카카오 캐시 초기화 도구로 갱신
 - [ ] apple-touch-icon.png (180x180, 흰 배경 위 logo.svg 중앙 배치) 제작·배치 후 index.html 주석 해제

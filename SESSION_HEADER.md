@@ -1,4 +1,4 @@
-# SESSION_HEADER.md · K-Route 세션 시작 규약
+# SESSION_HEADER.md · Cheongchun Line 세션 시작 규약
 
 모든 작업 프롬프트는 아래 파일을 순서대로 전부 읽고 시작한다.
 
@@ -10,7 +10,7 @@
 [프로젝트 문서 — 항상]
 4. DESIGN.md
 5. client/src/tokens.js
-6. IA.md   (§11 = K-Route)
+6. IA.md   (§11 = Cheongchun Line)
 7. ROUTES.md   (v5 섹션 포함)
 8. COMPONENTS.md
 9. PATTERNS.md

@@ -1,7 +1,7 @@
-# AGENTS.md — Bomnae Helper 에이전트 실행 구조 v3
+# AGENTS.md — Cheongchun Line 에이전트 실행 구조 v3
 
 > 구조 원칙(페이즈 분할·85% 규칙·체크리스트·아이콘 규칙)은 고정 AGENTS.md에서 계승하고,
-> 담당 범위·체크 항목만 Bomnae Helper로 재조준했다. 이식 문서 §10 "문서 팩 v3 신규 작성(AGENTS 포함)" 근거.
+> 담당 범위·체크 항목만 Cheongchun Line로 재조준했다. 이식 문서 §10 "문서 팩 v3 신규 작성(AGENTS 포함)" 근거.
 
 ## 하네스 구조
 

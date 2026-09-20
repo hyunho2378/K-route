@@ -1,7 +1,7 @@
 # MOTION.md · 애니메이션·인터랙션·재질 표준 (UI·모션 작업 시 필독)
 
 기존 tokens.js motion 토큰과 .claude/skills/animation-vocabulary·improve-animations 계열을 기반으로 한다.
-새 화면(quiz·go·chat)의 모션은 기존 봄내헬퍼 패턴과 이질감 없게.
+새 화면(quiz·go·chat)의 모션은 기존 Cheongchun Line 패턴과 이질감 없게.
 
 ## 원칙
 - transform·opacity만 애니메이트. layout/paint 유발 속성(width/height/top/left/margin) 금지.

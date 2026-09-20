@@ -1,4 +1,4 @@
-# ROUTES.md — Bomnae Helper 라우팅 v3 (react-router-dom@6)
+# ROUTES.md — Cheongchun Line 라우팅 v3 (react-router-dom@6)
 
 ## 1. 라우트 테이블
 
@@ -59,7 +59,7 @@
 ## 4. 공통 동작
 
 - 라우트 변경 시: 스크롤 top 복원(`ScrollRestoration` 커스텀 훅), GlassDock 수축, 진행 중 시트/다이얼로그 닫기.
-- 페이지 title: `Bomnae Helper — {페이지 키}` (사전 키 `meta.title.*`).
+- 페이지 title: `Cheongchun Line — {페이지 키}` (사전 키 `meta.title.*`).
 - 내부 이동은 전부 `<Link>`/`useNavigate` — `<a href>`는 외부 링크만(`rel="noopener"`).
 
 

@@ -1,4 +1,4 @@
-# DESIGN.md — Bomnae Helper · CHUNCHEON VIVID v3
+# DESIGN.md — Cheongchun Line · CHUNCHEON VIVID v3
 
 이 문서는 디자인의 유일한 기준이다. 여기 없는 색·크기·효과는 존재하지 않는 값이다.
 모든 수치의 실제 값은 `client/src/tokens.js`가 단일 진실이며, 이 문서는 그 사용 규칙을 정의한다.
@@ -107,7 +107,7 @@ Fluid 스케일 (tokens.typeScale): display `clamp(44px,6vw,104px)` / h1 `clamp(
 - 수축 트리거: 바깥 탭 / 스와이프 다운 / 라우트 변경. 확장 중 포커스 트랩 + Escape 닫기.
 - **탭바·햄버거 금지.** 터치 타깃 최소 44×44px (HIG).
 
-**푸터 (v3.1 전면 개정)** — **primary #009FE3 풀블리드**, 텍스트 white(메타는 white 72%). navy·검정 금지, 상단 스트라이프 보더 폐지. G-Local 구조 이식: 4컬럼 그리드(브랜드 한 문장+로고 / Explore 링크 / Contact: `official@bomnaehelper.ac.kr` / Team 5 · STATION C Glocal Solverthon Chuncheon). 최하단 바: 좌측 `© 2026 Bomnae Helper · Team 5`, **우측 Privacy Policy · Terms of Service** — 각각 `/legal/privacy` `/legal/terms`를 **새 탭**(`target="_blank" rel="noopener"`)으로. **언어 토글 없음**(헤더 LangMenu가 유일한 언어 진입점), "Prototype for demonstration…" 문구 삭제(해당 고지는 Terms 본문 안으로 이동).
+**푸터 (v3.1 전면 개정)** — **primary #009FE3 풀블리드**, 텍스트 white(메타는 white 72%). navy·검정 금지, 상단 스트라이프 보더 폐지. G-Local 구조 이식: 4컬럼 그리드(브랜드 한 문장+로고 / Explore 링크 / Contact: `official@bomnaehelper.ac.kr` / Team 5 · STATION C Glocal Solverthon Chuncheon). 최하단 바: 좌측 `© 2026 Cheongchun Line · Team 5`, **우측 Privacy Policy · Terms of Service** — 각각 `/legal/privacy` `/legal/terms`를 **새 탭**(`target="_blank" rel="noopener"`)으로. **언어 토글 없음**(헤더 LangMenu가 유일한 언어 진입점), "Prototype for demonstration…" 문구 삭제(해당 고지는 Terms 본문 안으로 이동).
 
 ## 7. 컴포넌트 스타일 규칙
 
@@ -214,7 +214,7 @@ TypeScript(.ts/.tsx/interface/type) / localStorage·sessionStorage / 색·간격
 - 헤더는 전 라우트 불투명 유지(재확인).
 
 ### 16.5 푸터 압축
-- 세로 최대 2단: [1단] 로고+한 문장, Explore 링크 가로 나열, Contact 이메일 — 한 행 그리드. [2단] 하단 바: 좌 `© 2026 Bomnae Helper. All rights reserved.` + `Team 5`, 우 Privacy Policy · Terms of Service(새 탭). 대회 풀네임·주소성 텍스트 금지. 데스크탑 기준 총 높이 240px 이내.
+- 세로 최대 2단: [1단] 로고+한 문장, Explore 링크 가로 나열, Contact 이메일 — 한 행 그리드. [2단] 하단 바: 좌 `© 2026 Cheongchun Line. All rights reserved.` + `Team 5`, 우 Privacy Policy · Terms of Service(새 탭). 대회 풀네임·주소성 텍스트 금지. 데스크탑 기준 총 높이 240px 이내.
 
 ### 16.6 언어 동형 원칙 (레이아웃 패리티)
 - en/ko/th **어떤 언어에서도 요소의 위치·순서·개수·구조가 동일**해야 한다. 언어 전환은 텍스트만 바뀐다(LangSwap). 언어별 디자인 분기·요소 이동·조건부 노출 전면 금지. 검수 시 3언어 스크린샷 오버레이 비교.

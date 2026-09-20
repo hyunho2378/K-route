@@ -1,4 +1,4 @@
-# PATTERNS.md — Bomnae Helper 반복 UI 패턴 v3
+# PATTERNS.md — Cheongchun Line 반복 UI 패턴 v3
 
 패턴은 그대로 사용한다. 임의 변형 금지. 코드 블록은 기준 구현이며 토큰 참조 방식만 프로젝트 유틸에 맞게 연결한다.
 
