@@ -1,5 +1,5 @@
 // ============================================================
-// tokens.js · Bomnae Helper 단일 진실(Single Source of Truth)
+// tokens.js · K-Route 단일 진실(Single Source of Truth)
 // 모든 색·타이포·간격·모션·지도 상수는 이 파일에서만 나온다.
 // 컴포넌트/CSS에 HEX·px 하드코딩 금지. tailwind.config.js가 이 파일을 import한다.
 // 배치 경로: client/src/tokens.js

@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
         {/* [V18] 모바일: flex-col-reverse로 저작권 줄을 항상 최하단에(링크 위→저작권 아래) · sm+는 좌우 배치 */}
         <div className="flex flex-col-reverse gap-8 pb-24 sm:flex-row sm:items-center sm:justify-between">
-          {/* [V10] "Team Bomnae Helper"를 /team 링크로 · 앞뒤 텍스트는 pre/post(t로 유령폭 회피) */}
+          {/* [V10] "Team K-Route"를 /team 링크로 · 앞뒤 텍스트는 pre/post(t로 유령폭 회피) */}
           <p className="text-caption font-medium">
             {t('common.footer.copyrightPre')}
             {/* [V18] 밑줄 제거 · hover 시에만 색 변화(§17 링크 문법) */}
