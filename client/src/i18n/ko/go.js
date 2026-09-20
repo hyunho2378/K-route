@@ -8,6 +8,12 @@ export default {
     current: '현재 위치',
     station: '춘천역',
     stopN: '{n}번째 장소',
+    pass: {
+      eyebrow: '내 노선 패스',
+      here: '지금 여기예요',
+      start: '노선의 시작',
+      end: '노선의 끝',
+    },
     locate: {
       title: '길 안내에 현재 위치를 사용할까요?',
       body: '장소까지 가는 길을 보여 드리려고 현재 위치를 한 번 확인합니다. 위치는 저장하지 않아요.',

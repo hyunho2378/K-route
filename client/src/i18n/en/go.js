@@ -8,6 +8,13 @@ export default {
     current: 'Your location',
     station: 'Chuncheon Station',
     stopN: 'Stop {n}',
+    // [V5-31] 노선 패스카드(RoutePassCard) · 실제 지하철 플랫폼 행선 안내판 참고자료 반영
+    pass: {
+      eyebrow: 'Your route pass',
+      here: "You're here",
+      start: 'Start of your line',
+      end: 'End of your line',
+    },
     locate: {
       title: 'Use your location for directions?',
       body: 'We check your current location once to show the way to your stop. It is not saved.',

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowRight, LocateFixed, MapPin, RotateCcw, TrainFront } from 'lucide-react';
 import CrowdCard from '../components/go/CrowdCard';
 import LegTimeline from '../components/go/LegTimeline';
+import RoutePassCard from '../components/go/RoutePassCard';
 import ItineraryMap from '../components/gts/ItineraryMap';
 import TriText from '../components/gts/TriText';
 import Container from '../components/layout/Container';
@@ -163,6 +164,9 @@ export default function GtsGo() {
       <Container>
         <div className="flex flex-col gap-32 pb-64 pt-96">
           <LangSwap k="go.title" as="h1" className="text-h1 font-bold tracking-display" />
+
+          {/* [V5-31] 노선 패스카드 · 이전역 ← 현재역 → 다음역(실제 지하철 플랫폼 행선 안내판 참고자료 반영) */}
+          <RoutePassCard course={course} destIdx={destIdx} />
 
           {/* 3xl 미만 = 세로 흐름(요약 → 결과·지도 → 집중률 → 버튼) · 3xl 이상 = 집중률 카드만 우측 열 */}
           <div className="flex flex-col gap-24 3xl:grid 3xl:grid-cols-[minmax(0,1fr)_380px] 3xl:items-start 3xl:gap-x-32">
