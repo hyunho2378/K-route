@@ -41,7 +41,6 @@ import { boundingBox, buildOctolinearRoute } from './octolinear';
 // ------------------------------------------------------------------
 
 // 라인 3종 · lineSystem.js LINES와 동일한 4키(id, colorToken, crew, kType) 유지 + name/stationIds 추가.
-// 라인 3종 · lineSystem.js LINES와 동일한 4키(id, colorToken, crew, kType) 유지 + name/stationIds 추가.
 //
 // [V5-25] 역 구성을 SOURCE_SPOTS.md 검증 앵커 수와 그대로 맞춘다(인위적 균형 금지). K푸드는
 // grade=강함/중간 anchor가 13곳으로 실질 주력 라인이라 7곳을 대표로 보여주고, 드라마·애니는 각각
@@ -113,6 +112,15 @@ const FALLBACK_STROKE = 'stroke-inkSec';
 const FALLBACK_FILL = 'fill-inkSec';
 const FALLBACK_BG = 'bg-inkSec';
 
+// [V5-29] 실제 서울 지하철 역 표지판(초록 원 안 역번호 · 예: 2호선 210)을 참고 자료로 받아 반영.
+// 노선별 역 번호 배지 — 라인 이니셜(D/F/A) + 그 라인 안에서 몇 번째 역인지(1부터). 스키마틱 맵이라
+// 물리적 노선도의 "역 번호"를 그대로 지어내지 않고, 우리 라인 3종에 맞는 자체 코드 체계로 표현한다.
+const LINE_CODE_LETTER = { drama: 'D', food: 'F', anime: 'A' };
+const LINE_BADGE_BG = { drama: 'fill-primary', food: 'fill-spice', anime: 'fill-yellow' };
+const LINE_BADGE_TEXT = { drama: 'fill-white', food: 'fill-white', anime: 'fill-ink' };
+const BADGE_R = spacing[2]; // 8 · 역번호 배지 반지름
+const BADGE_OFFSET = spacing[3]; // 12 · 역 마커 중심에서 배지까지 대각선 오프셋
+
 // ------------------------------------------------------------------
 // 기하 상수 · 전부 tokens.spacing 배열 인덱스에서만 가져온다(직접 숫자 나열 금지).
 // spacing = [0,4,8,12,16,20,24,32,40,48,64,80,96,128]
@@ -176,6 +184,19 @@ export default function SubwayNetworkMap({
       (line.stationIds ?? []).forEach((id) => seen.set(id, (seen.get(id) ?? 0) + 1));
     });
     return new Set([...seen.entries()].filter(([, n]) => n >= 2).map(([id]) => id));
+  }, [lines]);
+
+  // [V5-29] 역번호 코드(라인이니셜+순번) · 각 라인의 stationIds 순서 그대로 1부터 매긴다.
+  //   지금 데이터엔 환승역이 없어 역 하나 = 라인 하나로 코드가 유일하게 정해진다.
+  const stationCodes = useMemo(() => {
+    const codes = new Map();
+    lines.forEach((line) => {
+      const letter = LINE_CODE_LETTER[line.id] ?? line.id.charAt(0).toUpperCase();
+      (line.stationIds ?? []).forEach((id, idx) => {
+        if (!codes.has(id)) codes.set(id, `${letter}${idx + 1}`);
+      });
+    });
+    return codes;
   }, [lines]);
 
   // 라인별 옥토리니어 폴리라인(그리드 단위) → px 변환 포인트 문자열.
@@ -315,6 +336,15 @@ export default function SubwayNetworkMap({
             const ownerLineId = lines.find((l) => (l.stationIds ?? []).includes(station.id))?.id;
             const fillClass = isTransfer ? 'fill-bg' : LINE_FILL[ownerLineId] ?? FALLBACK_FILL;
             const label = pick(station.name, lang);
+            // [V5-29] 역번호 배지 · 실제 지하철 역 표지판(초록 원 안 역번호) 참고자료 반영.
+            //   환승역은 라인이 2개라 배지도 2개(살짝 겹쳐 나란히), 일반역은 1개.
+            const codeLines = isTransfer
+              ? lines.filter((l) => (l.stationIds ?? []).includes(station.id))
+              : ownerLineId
+                ? [lines.find((l) => l.id === ownerLineId)]
+                : [];
+            const badgeCx = cx + BADGE_OFFSET * Math.SQRT1_2;
+            const badgeCy = cy - BADGE_OFFSET * Math.SQRT1_2;
 
             return (
               <g
@@ -352,6 +382,32 @@ export default function SubwayNetworkMap({
                 >
                   {label}
                 </text>
+                {/* 역번호 배지(들) · 라인색 원 + 코드(라인이니셜+순번), 흰 테두리로 본선/역 위에서도 또렷하게 */}
+                {codeLines.map((codeLine, ci) => {
+                  const code = stationCodes.get(station.id + (codeLines.length > 1 ? `::${codeLine.id}` : ''))
+                    ?? `${LINE_CODE_LETTER[codeLine.id] ?? codeLine.id.charAt(0).toUpperCase()}${(codeLine.stationIds ?? []).indexOf(station.id) + 1}`;
+                  const bx = badgeCx + ci * (BADGE_R * 1.8);
+                  return (
+                    <g key={codeLine.id}>
+                      <circle
+                        cx={bx}
+                        cy={badgeCy}
+                        r={BADGE_R}
+                        className={`${LINE_BADGE_BG[codeLine.id] ?? FALLBACK_FILL} stroke-bg`}
+                        strokeWidth={spacing[1]}
+                      />
+                      <text
+                        x={bx}
+                        y={badgeCy}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className={`font-display text-[9px] font-bold ${LINE_BADGE_TEXT[codeLine.id] ?? 'fill-white'}`}
+                      >
+                        {code}
+                      </text>
+                    </g>
+                  );
+                })}
               </g>
             );
           })}
