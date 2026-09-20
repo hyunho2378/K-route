@@ -41,6 +41,14 @@ import { boundingBox, buildOctolinearRoute } from './octolinear';
 // ------------------------------------------------------------------
 
 // 라인 3종 · lineSystem.js LINES와 동일한 4키(id, colorToken, crew, kType) 유지 + name/stationIds 추가.
+// 라인 3종 · lineSystem.js LINES와 동일한 4키(id, colorToken, crew, kType) 유지 + name/stationIds 추가.
+//
+// [V5-25] 역 구성을 SOURCE_SPOTS.md 검증 앵커 수와 그대로 맞춘다(인위적 균형 금지). K푸드는
+// grade=강함/중간 anchor가 13곳으로 실질 주력 라인이라 7곳을 대표로 보여주고, 드라마·애니는 각각
+// 단 1곳(남이섬=128019 겨울연가 grade 중간, 애니메이션박물관 grade 강함)뿐이라 그대로 1역으로
+// 놓는다(점 하나로만 렌더된다 · COMPONENTS.md v5-16 "역이 1곳뿐인 라인 = dot" 선례와 같은 원칙).
+// 이 불균형을 감추지 않고 그대로 보여주는 것이 설계 의도다(근거 없는 성지 주장 금지 원칙).
+// 드라마·애니는 가상 환승점을 지어내지 않으므로 푸드 라인과 서로 교차하지 않는다(환승역 0곳).
 export const SAMPLE_LINES = [
   {
     id: 'drama',
@@ -48,7 +56,7 @@ export const SAMPLE_LINES = [
     crew: 'lake',
     kType: 'kdrama',
     name: { en: 'Drama Line', ko: '드라마 라인' },
-    stationIds: ['nami-island', 'soyang-skywalk', 'hwadong-2571', 'downtown-junction', 'gongji-stream'],
+    stationIds: ['nami-island'],
   },
   {
     id: 'food',
@@ -56,7 +64,15 @@ export const SAMPLE_LINES = [
     crew: 'dakgalbi',
     kType: 'kfood',
     name: { en: 'Food Line', ko: '푸드 라인' },
-    stationIds: ['log-house-dakgalbi', 'makguksu-museum', 'downtown-junction', 'myeongdong-junction', 'old-market'],
+    stationIds: [
+      'tongnamujip',
+      'hakgok-makguksu',
+      'wonjo-charcoal-dak',
+      'chuncheon-makguksu-museum',
+      'umi-dakgalbi',
+      'saembat-makguksu',
+      'sandak',
+    ],
   },
   {
     id: 'anime',
@@ -64,26 +80,23 @@ export const SAMPLE_LINES = [
     crew: 'potato',
     kType: 'kanime',
     name: { en: 'Anime Line', ko: '애니 라인' },
-    stationIds: ['potato-field', 'soyang-dam', 'soul-roastery', 'myeongdong-junction', 'animation-museum'],
+    stationIds: ['animation-museum'],
   },
 ];
 
 // 역 목록 · x/y는 그리드 단위(정수), labelSide는 라벨을 마커 어느 방향에 둘지(n/s/e/w).
-// downtown-junction·myeongdong-junction 두 곳만 2개 라인에 동시에 속한 환승역이다.
+// 이름은 SOURCE_SPOTS.md 검증 표의 venue id·venues.js 표시명을 그대로 따른다(신규 성지 0건).
+// 좌표는 실좌표가 아니라 노선도용 개략 좌표다(실제 지리적 위치를 단정하지 않는다).
 export const SAMPLE_STATIONS = [
-  { id: 'nami-island', name: { en: 'Nami Island', ko: '남이섬' }, x: 0, y: 2, labelSide: 'n' },
-  { id: 'soyang-skywalk', name: { en: 'Soyang River Sky Walk', ko: '소양강스카이워크' }, x: 2, y: 2, labelSide: 'n' },
-  { id: 'hwadong-2571', name: { en: 'Hwadong 2571', ko: '화동2571' }, x: 4, y: 2, labelSide: 'n' },
-  { id: 'downtown-junction', name: { en: 'Old Downtown', ko: '구도심' }, x: 6, y: 4, labelSide: 's' },
-  { id: 'gongji-stream', name: { en: 'Gongji Stream', ko: '공지천' }, x: 8, y: 4, labelSide: 'n' },
-  { id: 'log-house-dakgalbi', name: { en: 'Log House Dakgalbi', ko: '통나무집 닭갈비' }, x: 6, y: 0, labelSide: 'n' },
-  { id: 'makguksu-museum', name: { en: 'Makguksu Experience Museum', ko: '막국수체험박물관' }, x: 6, y: 2, labelSide: 'e' },
-  { id: 'myeongdong-junction', name: { en: 'Myeongdong', ko: '명동' }, x: 8, y: 6, labelSide: 'e' },
-  { id: 'old-market', name: { en: 'Old Downtown Market', ko: '구시장' }, x: 10, y: 6, labelSide: 'e' },
-  { id: 'potato-field', name: { en: 'Potato Field', ko: '감자밭' }, x: 2, y: 8, labelSide: 's' },
-  { id: 'soyang-dam', name: { en: 'Soyang Dam', ko: '소양강댐' }, x: 4, y: 8, labelSide: 's' },
-  { id: 'soul-roastery', name: { en: 'Soul Roastery', ko: '소울로스터리' }, x: 6, y: 8, labelSide: 's' },
-  { id: 'animation-museum', name: { en: 'Animation Museum', ko: '애니메이션박물관' }, x: 10, y: 4, labelSide: 'e' },
+  { id: 'nami-island', name: { en: 'Nami Island', ko: '남이섬' }, x: 1, y: 7, labelSide: 's' },
+  { id: 'tongnamujip', name: { en: 'Tongnamujip Dakgalbi', ko: '통나무집 닭갈비' }, x: 0, y: 0, labelSide: 'n' },
+  { id: 'hakgok-makguksu', name: { en: 'Hakgok Makguksu & Dakgalbi', ko: '학곡막국수닭갈비' }, x: 2, y: 0, labelSide: 'n' },
+  { id: 'wonjo-charcoal-dak', name: { en: 'Wonjo Charcoal Dak Bulgogi', ko: '원조숯불닭불고기' }, x: 4, y: 0, labelSide: 'n' },
+  { id: 'chuncheon-makguksu-museum', name: { en: 'Chuncheon Makguksu Museum', ko: '춘천막국수체험박물관' }, x: 6, y: 2, labelSide: 'e' },
+  { id: 'umi-dakgalbi', name: { en: 'Umi Dakgalbi', ko: '우미 닭갈비' }, x: 8, y: 2, labelSide: 'n' },
+  { id: 'saembat-makguksu', name: { en: 'Saembat Makguksu', ko: '샘밭막국수' }, x: 10, y: 2, labelSide: 'n' },
+  { id: 'sandak', name: { en: 'Sandak', ko: '산닭' }, x: 12, y: 0, labelSide: 'n' },
+  { id: 'animation-museum', name: { en: 'Animation Museum', ko: '애니메이션박물관' }, x: 11, y: 7, labelSide: 's' },
 ];
 
 export const SAMPLE_NETWORK = { lines: SAMPLE_LINES, stations: SAMPLE_STATIONS };
