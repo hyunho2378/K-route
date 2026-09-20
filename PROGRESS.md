@@ -835,7 +835,11 @@ press(0.97)만 허용 · 그림자는 tokens.shadow 만")를 절대 위반하지
 
 ## 사용자 준비물 (블로커 — 코드 진행과 무관하게 병행)
 
-- [ ] 봄내크루 원본 에셋 (배경 제거본) → `client/public/images/crew/`
+- [x] 봄내크루 원본 에셋 (배경 흰색본, 사용자 제공 6장, 2026-09-21 도착) → `client/public/images/crew/`
+  - 원본 마스터(6144×6144, 배경 흰색)는 `docs/assets/crew-originals/`에 보관, 웹용은 256px로 리사이즈.
+  - 라인 슬롯 3종 교체(파일 내용만 교체, 경로·코드 불변): `potato.png`=감자 댄서(anime 라인) · `dakgalbi.png`=닭 드러머(food 라인) · `lake.png`=자전거 타는 캐릭터(drama 라인, **추론 배정 — 물/호수 상징이 명확하지 않아 확정 아님, 확인 요청**).
+  - 배정 안 된 나머지 3장은 `client/public/images/crew/roster/`에 보관: `makguksu.png`(막국수 그릇), `runner.png`(달리는 캐릭터), `ninja-orange.png`(주황 닌자 캐릭터) — 라인 미배정, 추후 배지·보조 캐릭터 후보.
+  - 아직 실제 렌더 와이어링은 안 됨: `QuizQuestion.jsx`(§17 주석)와 `lines.js`/`useShuttleSim.js`(LoopMap 경유, 현재 비활성 추정)만 경로를 참조하고 있고 실제 화면에 크루 아이콘을 렌더하는 코드는 아직 없음 — 파일 교체만 완료, 렌더 연결은 별도 작업.
 - [ ] Google OAuth 클라이언트 ID/Secret (PHASE 3 전까지)
 - [ ] Neon DATABASE_URL (PHASE 3 전까지)
 - [ ] 히어로 실사진 — 텍스트 없는 실사 (3~4일차 촬영)
