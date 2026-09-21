@@ -48,6 +48,11 @@ export default function GtsGo() {
   const [go, setGo] = useState(null); // { key, res } · res null = 네트워크 실패(to 없음)
   const [retry, setRetry] = useState(0);
   const consented = useRef(false); // 동의는 페이지 세션 1회(§21 · GateForm 선례)
+  // [V5-33] "Your location" 라벨만으로는 실제로 맞는 위치를 잡았는지 확인이 안 된다는 지적 반영.
+  //   OpenStreetMap Nominatim(이미 지도 타일 출처로 쓰는 곳과 동일 데이터셋)으로 좌표 → 짧은 주소를
+  //   1회 역지오코딩해 보조 캡션으로 보여준다. 실패·타임아웃이면 조용히 원래 라벨만 유지(실패가
+  //   화면에 에러로 드러나지 않는다 · 외부 서비스 1개 추가 의존이라 반드시 폴백 경로를 둔다).
+  const [address, setAddress] = useState(null);
 
   const destIdx = Math.max(0, course.findIndex((s) => s.id === destId));
   const dest = course[destIdx];
@@ -154,6 +159,34 @@ export default function GtsGo() {
     if (originKind === 'current') locate();
   };
 
+  useEffect(() => {
+    if (originKind !== 'current' || oLat == null || oLng == null) {
+      setAddress(null);
+      return undefined;
+    }
+    let alive = true;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000); // 5초 넘으면 포기(폴백 라벨 유지)
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${oLat}&lon=${oLng}&zoom=16&accept-language=en`,
+      { signal: ctrl.signal },
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!alive || !data?.address) return;
+        const a = data.address;
+        // 동/읍면 단위 우선, 없으면 더 넓은 단위로(빈 문자열이면 표시 안 함 · 지어내지 않는다)
+        const short = a.suburb || a.neighbourhood || a.village || a.town || a.city_district || a.city || null;
+        if (short) setAddress(short);
+      })
+      .catch(() => {}) // 네트워크 실패·타임아웃 = 조용히 무시(기존 "Your location" 라벨만 유지)
+      .finally(() => clearTimeout(timer));
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [originKind, oLat, oLng]);
+
   const pending = locating || !originKind;
   const OriginIcon = originKind === 'station' && !pending ? TrainFront : LocateFixed;
   const cur = go?.key === reqKey ? go : null; // null = 조회 중(키 불일치 = 이전 결과 무효)
@@ -178,10 +211,16 @@ export default function GtsGo() {
                   <LangSwap k="go.from" className="text-caption font-medium text-inkMeta" />
                   <span aria-live="polite" className="flex items-center gap-8">
                     <OriginIcon size={20} aria-hidden="true" className="shrink-0 text-ink" />
-                    <LangSwap
-                      k={pending ? 'go.locating' : `go.${originKind}`}
-                      className={`text-body font-medium ${pending ? 'text-inkSec' : 'text-ink'}`}
-                    />
+                    <span className="flex min-w-0 flex-col">
+                      <LangSwap
+                        k={pending ? 'go.locating' : `go.${originKind}`}
+                        className={`text-body font-medium ${pending ? 'text-inkSec' : 'text-ink'}`}
+                      />
+                      {/* [V5-33] 역지오코딩된 짧은 주소 · 실패하면 아예 안 뜬다(폴백은 위 라벨만) */}
+                      {!pending && originKind === 'current' && address && (
+                        <span className="truncate text-caption font-medium text-inkMeta">{address}</span>
+                      )}
+                    </span>
                   </span>
                 </div>
                 <ArrowDown size={20} aria-hidden="true" className="shrink-0 self-center text-inkMeta lg:hidden" />

@@ -19,7 +19,9 @@ function SideStop({ spot, n, direction }) {
   const Icon = direction === 'prev' ? ChevronLeft : ChevronRight;
   return (
     <div
-      className={`flex min-w-0 flex-1 items-center gap-8 ${
+      // [V5-32] 320~390px 진짜 폰 폭 대응 · sm(640px) 미만은 아이콘+번호만(이름은 sm+에서만) ·
+      //   3분할 레이아웃이 실제 좁은 화면에서 중앙 카드를 짓누르지 않게 옆 칸을 압축한다.
+      className={`flex min-w-0 shrink-0 items-center gap-4 sm:min-w-0 sm:flex-1 sm:gap-8 ${
         direction === 'prev' ? 'flex-row' : 'flex-row-reverse text-right'
       }`}
     >
@@ -30,7 +32,11 @@ function SideStop({ spot, n, direction }) {
             <span className="text-caption font-medium text-inkMeta">
               {n}
             </span>
-            <TriText text={spot.name} className="truncate text-small font-semibold text-inkSec" clampClass="truncate" />
+            <TriText
+              text={spot.name}
+              className="hidden truncate text-small font-semibold text-inkSec sm:block"
+              clampClass="truncate"
+            />
           </div>
         </>
       ) : (
