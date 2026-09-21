@@ -134,6 +134,7 @@ const CASING_WIDTH = spacing[2]; // 8 · 본선 아래 흰 케이싱(본선보�
 const HOVER_BUMP = spacing[1]; // 4 · hover/focus 시 반지름 증가폭(scale 대신 반지름 보간)
 const LABEL_GAP = spacing[1]; // 4 · 마커 테두리와 라벨 사이 여백
 const PADDING_UNITS = 1.5; // 그리드 여백(바운딩 박스 밖 여유 · 그리드 단위, px 아님)
+const MIN_MAP_PX = 720; // [V5-38] 노선도 최소 렌더 폭 · 이보다 좁은 화면은 축소 대신 가로 스크롤(역 이름 가독성 유지)
 const DRAW_MS = 720; // PATTERNS §13 draw-on 명세값(720ms)과 동일 지속시간
 const STAGGER_MS = 160; // 라인별 시작 지연 · tokens.motion.fast(160ms)와 동일 값 재사용
 
@@ -276,8 +277,12 @@ export default function SubwayNetworkMap({
     <div className={`w-full ${className}`}>
       {titleText && <h3 className="mb-16 text-h3 font-semibold text-ink">{titleText}</h3>}
 
-      {/* 반응형 컨테이너: 뷰포트 기반 SVG viewBox + aspect-ratio 유지(320~3840px 전 구간 비율 고정). */}
-      <div className="relative w-full" style={{ aspectRatio: aspect || 1 }}>
+      {/* [V5-38] 반응형 컨테이너 · 모바일 실측(iframe 390px·320px)에서 SVG가 통째로 축소되며 역 이름이
+          읽을 수 없을 만큼 작아지는 문제 발견. 실제 지하철 노선도 앱들과 같은 해법을 쓴다:
+          좁은 화면에서는 축소하지 않고 최소 폭(MIN_MAP_PX)을 유지한 채 가로 스크롤로 넘긴다.
+          넓은 화면(min-width를 넘는 뷰포트)에서는 그대로 100%로 꽉 차 스크롤이 생기지 않는다. */}
+      <div className="w-full overflow-x-auto">
+      <div className="relative" style={{ aspectRatio: aspect || 1, minWidth: `${MIN_MAP_PX}px` }}>
         <svg
           viewBox={viewBox}
           preserveAspectRatio="xMidYMid meet"
@@ -412,6 +417,7 @@ export default function SubwayNetworkMap({
             );
           })}
         </svg>
+      </div>
       </div>
 
       {showLegend && (
