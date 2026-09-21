@@ -28,7 +28,7 @@ function SideStop({ spot, n, direction }) {
       {spot ? (
         <>
           <Icon size={20} aria-hidden="true" className="shrink-0 text-inkMeta" />
-          <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-4">
             <span className="text-caption font-medium text-inkMeta">
               {n}
             </span>
