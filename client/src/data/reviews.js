@@ -25,7 +25,7 @@ export const seedReviews = [
     country: { en: 'Thailand', ko: '태국', th: 'ไทย' },
     courseKey: 'reviews.course.lunchDinner2act',
     date: '2026-07-28',
-    likes: 21,
+    likes: 99, // [V5-35] 홈 미리보기 상위 3 고정 노출(좋아요순 정렬이라 기존 구 리뷰보다 높게)
     mock: true,
   },
   {
@@ -38,7 +38,7 @@ export const seedReviews = [
     country: { en: 'South Korea', ko: '대한민국', th: 'เกาหลีใต้' },
     courseKey: 'reviews.course.lunchCafeAct',
     date: '2026-08-03',
-    likes: 15,
+    likes: 98,
     mock: true,
   },
   {
@@ -51,7 +51,7 @@ export const seedReviews = [
     country: { en: 'Germany', ko: '독일', th: 'เยอรมนี' },
     courseKey: 'reviews.course.lunchDinner2act',
     date: '2026-08-11',
-    likes: 12,
+    likes: 97,
     mock: true,
   },
   {
