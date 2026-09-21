@@ -3,13 +3,13 @@
 // 카드 UI는 홈 전용 경량(IA §10.2): 별점 primary 채움 · 한 줄 발췌 · 작성자 이니셜 + 국가명 텍스트
 // (국기 이모지 금지 · IA §10.8). 리뷰 본문·국적은 사용자 생성 데이터 · 원문 그대로 렌더
 // (언어 동형 원칙 예외 · UI 크롬만 3언어). 좋아요 실시간 상태는 /reviews 소관 · 여기선 시드 값 정렬만.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { useLang } from '../../i18n/LangContext';
 import LangSwap from '../../i18n/LangSwap';
 import Button from '../ui/Button';
-import { seedReviews, fetchReviews } from '../../data/reviews';
+import { seedReviews } from '../../data/reviews';
 
 const STARS = [1, 2, 3, 4, 5];
 
@@ -22,21 +22,10 @@ const authorLine = (review, lang) => {
 
 export default function ReviewsStrip() {
   const { lang } = useLang();
-  // [V13] 리뷰 DB 실데이터에서 표시(하드코딩 제거) · 실패 시 시드 폴백. 다국어 본문 원문 유지.
-  const [reviews, setReviews] = useState(seedReviews);
-  useEffect(() => {
-    let alive = true;
-    fetchReviews('likes')
-      .then((rows) => {
-        if (alive && Array.isArray(rows) && rows.length) setReviews(rows);
-      })
-      .catch(() => {
-        /* 서버 부재 — 시드 유지 */
-      });
-    return () => {
-      alive = false;
-    };
-  }, []);
+  // [V5-35] 사용자 지시로 홈 미리보기는 K-Route 경험에 맞게 새로 쓴 시드(rv-kroute-*)만 쓴다.
+  //   실서버 리뷰(구 GTS 예약 시절 데이터가 섞여 있음)는 /reviews 전체 목록에서만 가져온다 —
+  //   심사 직전 홈 화면에 옛 서비스 얘기가 다시 섞이는 걸 막는다(fetchReviews 호출 자체를 홈에서 뺐다).
+  const [reviews] = useState(seedReviews);
   const top = [...reviews].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0)).slice(0, 3);
 
   return (

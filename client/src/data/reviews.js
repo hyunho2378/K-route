@@ -12,6 +12,48 @@
 // ============================================================
 
 export const seedReviews = [
+  // [V5-35] 사용자 지시(심사위원 시뮬레이션 발견) — 기존 시드가 전부 "밴 기사·선주문·시간 슬롯"
+  //   구 GTS 예약 서비스 얘기라 지금 K-Route(퀴즈→라인→NFC 스탬프) 경험과 안 맞았음. 홈 미리보기
+  //   3장만 지금 서비스에 맞게 새로 썼다(장소명은 이미 앱 전역에서 실사용 중인 실명만 사용).
+  {
+    id: 'rv-kroute-01',
+    rating: 5,
+    lang: 'en',
+    title: 'Picked K-Food Line and it just worked',
+    body: 'The quiz took less than a minute and put me on the K-Food Line. I picked Tongnamujip Dakgalbi and Chuncheon Makguksu Museum, and the app ordered them by bus time so I never backtracked. Tapped the NFC sticker at each stop for my passport stamp.',
+    initials: 'R.T.',
+    country: { en: 'Thailand', ko: '태국', th: 'ไทย' },
+    courseKey: 'reviews.course.lunchDinner2act',
+    date: '2026-07-28',
+    likes: 21,
+    mock: true,
+  },
+  {
+    id: 'rv-kroute-02',
+    rating: 4,
+    lang: 'ko',
+    title: '남이섬 대신 다른 곳도 갈 수 있었어요',
+    body: '드라마 라인을 골랐는데 남이섬 하나만 나올까 걱정했는데, 근처 로컬 장소까지 같이 묶어줘서 하루가 심심하지 않았습니다. 어떤 곳이 진짜 겨울연가 관련인지 배지로 정확히 구분해 준 게 좋았어요.',
+    initials: 'J.K.',
+    country: { en: 'South Korea', ko: '대한민국', th: 'เกาหลีใต้' },
+    courseKey: 'reviews.course.lunchCafeAct',
+    date: '2026-08-03',
+    likes: 15,
+    mock: true,
+  },
+  {
+    id: 'rv-kroute-03',
+    rating: 5,
+    lang: 'en',
+    title: 'Animation Museum line, no Korean needed',
+    body: 'I do not read Korean and still finished the whole route. Every card had English descriptions straight from the tourism board, and the map showed bus wait times so I knew exactly when to leave. Animation Museum was worth the trip on its own.',
+    initials: 'M.G.',
+    country: { en: 'Germany', ko: '독일', th: 'เยอรมนี' },
+    courseKey: 'reviews.course.lunchDinner2act',
+    date: '2026-08-11',
+    likes: 12,
+    mock: true,
+  },
   {
     id: 'rv-01',
     rating: 5,
