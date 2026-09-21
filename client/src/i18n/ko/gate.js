@@ -4,8 +4,8 @@
 export default {
   home: {
     hero: {
-      title: "춘천엔 지하철이 없다.",
-      sub: "그래서 노선을 깔았다. K-콘텐츠 라인을 고르고, 노선도처럼 도시를 읽는다.",
+      title: "춘천엔 지하철이 없다. 그래서 우리가 그게 됐다.",
+      sub: "K-콘텐츠 라인을 고르고, 노선도처럼 도시를 읽는다.",
       ctaGate: "경로 찾기",
       ctaBuild: "Cheongchun Line 시작하기",
       slides: {

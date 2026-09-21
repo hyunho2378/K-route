@@ -7,8 +7,8 @@
 export default {
   home: {
     hero: {
-      title: "Chuncheon has no subway.",
-      sub: "So we drew the lines. Pick a K-content line, and read the city like a transit map.",
+      title: "No subway in Chuncheon. So we became one.",
+      sub: "Pick a K-content line, and read the city like a transit map.",
       ctaGate: "Plan my route",
       ctaBuild: "Start Cheongchun Line",
       slides: {
