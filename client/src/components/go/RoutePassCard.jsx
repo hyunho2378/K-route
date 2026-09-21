@@ -8,10 +8,10 @@
 //
 // 데이터는 전부 props로 받는다(course·destIdx는 GtsGo.jsx가 이미 갖고 있는 상태를 그대로 넘긴다).
 // 라인이 없는 장소(배지 없는 연계 로컬)는 중립면(NO_LINE_FACE)로 표시 — 없는 라인을 지어내지 않는다.
-import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, TrainFront } from 'lucide-react';
 import KBadge from '../gts/KBadge';
 import TriText from '../gts/TriText';
-import { LINE_FACE, NO_LINE_FACE, lineOfSpot } from '../../data/gts/lineSystem';
+import { LINE_BG, LINE_FACE, NO_LINE_FACE, lineOfSpot } from '../../data/gts/lineSystem';
 import LangSwap from '../../i18n/LangSwap';
 
 // 옆(이전/다음) 칸 · 작게, 흐리게, 화살표와 함께 — 실제 역 표지판의 옆 칸 문법
@@ -83,6 +83,48 @@ export default function RoutePassCard({ course, destIdx }) {
 
         <SideStop spot={next} n={destIdx + 2} direction="next" />
       </div>
+
+      {/* [V5-34] 전체 코스 수평 진행바 · 사용자 제공 참고자료("지하섬" 앱의 역 진행바 + 열차 아이콘)
+          반영 · 우리 라인 색으로. 완료(이전 역) = 작은 채움 점 · 현재 역 = 열차 아이콘 · 남은 역 =
+          빈 점(테두리만). 화면이 좁아도 트랙이 쪼그라들지 않게 min-w를 점 개수만큼 확보한다. */}
+      {course.length > 1 && (
+        <div className="overflow-x-auto">
+          <div className="flex items-center" style={{ minWidth: `${course.length * 48}px` }}>
+            {course.map((stop, i) => {
+              const stopLine = lineOfSpot(stop);
+              const dotBg = stopLine ? LINE_BG[stopLine] : 'bg-inkMeta';
+              const isDone = i < destIdx;
+              const isCurrent = i === destIdx;
+              return (
+                <div key={stop.id} className="flex flex-1 items-center last:flex-none">
+                  {isCurrent ? (
+                    <span
+                      className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-pill text-white shadow-sm ${dotBg}`}
+                      aria-current="step"
+                    >
+                      <TrainFront size={14} aria-hidden="true" />
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className={`h-10 w-10 shrink-0 rounded-pill ${
+                        isDone ? dotBg : 'border-2 border-line bg-white'
+                      }`}
+                    />
+                  )}
+                  {i < course.length - 1 && (
+                    <span aria-hidden="true" className={`h-2 flex-1 ${isDone ? dotBg : 'bg-line'}`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex justify-between text-caption font-medium text-inkMeta">
+            <LangSwap k="go.pass.start" />
+            <LangSwap k="go.pass.end" />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
